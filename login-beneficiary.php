@@ -58,7 +58,6 @@ if(isset($_POST['register-beneficiary']))
     $stmt->bindParam(2, $email);
     $stmt->bindParam(3, $password);
     $stmt->execute();
-    $records=$stmt->fetch(PDO::FETCH_ASSOC);
     $id=$pdo->lastInsertId();
     $stmt1=$pdo->prepare("insert into users (role_id, name, role, email) values (?,?,?,?)");
     $stmt1->bindParam(1,$id);
@@ -66,8 +65,8 @@ if(isset($_POST['register-beneficiary']))
     $stmt1->bindValue(3, "Beneficiary");
     $stmt1->bindParam(4,$email);
     $stmt1->execute();
-    echo "Registered Successfully. Redirecting to Login Page...";
     header("refresh:2;url=login-beneficiary.php");
+    echo "Registered Successfully. Redirecting to Login Page...";
     exit();
     }
     else if($value==0)
