@@ -29,27 +29,40 @@ function locationScore(string $a, string $b): int {
     return count(array_intersect($words($a), $words($b)));
 }
 
-function sendRoundEmails(PDO $pdo, int $batch_id, array $ngo_ids, int $round_no, array $b): void {
+function createRoundNotifications(PDO $pdo, int $batch_id, array $ngo_ids, int $round_no): array {
     $expires_at = date('Y-m-d H:i:s', strtotime('+' . ESCALATION_MINUTES . ' minutes'));
+    $si = $pdo->prepare(
+        "INSERT INTO food_donation_notifications
+           (batch_id, ngo_id, round_no, token, expires_at, status)
+         VALUES (?,?,?,?,?,'Pending')"
+    );
+    $items = [];
     foreach ($ngo_ids as $ngo_id) {
         $token = bin2hex(random_bytes(32));
-        $si = $pdo->prepare(
-            "INSERT INTO food_donation_notifications
-               (batch_id, ngo_id, round_no, token, expires_at, status)
-             VALUES (?,?,?,?,?,'Pending')"
-        );
-        $si->execute([$batch_id, $ngo_id, $round_no, $token, $expires_at]);
-        $notif_id = (int) $pdo->lastInsertId();
+        $si->execute([$batch_id, (int) $ngo_id, $round_no, $token, $expires_at]);
+        $items[] = [
+            'notif_id' => (int) $pdo->lastInsertId(),
+            'ngo_id'   => (int) $ngo_id,
+            'token'    => $token,
+        ];
+    }
+    return ['expires_at' => $expires_at, 'items' => $items];
+}
 
-        $se = $pdo->prepare("SELECT name, email FROM ngo_master WHERE id = ?");
-        $se->execute([$ngo_id]);
+function sendRoundEmails(PDO $pdo, array $round, array $b): void {
+    $expires_at = $round['expires_at'];
+    $exp_label  = date('h:i A', strtotime($expires_at));
+    $se = $pdo->prepare("SELECT name, email FROM ngo_master WHERE id = ?");
+
+    foreach ($round['items'] as $item) {
+        $se->execute([$item['ngo_id']]);
         $ngo = $se->fetch(PDO::FETCH_ASSOC);
-        if (!$ngo || empty($ngo['email'])) 
+        if (!$ngo || empty($ngo['email'])) {
             continue;
+        }
 
         $accept_url = APP_URL . "/public/ngos/ngo-food-accept.php"
-                    . "?notif_id={$notif_id}&token={$token}";
-        $exp_label  = date('h:i A', strtotime($expires_at));
+                    . "?notif_id={$item['notif_id']}&token={$item['token']}";
 
         $subject = "HelpSphere: Immediate Food Donation – Accept by {$exp_label}";
         $body    =
@@ -69,7 +82,12 @@ function sendRoundEmails(PDO $pdo, int $batch_id, array $ngo_ids, int $round_no,
           . ">>> ACCEPT HERE:\n{$accept_url}\n\n"
           . "- HelpSphere Platform";
 
-        smtp_mail($ngo['email'], $subject, $body);
+        // One failed email must not stop the rest
+        try {
+            smtp_mail($ngo['email'], $subject, $body);
+        } catch (Throwable $e) {
+            error_log('smtp_mail failed for NGO ' . $item['ngo_id'] . ': ' . $e->getMessage());
+        }
     }
 }
 
@@ -83,85 +101,118 @@ function runEscalationEngine(PDO $pdo): void {
          WHERE status = 'Pending' AND expires_at < ?"
     )->execute([$now]);
 
-    // 2. Find Pending batches whose latest round is fully expired (no accepts, no live Pending)
+    // 2. Candidate batches (re-checked under a lock below)
     $stmtB = $pdo->prepare(
         "SELECT DISTINCT fdb.id AS batch_id, fdb.food_type, fdb.quantity,
-                fdb.pickup_address, fdb.pickup_within,
-                MAX(fdn.round_no) AS last_round
+                fdb.pickup_address, fdb.pickup_within
          FROM food_donation_batches fdb
          JOIN food_donation_notifications fdn ON fdn.batch_id = fdb.id
-         WHERE fdb.status = 'Pending'
-         GROUP BY fdb.id, fdb.food_type, fdb.quantity, fdb.pickup_address, fdb.pickup_within"
+         WHERE fdb.status = 'Pending'"
     );
     $stmtB->execute();
     $batches = $stmtB->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($batches as $batch) {
-        $bid        = (int) $batch['batch_id'];
-        $last_round = (int) $batch['last_round'];
+        $bid   = (int) $batch['batch_id'];
+        $round = null;
 
-        // Count still-live Pending notifications in latest round
-        $sc = $pdo->prepare(
-            "SELECT COUNT(*) FROM food_donation_notifications
-             WHERE batch_id = ? AND round_no = ? AND status = 'Pending'"
-        );
-        $sc->execute([$bid, $last_round]);
-        $live = (int) $sc->fetchColumn();
-        if ($live > 0)
-             continue; // round still open
+        try {
+            $pdo->beginTransaction();
 
-        // Check if already accepted
-        $sa = $pdo->prepare(
-            "SELECT COUNT(*) FROM food_donation_notifications
-             WHERE batch_id = ? AND status = 'Accepted'"
-        );
-        $sa->execute([$bid]);
-        if ((int) $sa->fetchColumn() > 0) 
-            continue; // already handled
+            // Lock the batch row. A second request waits here until the first commits.
+            $lk = $pdo->prepare("SELECT status FROM food_donation_batches WHERE id = ? FOR UPDATE");
+            $lk->execute([$bid]);
+            if ($lk->fetchColumn() !== 'Pending') {
+                $pdo->rollBack();
+                continue;
+            }
 
-        // All expired, no accept → dispatch next round
-        $already_notified = [];
-        $sn = $pdo->prepare(
-            "SELECT DISTINCT ngo_id FROM food_donation_notifications WHERE batch_id = ?"
-        );
-        $sn->execute([$bid]);
-        $already_notified = array_column($sn->fetchAll(PDO::FETCH_ASSOC), 'ngo_id');
+            // Re-read everything AFTER taking the lock
+            $lr = $pdo->prepare("SELECT MAX(round_no) FROM food_donation_notifications WHERE batch_id = ?");
+            $lr->execute([$bid]);
+            $last_round = (int) $lr->fetchColumn();
 
-        // Fetch all verified NGOs not yet notified
-        $placeholders = implode(',', array_fill(0, count($already_notified), '?'));
-        $whereClause  = $already_notified
-            ? "WHERE status = 'Verified' AND id NOT IN ($placeholders)"
-            : "WHERE status = 'Verified'";
+            $sc = $pdo->prepare(
+                "SELECT COUNT(*) FROM food_donation_notifications
+                 WHERE batch_id = ? AND round_no = ? AND status = 'Pending'"
+            );
+            $sc->execute([$bid, $last_round]);
+            if ((int) $sc->fetchColumn() > 0) {
+                $pdo->rollBack();
+                continue; // round still open (or another request just started the next one)
+            }
 
-        $sg = $pdo->prepare("SELECT id, address FROM ngo_master $whereClause");
-        $sg->execute($already_notified);
-        $remaining = $sg->fetchAll(PDO::FETCH_ASSOC);
+            $sa = $pdo->prepare(
+                "SELECT COUNT(*) FROM food_donation_notifications
+                 WHERE batch_id = ? AND status = 'Accepted'"
+            );
+            $sa->execute([$bid]);
+            if ((int) $sa->fetchColumn() > 0) {
+                $pdo->rollBack();
+                continue; // already handled
+            }
 
-        if (empty($remaining)) {
-            // No more NGOs to notify — mark batch as fully expired
-            $pdo->prepare("UPDATE food_donation_batches SET status='Expired' WHERE id=?")
-                ->execute([$bid]);
+            $sn = $pdo->prepare("SELECT DISTINCT ngo_id FROM food_donation_notifications WHERE batch_id = ?");
+            $sn->execute([$bid]);
+            $already_notified = array_column($sn->fetchAll(PDO::FETCH_ASSOC), 'ngo_id');
+
+            if ($already_notified) {
+                $placeholders = implode(',', array_fill(0, count($already_notified), '?'));
+                $whereClause  = "WHERE status = 'Verified' AND id NOT IN ($placeholders)";
+            } else {
+                $whereClause  = "WHERE status = 'Verified'";
+            }
+
+            $sg = $pdo->prepare("SELECT id, address FROM ngo_master $whereClause");
+            $sg->execute($already_notified);
+            $remaining = $sg->fetchAll(PDO::FETCH_ASSOC);
+
+            if (empty($remaining)) {
+                $pdo->prepare("UPDATE food_donation_batches SET status='Expired' WHERE id=?")
+                    ->execute([$bid]);
+                $pdo->commit();
+                continue;
+            }
+
+            usort($remaining, fn($a, $b) =>
+                locationScore($batch['pickup_address'], $b['address']) -
+                locationScore($batch['pickup_address'], $a['address'])
+            );
+            $next5 = array_slice(array_column($remaining, 'id'), 0, BATCH_SIZE);
+
+            // Only DB work happens while the lock is held
+            $round = createRoundNotifications($pdo, $bid, $next5, $last_round + 1);
+            $pdo->commit();
+
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log('Escalation engine (batch ' . $bid . '): ' . $e->getMessage());
             continue;
         }
 
-        // Score by proximity to pickup address
-        usort($remaining, fn($a, $b) =>
-            locationScore($batch['pickup_address'], $b['address']) -
-            locationScore($batch['pickup_address'], $a['address'])
-        );
-        $next5 = array_slice(array_column($remaining, 'id'), 0, BATCH_SIZE);
-
-        sendRoundEmails($pdo, $bid, $next5, $last_round + 1, [
-            'food_type'      => $batch['food_type'],
-            'quantity'       => $batch['quantity'],
-            'pickup_address' => $batch['pickup_address'],
-            'pickup_within'  => $batch['pickup_within'],
-        ]);
+        // Emails go out AFTER the commit, with no lock held
+        if ($round !== null) {
+            sendRoundEmails($pdo, $round, [
+                'food_type'      => $batch['food_type'],
+                'quantity'       => $batch['quantity'],
+                'pickup_address' => $batch['pickup_address'],
+                'pickup_within'  => $batch['pickup_within'],
+            ]);
+        }
     }
 }
 
 // ── Run escalation every time this page is loaded ───────────────────────────
-runEscalationEngine($pdo);
+try {
+    runEscalationEngine($pdo);
+} catch (Throwable $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    error_log('Escalation engine failed: ' . $e->getMessage());
+}
 
 // ════════════════════════════════════════════════════════════
 //  ACCEPT HANDLER
