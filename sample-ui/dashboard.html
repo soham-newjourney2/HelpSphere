@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | HelpSphere NGO</title>
+  <meta name="description" content="HelpSphere NGO dashboard — requests, donations, pickups, campaigns and messages." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/dashboard.css" />
+</head>
+<body>
+
+<!-- ============ Icon sprite ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M11.2 21.5V11h1.6v10.5z"/><path d="M12 14.6c-4.3 0-6.9-2.6-7.4-6.4 3.8 0 6.9 2.2 7.4 6.4z"/><path d="M12 12.4c.5-4 3.4-6.6 7.4-6.9-.3 4-3.2 6.7-7.4 6.9z"/><path d="M12 9.6c-1.7-1.6-2.1-3.9-.1-6.9 2 2.9 1.7 5.3.1 6.9z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.2.6 3.5 2.8 3.5 6"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13M12 7c-1-2.5-4.5-3.5-4.5-1.2 0 1.2 2 1.2 4.5 1.2zM12 7c1-2.5 4.5-3.5 4.5-1.2 0 1.2-2 1.2-4.5 1.2z"/></symbol>
+  <symbol id="i-megaphone" viewBox="0 0 24 24"><path d="M4 10v4h3l7 4V6l-7 4zM17.5 9.5a3.5 3.5 0 0 1 0 5M7 14l1.2 5h2.3l-1-4.5"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6a1.5 1.5 0 0 1 3 0v5M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7c0 4-2.5 7-6 7-2.8 0-4.6-1.3-6-3.6l-2-3.4a1.5 1.5 0 0 1 2.5-1.6L8 14"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5h14v10h-9l-4 4v-4H5z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M5 8h14M5 12h14M5 16h14"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+  <symbol id="i-food" viewBox="0 0 24 24"><path d="M3 11h18a9 9 0 0 1-18 0zM8 7.5c0-1.5 1-2 1-3.5M12 7.5c0-1.5 1-2 1-3.5M16 7.5c0-1.5 1-2 1-3.5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5zM3.5 7.5L12 12l8.5-4.5M12 12v9"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.8 9.2c-.6-.8-1.6-1.2-2.8-1.2-1.7 0-2.8.9-2.8 2s1 1.7 2.8 2 2.8.9 2.8 2-1.1 2-2.8 2c-1.2 0-2.3-.5-2.9-1.3M12 6.5v11"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6zM8.5 12l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M4 16l5-5 4 4 7-7M15 8h5v5"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M4 15h16M10 5v14"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V10M10 20V5M15 20v-7M20 20v-4M3 20h18"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.1"/></symbol>
+</svg>
+
+<div class="app">
+
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="index.html" class="logo logo--light">
+        <span class="logo__mark"><svg><use href="#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button class="sidebar__close" id="sidebarClose" aria-label="Close menu">
+        <svg class="icon icon--sm"><use href="#i-close"/></svg>
+      </button>
+    </div>
+
+    <span class="sidebar__tag">NGO workspace</span>
+
+    <nav class="sidebar__nav">
+      <a href="#" class="is-active" aria-current="page"><svg class="icon"><use href="#i-grid"/></svg>Overview</a>
+      <a href="#"><svg class="icon"><use href="#i-pin"/></svg>Needs &amp; requests <span class="sidebar__count" data-pending>5</span></a>
+      <a href="#"><svg class="icon"><use href="#i-users"/></svg>Beneficiaries</a>
+      <a href="#"><svg class="icon"><use href="#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="#"><svg class="icon"><use href="#i-megaphone"/></svg>Campaigns</a>
+      <a href="#"><svg class="icon"><use href="#i-hand"/></svg>Volunteers</a>
+      <a href="#"><svg class="icon"><use href="#i-chat"/></svg>Communication <span class="sidebar__count">3</span></a>
+      <a href="#"><svg class="icon"><use href="#i-file"/></svg>Profile &amp; compliance</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <div class="verify-card">
+        <div class="verify-card__head">
+          <svg class="icon"><use href="#i-shield"/></svg>
+          <div>
+            <strong>Verified NGO</strong>
+            <span>4 of 4 documents approved</span>
+          </div>
+        </div>
+        <div class="progress progress--light" aria-hidden="true"><span style="width:100%"></span></div>
+      </div>
+      <a href="login.html?role=ngo" class="sidebar__logout"><svg class="icon"><use href="#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+        <svg class="icon icon--sm"><use href="#i-menu"/></svg>
+      </button>
+
+      <label class="search">
+        <svg class="icon icon--sm"><use href="#i-search"/></svg>
+        <span class="sr-only">Search</span>
+        <input type="search" id="searchInput" placeholder="Search beneficiaries, donations…" />
+        <kbd>/</kbd>
+      </label>
+
+      <div class="topbar__right">
+        <div class="notif">
+          <button class="icon-btn notif__btn" id="notifBtn" aria-label="Notifications, 3 unread" aria-expanded="false" aria-controls="notifPanel">
+            <svg class="icon icon--sm"><use href="#i-bell"/></svg>
+            <span class="notif__dot">3</span>
+          </button>
+          <div class="notif__panel" id="notifPanel" hidden>
+            <div class="notif__head"><strong>Notifications</strong><button type="button" id="markRead">Mark all read</button></div>
+            <ul>
+              <li class="is-unread"><span class="notif__icon notif__icon--warn"><svg class="icon icon--sm"><use href="#i-food"/></svg></span><div><strong>Immediate food donation nearby</strong><span>40 cooked meals · 3.1 km · 2 min ago</span></div></li>
+              <li class="is-unread"><span class="notif__icon"><svg class="icon icon--sm"><use href="#i-hand"/></svg></span><div><strong>2 new volunteer applications</strong><span>Winter Relief Drive · 25 min ago</span></div></li>
+              <li class="is-unread"><span class="notif__icon notif__icon--good"><svg class="icon icon--sm"><use href="#i-shield"/></svg></span><div><strong>Beneficiary document verified</strong><span>Rekha Das · Aadhaar card · 1 h ago</span></div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="profile">
+          <span class="avatar avatar--brand">AT</span>
+          <div class="profile__text">
+            <strong>Annapurna Trust</strong>
+            <span>NGO admin</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content" id="content">
+
+      <div class="demo-banner" id="roleBanner" hidden>
+        <svg class="icon icon--sm"><use href="#i-info"/></svg>
+        <span id="roleBannerText"></span>
+      </div>
+
+      <!-- Welcome -->
+      <section class="welcome">
+        <div>
+          <p class="welcome__date" id="todayLabel">Today</p>
+          <h1 class="welcome__title"><span id="greeting">Good morning</span>, Annapurna Trust</h1>
+          <p class="welcome__sub">You have <strong><span data-pending>5</span> pending requests</strong> and <strong><span data-pickups-today>3</span> pickups</strong> due today.</p>
+        </div>
+        <div class="welcome__actions">
+          <a href="#" class="btn btn--outline btn--sm"><svg class="icon"><use href="#i-megaphone"/></svg>New campaign</a>
+          <a href="#" class="btn btn--dark btn--sm"><svg class="icon"><use href="#i-plus"/></svg>Post a need</a>
+        </div>
+      </section>
+
+      <!-- KPIs -->
+      <section class="kpis" aria-label="Key figures">
+        <article class="kpi">
+          <div class="kpi__top"><span class="kpi__label">Pending requests</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="#i-pin"/></svg></span></div>
+          <p class="kpi__value" id="kpiPending" data-count="5">0</p>
+          <p class="kpi__note"><span class="delta delta--up"><svg class="icon"><use href="#i-trend"/></svg>+3</span> since yesterday</p>
+        </article>
+        <article class="kpi">
+          <div class="kpi__top"><span class="kpi__label">Donations this week</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="#i-gift"/></svg></span></div>
+          <p class="kpi__value" id="kpiDonations" data-count="80">0</p>
+          <p class="kpi__note"><span class="delta delta--up"><svg class="icon"><use href="#i-trend"/></svg>18%</span> vs last week</p>
+        </article>
+        <article class="kpi">
+          <div class="kpi__top"><span class="kpi__label">Awaiting pickup</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="#i-truck"/></svg></span></div>
+          <p class="kpi__value" id="kpiPickup" data-count="5">0</p>
+          <p class="kpi__note"><span data-pickups-today>3</span> due today</p>
+        </article>
+        <article class="kpi">
+          <div class="kpi__top"><span class="kpi__label">Active volunteers</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="#i-hand"/></svg></span></div>
+          <p class="kpi__value" data-count="36">0</p>
+          <p class="kpi__note">Across 3 campaigns</p>
+        </article>
+      </section>
+
+      <!-- Row: chart + immediate alert -->
+      <section class="row row--2-1">
+        <article class="card viz-root" id="donationsCard">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Donations received</h2>
+              <p class="card__sub">Last 7 days, by type</p>
+            </div>
+            <div class="seg" role="group" aria-label="Chart view">
+              <button type="button" class="seg__btn is-active" data-view="chart" aria-pressed="true"><svg class="icon icon--sm"><use href="#i-chart"/></svg><span>Chart</span></button>
+              <button type="button" class="seg__btn" data-view="table" aria-pressed="false"><svg class="icon icon--sm"><use href="#i-table"/></svg><span>Table</span></button>
+            </div>
+          </header>
+
+          <ul class="legend" id="chartLegend"></ul>
+
+          <div class="chart" id="chart"></div>
+          <div class="chart-tip" id="chartTip" hidden></div>
+          <div class="table-wrap" id="chartTable" hidden></div>
+        </article>
+
+        <article class="alert-card" id="alertCard" aria-live="polite">
+          <div class="alert-card__head">
+            <span class="pill pill--warn"><svg class="icon"><use href="#i-clock"/></svg>Immediate · Round 1</span>
+            <div class="countdown" aria-label="Time left to respond">
+              <svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19" class="countdown__track"/><circle cx="22" cy="22" r="19" class="countdown__bar" id="countdownBar"/></svg>
+              <span id="countdownText">7:00</span>
+            </div>
+          </div>
+
+          <div class="alert-card__body" id="alertBody">
+            <p class="alert-card__kicker">Food donation near you</p>
+            <h2 class="alert-card__title">40 cooked meals</h2>
+            <dl class="alert-card__meta">
+              <div><dt><svg class="icon icon--sm"><use href="#i-users"/></svg>Donor</dt><dd>Riya Sharma</dd></div>
+              <div><dt><svg class="icon icon--sm"><use href="#i-pin"/></svg>Pickup</dt><dd>Salt Lake Sector V · 3.1 km</dd></div>
+              <div><dt><svg class="icon icon--sm"><use href="#i-clock"/></svg>Pick up within</dt><dd>2 hours</dd></div>
+            </dl>
+            <p class="alert-card__note">You’re one of the 5 nearest verified NGOs. The first to accept gets it; if nobody accepts in time, the next 5 are notified.</p>
+            <div class="alert-card__actions">
+              <button type="button" class="btn btn--light" id="acceptBtn"><svg class="icon"><use href="#i-check"/></svg>Accept donation</button>
+              <button type="button" class="btn btn--ghost-light" id="passBtn">Pass</button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Row: requests -->
+      <section class="row">
+        <article class="card">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Assistance requests</h2>
+              <p class="card__sub">Review and act on beneficiary requests</p>
+            </div>
+            <div class="tabs" role="tablist" id="reqTabs">
+              <button type="button" role="tab" class="tabs__btn is-active" data-filter="all" aria-selected="true">All <span></span></button>
+              <button type="button" role="tab" class="tabs__btn" data-filter="Pending" aria-selected="false">Pending <span></span></button>
+              <button type="button" role="tab" class="tabs__btn" data-filter="Approved" aria-selected="false">Approved <span></span></button>
+              <button type="button" role="tab" class="tabs__btn" data-filter="Fulfilled" aria-selected="false">Fulfilled <span></span></button>
+            </div>
+          </header>
+
+          <div class="table-wrap">
+            <table class="table table--requests">
+              <thead>
+                <tr>
+                  <th scope="col">Beneficiary</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Request</th>
+                  <th scope="col">Submitted</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="reqBody"></tbody>
+            </table>
+            <p class="empty" id="reqEmpty" hidden>No requests match this filter.</p>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- Row: pickups + campaigns + messages -->
+      <section class="row row--3">
+        <article class="card">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Today’s pickups</h2>
+              <p class="card__sub" id="pickupSub">Scheduled food &amp; resources</p>
+            </div>
+            <a href="#" class="card__link">View all <svg class="icon icon--sm"><use href="#i-arrow"/></svg></a>
+          </header>
+          <ul class="pickups" id="pickupList">
+            <li class="pickup">
+              <span class="pickup__time">11:30<small>AM</small></span>
+              <div class="pickup__body">
+                <strong>Packaged food · 25 kg</strong>
+                <span><svg class="icon icon--sm"><use href="#i-pin"/></svg>New Town, Action Area I</span>
+              </div>
+              <span class="pill pill--info"><svg class="icon"><use href="#i-truck"/></svg>On the way</span>
+            </li>
+            <li class="pickup">
+              <span class="pickup__time">2:00<small>PM</small></span>
+              <div class="pickup__body">
+                <strong>Clothes · 3 boxes</strong>
+                <span><svg class="icon icon--sm"><use href="#i-pin"/></svg>Ballygunge Place</span>
+              </div>
+              <span class="pill pill--muted"><svg class="icon"><use href="#i-calendar"/></svg>Scheduled</span>
+            </li>
+            <li class="pickup">
+              <span class="pickup__time">5:15<small>PM</small></span>
+              <div class="pickup__body">
+                <strong>Raw vegetables · 40 kg</strong>
+                <span><svg class="icon icon--sm"><use href="#i-pin"/></svg>Gariahat Market</span>
+              </div>
+              <span class="pill pill--muted"><svg class="icon"><use href="#i-calendar"/></svg>Scheduled</span>
+            </li>
+          </ul>
+        </article>
+        <article class="card">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Ongoing campaigns</h2>
+              <p class="card__sub">Progress and volunteer sign-ups</p>
+            </div>
+            <a href="#" class="card__link">Manage <svg class="icon icon--sm"><use href="#i-arrow"/></svg></a>
+          </header>
+          <ul class="campaigns">
+            <li class="campaign">
+              <div class="campaign__top">
+                <strong>Winter Relief Drive</strong>
+                <span class="pill pill--warn"><svg class="icon"><use href="#i-hand"/></svg>2 to review</span>
+              </div>
+              <div class="progress" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" aria-label="Winter Relief Drive progress"><span style="width:68%"></span></div>
+              <div class="campaign__meta">
+                <span>1 Dec – 31 Jan · 68% of timeline</span>
+                <span class="avatars"><i class="avatar avatar--xs">RS</i><i class="avatar avatar--xs">AM</i><i class="avatar avatar--xs">PK</i><i class="avatar avatar--xs avatar--more">+15</i></span>
+              </div>
+            </li>
+            <li class="campaign">
+              <div class="campaign__top">
+                <strong>Back-to-School Kits</strong>
+                <span class="pill pill--good"><svg class="icon"><use href="#i-check"/></svg>On track</span>
+              </div>
+              <div class="progress" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100" aria-label="Back-to-School Kits progress"><span style="width:42%"></span></div>
+              <div class="campaign__meta">
+                <span>10 Jan – 15 Mar · 42% of timeline</span>
+                <span class="avatars"><i class="avatar avatar--xs">NB</i><i class="avatar avatar--xs">SG</i><i class="avatar avatar--xs avatar--more">+9</i></span>
+              </div>
+            </li>
+            <li class="campaign">
+              <div class="campaign__top">
+                <strong>Community Kitchen Week</strong>
+                <span class="pill pill--good"><svg class="icon"><use href="#i-check"/></svg>On track</span>
+              </div>
+              <div class="progress" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" aria-label="Community Kitchen Week progress"><span style="width:85%"></span></div>
+              <div class="campaign__meta">
+                <span>2 – 9 Feb · 85% of timeline</span>
+                <span class="avatars"><i class="avatar avatar--xs">IS</i><i class="avatar avatar--xs">LI</i><i class="avatar avatar--xs avatar--more">+4</i></span>
+              </div>
+            </li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Recent messages</h2>
+              <p class="card__sub">Donors, beneficiaries &amp; admins</p>
+            </div>
+            <a href="#" class="card__link">Open inbox <svg class="icon icon--sm"><use href="#i-arrow"/></svg></a>
+          </header>
+          <ul class="messages">
+            <li class="message is-unread">
+              <span class="avatar">RS</span>
+              <div class="message__body">
+                <div class="message__top"><strong>Riya Sharma</strong><span class="tag">Donor</span><time>10:42</time></div>
+                <p>The meals are packed and ready at the gate — please ask the volunteer to call when nearby.</p>
+              </div>
+            </li>
+            <li class="message is-unread">
+              <span class="avatar avatar--b">RD</span>
+              <div class="message__body">
+                <div class="message__top"><strong>Rekha Das</strong><span class="tag">Beneficiary</span><time>09:15</time></div>
+                <p>Thank you! I’ve uploaded my updated ration card as you asked.</p>
+              </div>
+            </li>
+            <li class="message is-unread">
+              <span class="avatar avatar--a">HS</span>
+              <div class="message__body">
+                <div class="message__top"><strong>HelpSphere Admin</strong><span class="tag">Admin</span><time>Yesterday</time></div>
+                <p>Your NGO verification is complete. All 4 documents have been approved.</p>
+              </div>
+            </li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HelpSphere | Share Surplus, Restore Dignity</title>
+  <meta name="description" content="HelpSphere connects donors, verified NGOs, volunteers and people in need to redistribute surplus food, money, blood and resources — transparently." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/home.css" />
+</head>
+<body>
+
+<!-- ============ Icon sprite ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M11.2 21.5V11h1.6v10.5z"/><path d="M12 14.6c-4.3 0-6.9-2.6-7.4-6.4 3.8 0 6.9 2.2 7.4 6.4z"/><path d="M12 12.4c.5-4 3.4-6.6 7.4-6.9-.3 4-3.2 6.7-7.4 6.9z"/><path d="M12 9.6c-1.7-1.6-2.1-3.9-.1-6.9 2 2.9 1.7 5.3.1 6.9z"/></symbol>
+  <symbol id="leaf" viewBox="0 0 40 60"><path d="M20 2C35 15 37 36 20 58 3 36 5 15 20 2z"/><path d="M20 11v43" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M5 8h14M5 12h14M5 16h14"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6a1.5 1.5 0 0 1 3 0v5M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7c0 4-2.5 7-6 7-2.8 0-4.6-1.3-6-3.6l-2-3.4a1.5 1.5 0 0 1 2.5-1.6L8 14"/></symbol>
+  <symbol id="i-food" viewBox="0 0 24 24"><path d="M3 11h18a9 9 0 0 1-18 0zM8 7.5c0-1.5 1-2 1-3.5M12 7.5c0-1.5 1-2 1-3.5M16 7.5c0-1.5 1-2 1-3.5"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.8 9.2c-.6-.8-1.6-1.2-2.8-1.2-1.7 0-2.8.9-2.8 2s1 1.7 2.8 2 2.8.9 2.8 2-1.1 2-2.8 2c-1.2 0-2.3-.5-2.9-1.3M12 6.5v11"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5zM3.5 7.5L12 12l8.5-4.5M12 12v9"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6zM8.5 12l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V10M10 20V5M15 20v-7M20 20v-4M3 20h18"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+</svg>
+
+<!-- ============ Navbar ============ -->
+<header class="nav" id="nav">
+  <div class="container nav__inner">
+    <a href="index.html" class="logo" aria-label="HelpSphere home">
+      <span class="logo__mark"><svg><use href="#i-sprout"/></svg></span>
+      HelpSphere
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#home" class="is-active">Home</a>
+      <a href="#about">About</a>
+      <a href="#donate">Donate</a>
+      <a href="#how">How it works</a>
+      <a href="#trust">Transparency</a>
+    </nav>
+
+    <div class="nav__actions">
+      <a href="login.html" class="nav__login">Log in</a>
+      <a href="login.html?role=donor" class="btn btn--dark btn--sm">Donate now</a>
+      <button class="icon-btn nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <svg class="icon icon--sm"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu" hidden>
+    <nav aria-label="Mobile">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#donate">Donate</a>
+      <a href="#how">How it works</a>
+      <a href="#trust">Transparency</a>
+    </nav>
+    <div class="mobile-menu__cta">
+      <a href="login.html" class="btn btn--outline btn--block">Log in</a>
+      <a href="login.html?role=donor" class="btn btn--dark btn--block">Donate now</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ Hero ============ -->
+  <section class="hero" id="home">
+    <svg class="leaf leaf--blur" style="--s:70px; --c:#6ea13c; top:12%; left:-22px; --r:-30deg; --d:9s"><use href="#leaf"/></svg>
+    <svg class="leaf leaf--blur" style="--s:56px; --c:#4f8a2c; top:58%; right:-14px; --r:200deg; --d:8s"><use href="#leaf"/></svg>
+
+    <div class="container hero__grid">
+      <div class="hero__copy">
+        <span class="eyebrow">Transparent resource redistribution</span>
+        <h1 class="hero__title">Sharing Surplus,<br />Restoring Dignity</h1>
+        <p class="hero__lead">
+          HelpSphere connects donors, verified NGOs, volunteers and people in need to redistribute
+          surplus food, money, blood and resources — so every rupee and every meal reaches the right hands.
+        </p>
+        <div class="hero__cta">
+          <a href="login.html?role=donor" class="btn btn--dark">
+            Start donating <svg class="icon icon--arrow"><use href="#i-arrow"/></svg>
+          </a>
+          <a href="login.html?role=beneficiary" class="btn btn--outline">Request help</a>
+        </div>
+
+        <ul class="hero__trust">
+          <li><svg class="icon icon--sm"><use href="#i-shield"/></svg> Admin-verified NGOs</li>
+          <li><svg class="icon icon--sm"><use href="#i-check"/></svg> Zero platform fees</li>
+        </ul>
+      </div>
+
+      <div class="hero__visual" aria-hidden="true">
+        <!-- Illustrated arch -->
+        <div class="arch">
+          <svg class="arch__scene" viewBox="0 0 400 500" preserveAspectRatio="xMidYMax slice">
+            <defs>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#eef2e6"/>
+                <stop offset="1" stop-color="#cfdcbf"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="500" fill="url(#sky)"/>
+            <circle cx="282" cy="150" r="54" fill="#f1e3a6"/>
+            <circle cx="282" cy="150" r="80" fill="#f1e3a6" opacity=".25"/>
+            <path d="M0 330 C70 290 130 300 200 320 S330 290 400 300 V500 H0z" fill="#9fc27a"/>
+            <path d="M0 370 C90 340 160 360 230 375 S350 350 400 360 V500 H0z" fill="#6e9f45"/>
+            <path d="M0 420 C80 400 170 410 240 425 S360 405 400 415 V500 H0z" fill="#3f6f27"/>
+            <!-- Big sprout -->
+            <g class="arch__sprout">
+              <path d="M198 500 C198 450 200 400 202 330" stroke="#24401a" stroke-width="7" fill="none" stroke-linecap="round"/>
+              <path d="M201 360 C150 362 112 330 104 280 C158 278 196 310 201 360z" fill="#4f8a2c"/>
+              <path d="M201 360 C170 340 140 318 116 290" stroke="#c5dba8" stroke-width="2" fill="none" opacity=".7"/>
+              <path d="M202 335 C206 282 246 246 300 240 C298 296 258 332 202 335z" fill="#6ea13c"/>
+              <path d="M202 335 C232 304 262 276 290 252" stroke="#e1edcf" stroke-width="2" fill="none" opacity=".7"/>
+              <path d="M202 300 C182 282 176 254 200 220 C224 254 220 282 202 300z" fill="#7fb04a"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Floating cards -->
+        <div class="float-card float-card--meals">
+          <span class="float-card__icon"><svg class="icon"><use href="#i-food"/></svg></span>
+          <div>
+            <strong data-count="1240">0</strong>
+            <span>meals rescued today</span>
+          </div>
+        </div>
+
+        <div class="float-card float-card--accept">
+          <span class="float-card__icon float-card__icon--good"><svg class="icon"><use href="#i-check"/></svg></span>
+          <div>
+            <strong>Annapurna Trust accepted</strong>
+            <span>Food pickup within 2 hrs · 3.1 km</span>
+          </div>
+        </div>
+
+        <div class="float-chip">
+          <svg class="icon icon--sm"><use href="#i-drop"/></svg> O+ blood needed · 2 km
+        </div>
+
+        <svg class="leaf" style="--s:34px; --c:#6ea13c; top:6%; left:8%; --r:-25deg; --d:6s"><use href="#leaf"/></svg>
+        <svg class="leaf" style="--s:22px; --c:#a9c97b; top:24%; left:-2%; --r:40deg; --d:7s; --delay:-2s"><use href="#leaf"/></svg>
+        <svg class="leaf" style="--s:28px; --c:#4f8a2c; bottom:14%; right:-3%; --r:120deg; --d:6.5s; --delay:-1s"><use href="#leaf"/></svg>
+        <svg class="leaf" style="--s:18px; --c:#c9d97a; top:44%; right:2%; --r:70deg; --d:5.5s"><use href="#leaf"/></svg>
+
+        <!-- Rotating badge -->
+        <div class="hero__badge badge-ring" style="--ring:170px">
+          <svg class="badge-ring__text" viewBox="0 0 200 200">
+            <defs><path id="ringPath" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+            <text><textPath href="#ringPath" textLength="480">FOR PEOPLE · FOR THE PLANET · FOR TOMORROW ·</textPath></text>
+          </svg>
+          <div class="badge-ring__core"><svg><use href="#i-sprout"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="container">
+      <dl class="stats reveal">
+        <div class="stats__item"><dt>Donors</dt><dd><span data-count="10000">0</span>+</dd></div>
+        <div class="stats__item"><dt>Verified NGOs</dt><dd><span data-count="2000">0</span>+</dd></div>
+        <div class="stats__item"><dt>Volunteers</dt><dd><span data-count="5000">0</span>+</dd></div>
+        <div class="stats__item"><dt>Lives impacted</dt><dd><span data-count="50000">0</span>+</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ Who it's for ============ -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">One platform, four roles</span>
+          <h2 class="section-title">Built for everyone<br />in the giving chain</h2>
+        </div>
+        <p class="section-lead">Each role gets its own secure space — from posting a need to tracking a pickup to verifying an NGO’s documents.</p>
+      </div>
+
+      <div class="roles">
+        <a href="login.html?role=donor" class="role-card reveal">
+          <span class="role-card__icon"><svg class="icon icon--lg"><use href="#i-heart"/></svg></span>
+          <h3>Donors</h3>
+          <p>Give food, money, blood or resources and follow every donation from pickup to delivery.</p>
+          <span class="role-card__link">Join as donor <svg class="icon icon--sm"><use href="#i-arrow"/></svg></span>
+        </a>
+        <a href="login.html?role=ngo" class="role-card reveal">
+          <span class="role-card__icon"><svg class="icon icon--lg"><use href="#i-building"/></svg></span>
+          <h3>NGOs</h3>
+          <p>Post needs, accept nearby donations, run campaigns and manage verified beneficiaries.</p>
+          <span class="role-card__link">NGO portal <svg class="icon icon--sm"><use href="#i-arrow"/></svg></span>
+        </a>
+        <a href="login.html?role=beneficiary" class="role-card reveal">
+          <span class="role-card__icon"><svg class="icon icon--lg"><use href="#i-user"/></svg></span>
+          <h3>People in need</h3>
+          <p>Request assistance with dignity, upload documents once and track every step of your request.</p>
+          <span class="role-card__link">Request help <svg class="icon icon--sm"><use href="#i-arrow"/></svg></span>
+        </a>
+        <a href="login.html?role=donor" class="role-card reveal">
+          <span class="role-card__icon"><svg class="icon icon--lg"><use href="#i-hand"/></svg></span>
+          <h3>Volunteers</h3>
+          <p>Sign up for NGO campaigns and help with logistics, verification and on-ground delivery.</p>
+          <span class="role-card__link">Volunteer <svg class="icon icon--sm"><use href="#i-arrow"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Ways to give ============ -->
+  <section class="section section--card" id="donate">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Ways to give</span>
+          <h2 class="section-title">Give what you can,<br />where it matters most</h2>
+        </div>
+        <p class="section-lead">HelpSphere never touches your money — we connect you directly to verified NGOs and the people they serve.</p>
+      </div>
+
+      <div class="give">
+        <article class="give-card give-card--feature reveal">
+          <div class="give-card__top">
+            <span class="give-card__icon"><svg class="icon icon--lg"><use href="#i-food"/></svg></span>
+            <span class="pill pill--warn"><svg class="icon"><use href="#i-clock"/></svg> 7-min response</span>
+          </div>
+          <h3>Food</h3>
+          <p>Have surplus cooked, packaged or raw food? Post it once — the <strong>5 nearest verified NGOs</strong> are alerted instantly. If no one accepts in 7 minutes, the next 5 are notified automatically.</p>
+          <ul class="give-card__list">
+            <li><svg class="icon icon--sm"><use href="#i-check"/></svg> Immediate or scheduled pickup</li>
+            <li><svg class="icon icon--sm"><use href="#i-check"/></svg> Respond to NGO food requests</li>
+          </ul>
+          <a href="login.html?role=donor" class="btn btn--light">Donate food <svg class="icon icon--arrow"><use href="#i-arrow"/></svg></a>
+        </article>
+
+        <article class="give-card reveal">
+          <span class="give-card__icon"><svg class="icon icon--lg"><use href="#i-coin"/></svg></span>
+          <h3>Money</h3>
+          <p>Pick a verified NGO by cause and contact them directly. No middlemen, no platform cut.</p>
+          <a href="login.html?role=donor" class="give-card__link">Find an NGO <svg class="icon icon--sm"><use href="#i-arrow"/></svg></a>
+        </article>
+
+        <article class="give-card reveal">
+          <span class="give-card__icon"><svg class="icon icon--lg"><use href="#i-box"/></svg></span>
+          <h3>Resources</h3>
+          <p>Clothes, books, stationery and medical supplies — schedule a pickup at a time that suits you.</p>
+          <a href="login.html?role=donor" class="give-card__link">Schedule pickup <svg class="icon icon--sm"><use href="#i-arrow"/></svg></a>
+        </article>
+
+        <article class="give-card reveal">
+          <span class="give-card__icon"><svg class="icon icon--lg"><use href="#i-drop"/></svg></span>
+          <h3>Blood</h3>
+          <p>Get notified when hospitals and NGOs near you post urgent blood requirements.</p>
+          <a href="login.html?role=donor" class="give-card__link">Become a donor <svg class="icon icon--sm"><use href="#i-arrow"/></svg></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ How it works ============ -->
+  <section class="section" id="how">
+    <div class="container">
+      <div class="section-head section-head--center reveal">
+        <span class="eyebrow">How it works</span>
+        <h2 class="section-title">From surplus to support<br />in four steps</h2>
+      </div>
+
+      <ol class="steps">
+        <li class="step reveal">
+          <span class="step__num">01</span>
+          <svg class="icon icon--lg"><use href="#i-heart"/></svg>
+          <h3>Offer or request</h3>
+          <p>Donors post what they can give; beneficiaries describe what they need.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">02</span>
+          <svg class="icon icon--lg"><use href="#i-shield"/></svg>
+          <h3>Verify &amp; match</h3>
+          <p>Admins verify NGO documents. NGOs review requests and match by proximity.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">03</span>
+          <svg class="icon icon--lg"><use href="#i-truck"/></svg>
+          <h3>Pick up &amp; deliver</h3>
+          <p>NGOs accept, schedule the pickup and deliver aid to verified beneficiaries.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">04</span>
+          <svg class="icon icon--lg"><use href="#i-chart"/></svg>
+          <h3>Track the impact</h3>
+          <p>Every status change is logged, so everyone can see where help went.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ Transparency ============ -->
+  <section class="trust" id="trust">
+    <svg class="leaf leaf--blur" style="--s:60px; --c:#4f8a2c; top:10%; right:6%; --r:30deg; --d:8s"><use href="#leaf"/></svg>
+    <div class="container trust__grid">
+      <div class="reveal">
+        <span class="eyebrow eyebrow--light">Transparency &amp; trust</span>
+        <h2 class="section-title trust__title">Every donation leaves a trail you can follow</h2>
+        <ul class="trust__list">
+          <li><svg class="icon"><use href="#i-shield"/></svg><div><strong>Verified NGOs &amp; beneficiaries</strong><span>Documents are reviewed by admins before anyone can receive aid.</span></div></li>
+          <li><svg class="icon"><use href="#i-clock"/></svg><div><strong>Real-time status tracking</strong><span>Donated → Accepted → Picked up → Delivered, visible to donor and NGO.</span></div></li>
+          <li><svg class="icon"><use href="#i-chart"/></svg><div><strong>Audits &amp; impact reports</strong><span>Admin activity logs and reports keep every organisation accountable.</span></div></li>
+        </ul>
+      </div>
+
+      <!-- Live tracker mock -->
+      <div class="tracker reveal" aria-label="Example donation tracker">
+        <div class="tracker__head">
+          <div>
+            <span class="tracker__label">Donation #HS-20418</span>
+            <strong>25 kg packaged food</strong>
+          </div>
+          <span class="pill pill--good"><svg class="icon"><use href="#i-truck"/></svg> Picked up</span>
+        </div>
+        <ol class="timeline">
+          <li class="is-done"><span class="timeline__dot"></span><div><strong>Donated</strong><span>Riya S. · 10:12 AM</span></div></li>
+          <li class="is-done"><span class="timeline__dot"></span><div><strong>Accepted by Annapurna Trust</strong><span>Responded in 3 min · 10:15 AM</span></div></li>
+          <li class="is-current"><span class="timeline__dot"></span><div><strong>Picked up</strong><span>Volunteer Arjun M. · 11:02 AM</span></div></li>
+          <li><span class="timeline__dot"></span><div><strong>Delivered to beneficiaries</strong><span>Expected by 1:00 PM</span></div></li>
+        </ol>
+        <div class="tracker__foot">
+          <svg class="icon icon--sm"><use href="#i-pin"/></svg> Salt Lake Sector V → Shelter Home, Kasba
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Volunteer CTA ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="cta reveal">
+        <div class="cta__copy">
+          <h2>Be the change on the ground</h2>
+          <p>Join an NGO campaign as a volunteer and help deliver aid where it’s needed most.</p>
+          <div class="hero__cta">
+            <a href="login.html?role=donor" class="btn btn--dark">Become a volunteer <svg class="icon icon--arrow"><use href="#i-arrow"/></svg></a>
+            <a href="login.html?role=ngo" class="btn btn--outline">Register your NGO</a>
+          </div>
+        </div>
+        <div class="badge-ring cta__badge" style="--ring:150px">
+          <svg class="badge-ring__text" viewBox="0 0 200 200">
+            <defs><path id="ringPath2" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+            <text><textPath href="#ringPath2" textLength="480">VOLUNTEER · DONATE · DELIVER · REPEAT ·</textPath></text>
+          </svg>
+          <div class="badge-ring__core"><svg><use href="#i-sprout"/></svg></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ Footer ============ -->
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <a href="index.html" class="logo logo--light">
+        <span class="logo__mark"><svg><use href="#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <p class="footer__about">Connecting kindness with the people who need it — transparently, one donation at a time.</p>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <a href="#about">About</a>
+      <a href="#how">How it works</a>
+      <a href="#trust">Transparency</a>
+    </div>
+    <div>
+      <h4>Get involved</h4>
+      <a href="login.html?role=donor">Donate</a>
+      <a href="login.html?role=beneficiary">Request help</a>
+      <a href="login.html?role=ngo">NGO portal</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <a href="mailto:hello@helpsphere.org">hello@helpsphere.org</a>
+      <a href="tel:+910000000000">+91 00000 00000</a>
+    </div>
+  </div>
+  <div class="container footer__bottom">
+    <span>© 2026 HelpSphere. Sample UI.</span>
+    <a href="login.html?role=admin">Admin login</a>
+  </div>
+</footer>
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/home.js"></script>
+</body>
+</html>
