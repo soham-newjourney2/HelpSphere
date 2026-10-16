@@ -1,31 +1,83 @@
 <?php
-require_once __DIR__. '/../../inc/auth.php';
+require_once __DIR__ . '/../../inc/auth.php';
 require_login();
-$success = isset($_GET['success']) ? $_GET['success'] : 0;
+
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
+
+if (!function_exists('h')) {
+    function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+}
+
+$UPLOAD_DIR = realpath(__DIR__ . '/../../uploads/beneficiary_documents');
+$beneficiary_id = (int)($_SESSION['beneficiary_id'] ?? 0);
+
+// ─── Secure document viewer: ?doc=ID (files are served only to their owner) ───
+if (isset($_GET['doc'])) {
+    $stmt = $pdo->prepare("SELECT file_path FROM beneficiary_documents WHERE id = ? AND beneficiary_id = ?");
+    $stmt->execute([(int)$_GET['doc'], $beneficiary_id]);
+    $stored = (string)$stmt->fetchColumn();
+
+    $path = false;
+    if ($UPLOAD_DIR && $stored !== '') {
+        $try = realpath($UPLOAD_DIR . DIRECTORY_SEPARATOR . basename($stored));
+        if ($try && strpos($try, $UPLOAD_DIR . DIRECTORY_SEPARATOR) === 0 && is_file($try)) $path = $try;
+    }
+    if (!$path) { http_response_code(404); exit('Document file not found.'); }
+
+    while (ob_get_level() > 0) ob_end_clean();   // stray output would corrupt the file
+    @ini_set('zlib.output_compression', 'Off');
+    session_write_close();
+
+    $mime   = (new finfo(FILEINFO_MIME_TYPE))->file($path) ?: 'application/octet-stream';
+    $inline = in_array($mime, ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'], true);
+    header('Content-Type: ' . $mime);
+    header('Content-Length: ' . filesize($path));
+    header('X-Content-Type-Options: nosniff');
+    header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . rawurlencode(basename($path)) . '"');
+    readfile($path);
+    exit;
+}
+
+$success = isset($_GET['success']) ? (int)$_GET['success'] : 0;
 
 // ─── Delete Document ──────────────────────────────────────────────────────────
-if (isset($_POST['delete_id'])) {
-    $delete_id = (int) $_POST['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    if (!hash_equals($_SESSION['csrf'], (string)($_POST['csrf'] ?? ''))) {
+        http_response_code(403);
+        die("Invalid session token. Please go back and try again.");
+    }
 
-    // Fetch file path — ensure it belongs to this beneficiary
-    $stmtGet = $pdo->prepare("SELECT file_path FROM beneficiary_documents WHERE id = ? AND beneficiary_id = ?");
-    $stmtGet->execute([$delete_id, $_SESSION['beneficiary_id']]);
+    $delete_id = (int)$_POST['delete_id'];
+    $result = 'error';
+
+    // Only the owner's documents, and never a Verified one
+    $stmtGet = $pdo->prepare("SELECT file_path FROM beneficiary_documents WHERE id = ? AND beneficiary_id = ? AND status <> 'Verified'");
+    $stmtGet->execute([$delete_id, $beneficiary_id]);
     $doc = $stmtGet->fetch(PDO::FETCH_ASSOC);
 
     if ($doc) {
-        $full_path = __DIR__ . '/../../uploads/beneficiary_documents/' . $doc['file_path'];
-        if (file_exists($full_path)) {
-            unlink($full_path);
+        $stmtDel = $pdo->prepare("DELETE FROM beneficiary_documents WHERE id = ? AND beneficiary_id = ? AND status <> 'Verified'");
+        $stmtDel->execute([$delete_id, $beneficiary_id]);
+
+        if ($stmtDel->rowCount() > 0) {
+            $result = 'deleted';
+            // Remove the file only after the row is gone, and only from inside the upload folder
+            if ($UPLOAD_DIR && (string)$doc['file_path'] !== '') {
+                $full = realpath($UPLOAD_DIR . DIRECTORY_SEPARATOR . basename($doc['file_path']));
+                if ($full && strpos($full, $UPLOAD_DIR . DIRECTORY_SEPARATOR) === 0 && is_file($full)) {
+                    unlink($full);
+                }
+            }
         }
-        $stmtDel = $pdo->prepare("DELETE FROM beneficiary_documents WHERE id = ? AND beneficiary_id = ?");
-        $stmtDel->execute([$delete_id, $_SESSION['beneficiary_id']]);
     }
 
-    header("Location: beneficiary-documents.php?deleted=1");
+    header("Location: beneficiary-documents.php?" . ($result === 'deleted' ? 'deleted=1' : 'error=1'));
     exit;
 }
 
 $deleted = isset($_GET['deleted']) ? 1 : 0;
+$error   = isset($_GET['error']) ? 1 : 0;
 ?>
 
 <!DOCTYPE html>
@@ -181,8 +233,8 @@ $deleted = isset($_GET['deleted']) ? 1 : 0;
     <div class="preview-header">
       <h4 id="previewTitle">Document</h4>
       <div class="preview-header-actions">
-        <a id="previewOpenTab" href="#" target="_blank" class="btn-open-tab">↗ Open in new tab</a>
-        <button class="btn-close-preview" onclick="closePreview()">✕ Close</button>
+        <a id="previewOpenTab" href="#" target="_blank" rel="noopener" class="btn-open-tab">↗ Open in new tab</a>
+        <button type="button" class="btn-close-preview" id="previewClose">✕ Close</button>
       </div>
     </div>
     <div class="preview-body" id="previewBody"></div>
@@ -263,44 +315,41 @@ $deleted = isset($_GET['deleted']) ? 1 : 0;
 
             <div class="request-list">
 
-            <?php 
+            <?php
             $stmt = $pdo->prepare("SELECT * FROM beneficiary_documents WHERE beneficiary_id = ? ORDER BY uploaded_at DESC");
-            $stmt->bindParam(1, $_SESSION['beneficiary_id']);
-            $stmt->execute();
+            $stmt->execute([$beneficiary_id]);
             if ($stmt->rowCount() > 0):
                 while ($record = $stmt->fetch(PDO::FETCH_ASSOC)):
-                    $doc_id      = (int) $record['id'];
-                    $name        = htmlspecialchars($record['document_name']);
-                    $uploaded_at = $record['uploaded_at'];
-                    $status      = htmlspecialchars($record['status']);
-                    $file_path   = htmlspecialchars($record['file_path'] ?? '');
-                    $file_url    = '../../uploads/beneficiary_documents/' . $file_path;
-                    $ext         = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+                    $doc_id     = (int)$record['id'];
+                    $name_raw   = (string)$record['document_name'];
+                    $status_raw = (string)$record['status'];
+                    $file_raw   = (string)($record['file_path'] ?? '');
+                    $file_url   = 'beneficiary-documents.php?doc=' . $doc_id;
+                    $ext        = strtolower(pathinfo($file_raw, PATHINFO_EXTENSION));
             ?>
                 <div class="document-card">
-                  <strong>Document: <?php echo $name ?></strong>
-                  <p><strong>Uploaded:</strong> <?php echo $uploaded_at ?></p>
-                  <div class="status review"><?php echo $status ?></div>
+                  <strong>Document: <?php echo h($name_raw) ?></strong>
+                  <p><strong>Uploaded:</strong> <?php echo h($record['uploaded_at']) ?></p>
+                  <div class="status review"><?php echo h($status_raw) ?></div>
 
                   <div class="doc-actions">
-                    <?php if (!empty($file_path)): ?>
-                      <button class="btn-view-doc"
-                              onclick="openPreview(
-                                '<?php echo addslashes($name); ?>',
-                                '<?php echo addslashes($file_url); ?>',
-                                '<?php echo $ext; ?>'
-                              )">
+                    <?php if ($file_raw !== ''): ?>
+                      <button type="button" class="btn-view-doc"
+                              data-name="<?php echo h($name_raw) ?>"
+                              data-url="<?php echo h($file_url) ?>"
+                              data-ext="<?php echo h($ext) ?>">
                         👁 View
                       </button>
                     <?php endif; ?>
 
-                    <?php if($status!="Verified"): ?>
-                    <form method="POST" action="" style="margin:0;"
-                          onsubmit="return confirm('Delete \'<?php echo addslashes($name); ?>\'? This cannot be undone.');">
+                    <?php if ($status_raw !== 'Verified'): ?>
+                    <form method="POST" action="" class="delete-form" style="margin:0;"
+                          data-name="<?php echo h($name_raw) ?>">
                       <input type="hidden" name="delete_id" value="<?php echo $doc_id; ?>">
+                      <input type="hidden" name="csrf" value="<?php echo h($_SESSION['csrf']) ?>" />
                       <button type="submit" class="btn-delete-doc">🗑 Delete</button>
                     </form>
-                    <?php endif ?>
+                    <?php endif; ?>
                   </div>
                 </div>
             <?php
@@ -320,11 +369,14 @@ $deleted = isset($_GET['deleted']) ? 1 : 0;
 
 </div>
 
-<?php if ($success == 1): ?>
+<?php if ($success === 1): ?>
     <script>alert("Document Uploaded Successfully");</script>
 <?php endif; ?>
-<?php if ($deleted == 1): ?>
+<?php if ($deleted === 1): ?>
     <script>alert("Document deleted successfully.");</script>
+<?php endif; ?>
+<?php if ($error === 1): ?>
+    <script>alert("This document could not be deleted. Verified documents cannot be deleted.");</script>
 <?php endif; ?>
 
 <script src="../assets/js/beneficiary-dashboard.js"></script>
@@ -337,7 +389,7 @@ $deleted = isset($_GET['deleted']) ? 1 : 0;
     document.getElementById('previewOpenTab').href      = fileUrl;
 
     const body = document.getElementById('previewBody');
-    body.innerHTML = '';
+    body.textContent = '';
 
     if (imageExts.includes(ext)) {
       const img = document.createElement('img');
@@ -351,15 +403,29 @@ $deleted = isset($_GET['deleted']) ? 1 : 0;
       body.appendChild(iframe);
 
     } else {
-      body.innerHTML = `
-        <div class="preview-unsupported">
-          <div class="file-icon">📄</div>
-          <p><strong>${docName}</strong></p>
-          <p>This file type cannot be previewed in the browser.</p>
-          <a href="${fileUrl}" download class="btn-open-tab" style="display:inline-block; margin-top:12px;">
-            ⬇ Download File
-          </a>
-        </div>`;
+      const wrap = document.createElement('div');
+      wrap.className = 'preview-unsupported';
+
+      const icon = document.createElement('div');
+      icon.className = 'file-icon';
+      icon.textContent = '📄';
+
+      const p1 = document.createElement('p');
+      const strong = document.createElement('strong');
+      strong.textContent = docName;
+      p1.appendChild(strong);
+
+      const p2 = document.createElement('p');
+      p2.textContent = 'This file type cannot be previewed in the browser.';
+
+      const a = document.createElement('a');
+      a.href = fileUrl;
+      a.className = 'btn-open-tab';
+      a.style.cssText = 'display:inline-block; margin-top:12px;';
+      a.textContent = '⬇ Download File';
+
+      wrap.append(icon, p1, p2, a);
+      body.appendChild(wrap);
     }
 
     document.getElementById('previewModal').classList.add('active');
@@ -367,14 +433,28 @@ $deleted = isset($_GET['deleted']) ? 1 : 0;
 
   function closePreview() {
     document.getElementById('previewModal').classList.remove('active');
-    document.getElementById('previewBody').innerHTML = '';
+    document.getElementById('previewBody').textContent = '';
   }
 
-  document.getElementById('previewModal').addEventListener('click', function(e) {
+  document.querySelectorAll('.btn-view-doc').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      openPreview(btn.dataset.name, btn.dataset.url, btn.dataset.ext);
+    });
+  });
+
+  document.querySelectorAll('.delete-form').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      if (!confirm('Delete "' + form.dataset.name + '"? This cannot be undone.')) e.preventDefault();
+    });
+  });
+
+  document.getElementById('previewClose').addEventListener('click', closePreview);
+
+  document.getElementById('previewModal').addEventListener('click', function (e) {
     if (e.target === this) closePreview();
   });
 
-  document.addEventListener('keydown', function(e) {
+  document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closePreview();
   });
 </script>
