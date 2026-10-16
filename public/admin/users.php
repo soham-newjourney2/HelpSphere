@@ -2,6 +2,9 @@
 require_once __DIR__. '/../../inc/auth.php';
 admin_require_login();
 
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
+
 /*
  * Role configuration (based on your actual tables).
  * Each editable field: 'column' => [label, type, max length OR list of options, required]
@@ -407,7 +410,7 @@ $filters_active=($type!=='all' || $q!=='');
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
           <span>NGO Verification</span></a></li>
         <li>
-          <a href="../../inc/logout.php" class="sidebar__link" id="nav-all-users">
+          <a href="../../inc/logout.php" class="sidebar__link" id="nav-logout">
             <span>Logout</span>
           </a>
         </li>
@@ -493,7 +496,6 @@ $filters_active=($type!=='all' || $q!=='');
               $display_id='HS-'.$ROLES[$role]['prefix'].str_pad((string)$rec['id'], 4, '0', STR_PAD_LEFT);
               $letter=mb_strtoupper(mb_substr((string)$name, 0, 1)) ?: '?';
               $color=$avatarColors[$i % count($avatarColors)];
-              $ref=['action'=>'', 'utype'=>$role, 'uid'=>$rec['id']];
               $i++;
               ?>
             <tr>
