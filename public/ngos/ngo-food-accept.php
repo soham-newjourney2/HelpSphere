@@ -202,70 +202,83 @@ if ($notif_id > 0 && $token !== '') {
         $state = 'expired';
 
     } else {
-        // ── Valid, live notification — process the accept ──
+                // ── Valid, live notification — process the accept ──
         $batch_id  = (int) $notif['batch_id'];
         $ngo_id    = (int) $notif['ngo_id'];
         $donor_id  = (int) $notif['donor_id'];
         $ngo_name  = $notif['ngo_name_val'];
 
-        // Race condition guard: only first NGO to hit UPDATE wins
-        $su = $pdo->prepare(
-            "UPDATE food_donation_batches
-             SET status = 'Accepted', ngo_id = ?
-             WHERE id = ? AND status = 'Pending'"
-        );
-        $su->execute([$ngo_id, $batch_id]);
+        try {
+            $pdo->beginTransaction();
 
-        if ($su->rowCount() === 1) {
-            // We won the race ✔
-
-            // 1. Mark this notification as Accepted
-            $pdo->prepare(
-                "UPDATE food_donation_notifications SET status='Accepted' WHERE id=?"
-            )->execute([$notif_id]);
-
-            // 2. Expire all other notifications for this batch
-            $pdo->prepare(
-                "UPDATE food_donation_notifications
-                 SET status='Expired'
-                 WHERE batch_id=? AND id != ?"
-            )->execute([$batch_id, $notif_id]);
-
-            // 3. Insert into food_donations
-            $si = $pdo->prepare(
-                "INSERT INTO food_donations
-                   (donor_id, food_type, target_type, target_id, quantity,
-                    status, pickup_address, pickup_time, urgency, donation_type)
-                 VALUES (?,?,?,?,?,?,?,?,?,?)"
+            // Race condition guard: only first NGO to hit UPDATE wins
+            $su = $pdo->prepare(
+                "UPDATE food_donation_batches
+                 SET status = 'Accepted', ngo_id = ?
+                 WHERE id = ? AND status = 'Pending'"
             );
-            // pickup_time stored as "within X hours from now"
-            $pickup_time = date('H:i:s', strtotime('+' . (int)$notif['pickup_within'] . ' hours'));
-            $si->execute([
-                $donor_id,
-                $notif['food_type'],
-                'NGO',
-                $ngo_id,
-                $notif['quantity'],
-                'Donated',
-                $notif['pickup_address'],
-                $pickup_time,
-                'High',
-                'Immediate'
-            ]);
+            $su->execute([$ngo_id, $batch_id]);
 
-            // 4. Update donations table (generic log)
-            $sd = $pdo->prepare(
-                "INSERT INTO donations (donor_id, target_id, target_role, status, donation_type)
-                 VALUES (?,?,'NGO','Donated','Food')"
-            );
-            $sd->execute([$donor_id, $ngo_id]);
+            if ($su->rowCount() === 1) {
+                // We won the race ✔
 
-            $state = 'success';
-            $batch = $notif;
+                // 1. Mark this notification as Accepted
+                $pdo->prepare(
+                    "UPDATE food_donation_notifications SET status='Accepted' WHERE id=?"
+                )->execute([$notif_id]);
 
-        } else {
-            // Another NGO accepted first
-            $state = 'already_taken';
+                // 2. Expire all other notifications for this batch
+                $pdo->prepare(
+                    "UPDATE food_donation_notifications
+                     SET status='Expired'
+                     WHERE batch_id=? AND id != ?"
+                )->execute([$batch_id, $notif_id]);
+
+                // 3. Insert into food_donations
+                $si = $pdo->prepare(
+                    "INSERT INTO food_donations
+                       (donor_id, food_type, target_type, target_id, quantity,
+                        status, pickup_address, pickup_time, urgency, donation_type, is_requested_by_ngo)
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+                );
+                $pickup_time = date('H:i:s', strtotime('+' . (int)$notif['pickup_within'] . ' hours'));
+                $si->execute([
+                    $donor_id,
+                    $notif['food_type'],
+                    'NGO',
+                    $ngo_id,
+                    $notif['quantity'],
+                    'Donated',
+                    $notif['pickup_address'],
+                    $pickup_time,
+                    'High',
+                    'Immediate',
+                    'No'
+                ]);
+
+                // 4. Update donations table (generic log)
+                $sd = $pdo->prepare(
+                    "INSERT INTO donations (donor_id, target_id, target_role, status, donation_type)
+                     VALUES (?,?,'NGO','Donated','Food')"
+                );
+                $sd->execute([$donor_id, $ngo_id]);
+
+                $pdo->commit();
+                $state = 'success';
+                $batch = $notif;
+
+            } else {
+                // Another NGO accepted first
+                $pdo->rollBack();
+                $state = 'already_taken';
+            }
+
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log($e->getMessage());
+            $state = 'error';
         }
     }
 }
@@ -375,6 +388,12 @@ if ($notif_id > 0 && $token !== '') {
                The request has been forwarded to the next batch of NGOs.</p>
             <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
 
+        <?php elseif ($state === 'error'): ?>
+        <div class="icon">⚠️</div>
+        <h2>Something Went Wrong</h2>
+        <p>We couldn't process your acceptance. Nothing was changed.<br>
+           Please try the link again, or contact the platform administrator.</p>
+        <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
         <?php else: ?>
             <div class="icon">❌</div>
             <h2>Invalid Link</h2>
