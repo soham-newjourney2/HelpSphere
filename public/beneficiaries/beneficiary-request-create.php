@@ -1,18 +1,25 @@
 <?php
-require_once __DIR__. '/../../inc/auth.php';
+require_once __DIR__ . '/../../inc/auth.php';
 require_login();
 
-if(isset($_POST['submit-btn']))
-{
-    $cat=isset($_POST['category'])?$_POST['category']:'';
-    $desc=isset($_POST['description'])?$_POST['description']:'';
-    $stmt=$pdo->prepare("insert into assistance_requests (beneficiary_id, category, description) values (?,?,?)");
-    $stmt->bindParam(1,$_SESSION['beneficiary_id']);
-    $stmt->bindParam(2, $cat);
-    $stmt->bindParam(3, $desc);
-    $stmt->execute();
-    if($stmt){
-        header("Location: ../beneficiaries/beneficiary-request-management.php");
+$allowed_categories = ['Food', 'Resources'];
+$error = '';
+
+if (isset($_POST['submit-btn'])) {
+    $cat  = trim($_POST['category'] ?? '');
+    $desc = trim($_POST['description'] ?? '');
+
+    if (!in_array($cat, $allowed_categories, true)) {
+        $error = 'Please select a valid category.';
+    } elseif ($desc === '') {
+        $error = 'Description is required.';
+    } else {
+        $stmt = $pdo->prepare("INSERT INTO assistance_requests (beneficiary_id, category, description) VALUES (?,?,?)");
+        if ($stmt->execute([$_SESSION['beneficiary_id'], $cat, $desc])) {
+            header("Location: ../beneficiaries/beneficiary-request-management.php");
+            exit;
+        }
+        $error = 'Could not save your request. Please try again.';
     }
 }
 ?>
@@ -109,6 +116,9 @@ if(isset($_POST['submit-btn']))
                 <h3>Request Details</h3>
             </div>
 
+            <?php if ($error !== ''): ?>
+            <p class="form-error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
             <div class="request-item">
 
                 <form class="request-form" action="" method="POST">
@@ -116,9 +126,9 @@ if(isset($_POST['submit-btn']))
                     <div class="form-group">
                         <label>Category of Assistance</label>
                         <select name="category" required>
-                            <option>Select assistance category</option>
-                            <option>Food</option>
-                            <option>Resources</option>
+                            <option value="" disabled selected>Select assistance category</option>
+                            <option value="Food">Food</option>
+                            <option value="Resources">Resources</option>
                         </select>
                     </div>
 
