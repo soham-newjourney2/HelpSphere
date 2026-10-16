@@ -2,10 +2,16 @@
 require_once __DIR__. '/../../inc/auth.php';
 require_login();
 
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $request=$_POST['request'];
-    $docname = trim($_POST['docname']);
+    if (!hash_equals($_SESSION['csrf'], (string)($_POST['csrf'] ?? ''))) {
+    http_response_code(403);
+    die("❌ Invalid session token. Please go back and try again.");
+    }
+    $request = (string)($_POST['request'] ?? '');
+    $docname = trim((string)($_POST['docname'] ?? ''));
     $beneficiary_id = $_SESSION['beneficiary_id']; // assuming you store logged-in user ID
 
     $stmt=$pdo->prepare("select * from assistance_requests where description=? and beneficiary_id=?");
@@ -15,12 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if($stmt->rowCount()>0) 
     {
         $result=$stmt->fetch(PDO::FETCH_ASSOC);
-        $request_id=isset($result['id'])?$result['id']:0;
-        if($request_id<=0)
-        {
-            echo "Request Does Not Exist! ";
-            exit;
-        }
     }
     
 
@@ -53,13 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (move_uploaded_file($fileTmpPath, $destPath)) {
             // Insert into DB
-            $stmt = $pdo->prepare("INSERT INTO beneficiary_documents (beneficiary_id, request_id, document_name, file_path, uploaded_at, status) VALUES (?, ?, ?, ?, NOW(), ?)");
+            $stmt = $pdo->prepare("INSERT INTO beneficiary_documents (beneficiary_id, document_name, file_path, uploaded_at, status) VALUES (?, ?, ?, NOW(), ?)");
             // $stmt->bind_param("iss", $beneficiary_id, $docname, $newFileName);
             $stmt->bindParam(1,$_SESSION['beneficiary_id']);
-            $stmt->bindParam(2,$request_id);
-            $stmt->bindParam(3,$docname);
-            $stmt->bindParam(4,$newFileName);
-            $stmt->bindValue(5,"Uploaded");
+            $stmt->bindParam(2,$docname);
+            $stmt->bindParam(3,$newFileName);
+            $stmt->bindValue(4,"Uploaded");
             if ($stmt->execute()) {
                 header("Location: beneficiary-documents.php?success=1");
                 exit;
