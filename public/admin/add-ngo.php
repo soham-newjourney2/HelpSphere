@@ -1,91 +1,66 @@
 <?php
-require_once __DIR__. '/../../inc/auth.php';
+require_once __DIR__ . '/../../inc/auth.php';
 admin_require_login();
-$value=1;
-$val=1;
-$flag=0;
 
-if(isset($_POST['submit-btn'])){
-  // Function to remove leading and trailing whitespaces,'_','\', and prevent Cross Site Scripting (XSS) Attacks 
-    function validateInput($data)
-    {
-        $data=trim($data,"_");
-        $data=stripslashes($data);
-        $data=htmlspecialchars($data);
-        return $data;
-    }
+$message = '';   // error text shown inside the page body
+$success = false;
 
-    // Function To Prevent Cross Site Scripting (XSS) Attacks
-    function XSSPrevention($data)
-    {
-        $data=htmlspecialchars($data);
-        return $data;
-    }
+if (isset($_POST['submit-btn'])) {
+    $fullname         = trim($_POST['ngo-name'] ?? '');
+    $email            = trim($_POST['email'] ?? '');
+    $password_raw     = $_POST['password'] ?? '';
+    $confirm_password = $_POST['cpassword'] ?? '';
+    $reg_date         = trim($_POST['reg-date'] ?? '');
 
-    $fullname=validateInput($_POST['ngo-name']);
-    $email=validateInput($_POST['email']);
-    if(!$fullname)
-    {
-        $val=-1;        
-    }
-
-    // Hashing the Password before storing in Database 
-    $password=password_hash($_POST['password'], PASSWORD_ARGON2ID); 
-    $confirm_password=$_POST['cpassword'];
-
-    // Checking if email exists
-    $stmt=$pdo->prepare("Select * from ngo_master where email=?");
-    $stmt->bindParam(1,$email);
-    $stmt->execute();
-    if($stmt->rowCount()>0)
-    {
-        $val=0;
-    }
-    
-    // Password Verification
-    if(password_verify($confirm_password,$password)==FALSE)
-    {
-        $value=0;
+    // Validate first, insert only if everything passes
+    if ($fullname === '') {
+        $message = 'Full Name Required';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = 'Valid Email ID Required';
+    } elseif (strlen($password_raw) < 6) {
+        $message = 'Password must be at least 6 characters';
+    } elseif ($password_raw !== $confirm_password) {
+        $message = 'Passwords do not match';
+    } else {
+        $d = DateTime::createFromFormat('Y-m-d', $reg_date);
+        if (!$d || $d->format('Y-m-d') !== $reg_date) {
+            $message = 'Valid Registration Date Required';
+        }
     }
 
-    if($value==1 && $val==1)
-    {
-    // Insert data into table ngo_master and prevent SQL Injection Attacks
-    $stmt=$pdo->prepare("insert into ngo_master (name, email, password, focus, description, registration_no, address, registration_date, status, phone) values (?,?,?,?,?,?,?,?,?,?)");
-    $stmt->bindParam(1, $fullname);
-    $stmt->bindParam(2, $email);
-    $stmt->bindParam(3, $password);
-    $stmt->bindParam(4, $_POST['focus']);
-    $stmt->bindParam(5, $_POST['description']);
-    $stmt->bindParam(6, $_POST['reg-no']);
-    $stmt->bindParam(7, $_POST['address']);
-    $stmt->bindParam(8, $_POST['reg-date']);
-    $stmt->bindValue(9, "Unverified");
-    $stmt->bindParam(10, $_POST['phone']);
-    $stmt->execute();
-    $id=$pdo->lastInsertId();
-    $stmt1=$pdo->prepare("insert into users (role_id, name, role, email) values (?,?,?,?)");
-    $stmt1->bindParam(1,$id);
-    $stmt1->bindParam(2,$fullname);
-    $stmt1->bindValue(3, "NGO");
-    $stmt1->bindParam(4,$email);
-    $stmt1->execute();
-    echo "<script>window.addEventListener('DOMContentLoaded',()=>showToast('NGO registered successfully!','success'));</script>";    
+    if ($message === '') {
+        try {
+            $stmt = $pdo->prepare("SELECT id FROM ngo_master WHERE email=?");
+            $stmt->execute([$email]);
+
+            if ($stmt->rowCount() > 0) {
+                $message = 'Email already exists';
+            } else {
+                $password = password_hash($password_raw, PASSWORD_ARGON2ID);
+
+                $pdo->beginTransaction();
+
+                $stmt = $pdo->prepare("INSERT INTO ngo_master (name, email, password, focus, description, registration_no, address, registration_date, status, phone) VALUES (?,?,?,?,?,?,?,?,?,?)");
+                $stmt->execute([
+                    $fullname, $email, $password,
+                    $_POST['focus'], $_POST['description'],
+                    $_POST['reg-no'], $_POST['address'],
+                    $reg_date, 'Unverified', $_POST['phone']
+                ]);
+                $id = $pdo->lastInsertId();
+
+                $stmt1 = $pdo->prepare("INSERT INTO users (role_id, name, role, email) VALUES (?,?,?,?)");
+                $stmt1->execute([$id, $fullname, 'NGO', $email]);
+
+                $pdo->commit();
+                $success = true;
+            }
+        } catch (PDOException $e) {
+            if ($pdo->inTransaction()) { $pdo->rollBack(); }
+            error_log($e->getMessage());
+            $message = 'Something went wrong. Please try again.';
+        }
     }
-    else if($value==0)
-    {
-        echo "<h1>Passwords Do Not Match. Please Enter Correct Password</h1>";
-    }
-    else if($val==0)
-    {
-        echo "<h1>Username or Email exists.</h1>";
-    }
-    else if($val==-1)
-        echo "Full Name Required";
-    else if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-        echo "Valid Email ID Required";
-    else if(strlen($password) < 6)
-        echo "Password must be >= 6 chars";
 }
 ?>
 
@@ -196,6 +171,9 @@ if(isset($_POST['submit-btn'])){
     </header>
 
     <section class="page active" id="page-add-ngo">
+      <?php if ($message !== ''): ?>
+      <p class="form-error"><?php echo htmlspecialchars($message); ?></p>
+      <?php endif; ?>
       <div class="page__header">
         <div>
           <h2 class="page__title">Register New NGO</h2>
@@ -222,12 +200,12 @@ if(isset($_POST['submit-btn'])){
                 <input type="text" id="ngo-reg" class="form-input" placeholder="e.g. NGO-2026-XXXX" name="reg-no" required />
               </div>
               <div class="form-group">
-                <label for="ngo-type" class="form-label">Focus <span class="required">*</span></label>
-                <input type="text" id="ngo-reg" class="form-input" placeholder="e.g. Child Welfare" name="focus" required />
+                <label for="ngo-focus" class="form-label">Focus <span class="required">*</span></label>
+                <input type="text" id="ngo-focus" class="form-input" placeholder="e.g. Child Welfare" name="focus" required />
               </div>
               <div class="form-group">
                 <label for="ngo-established" class="form-label">Registration Date</label>
-                <input type="date" id="ngo-established" class="form-input" name="reg-date" />
+                <input type="date" id="ngo-established" class="form-input" name="reg-date" required/>
               </div>
             </div>
 
@@ -243,11 +221,11 @@ if(isset($_POST['submit-btn'])){
               </div>
               <div class="form-group">
                 <label for="ngo-website" class="form-label">Password</label>
-                <input type="password" id="ngo-website" class="form-input" placeholder="your password" name="password" required />
+                <input type="password" id="ngo-password" class="form-input" placeholder="your password" name="password" required />
               </div>
               <div class="form-group">
                 <label for="ngo-website" class="form-label">Confirm Password</label>
-                <input type="password" id="ngo-website" class="form-input" placeholder="confirm your password" name="cpassword" required />
+                <input type="password" id="ngo-cpassword" class="form-input" placeholder="confirm your password" name="cpassword" required />
               </div>
             </div>
 
@@ -327,29 +305,8 @@ if(isset($_POST['submit-btn'])){
   <div class="toast-container" id="toast-container"></div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
 
-      const root = document.documentElement;
-
-      document.getElementById('theme-toggle')?.addEventListener('click', () => {
-        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        root.setAttribute('data-theme', next);
-        try { localStorage.setItem('hs-theme', next); } catch (e) {}
-      });
-
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('overlay');
-
-      document.getElementById('hamburger')?.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('show');
-      });
-      overlay?.addEventListener('click', () => {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('show');
-      });
-
-      function showToast(message, type = 'success') {
+    function showToast(message, type = 'success') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast toast--${type}`;
@@ -371,6 +328,28 @@ if(isset($_POST['submit-btn'])){
           setTimeout(() => toast.remove(), 300);
         }, 4000);
       }
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const root = document.documentElement;
+
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('hs-theme', next); } catch (e) {}
+      });
+
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+
+      document.getElementById('hamburger')?.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+      });
+      overlay?.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+      });
 
       const uploadZone = document.getElementById('file-upload-zone');
       ['dragenter', 'dragover'].forEach(evt => {
@@ -396,5 +375,8 @@ if(isset($_POST['submit-btn'])){
 
     });
   </script>
+  <?php if ($success): ?>
+<script>showToast('NGO registered successfully!', 'success');</script>
+<?php endif; ?>
 </body>
 </html>
