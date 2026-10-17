@@ -13,6 +13,12 @@ if(isset($_POST['save-btn']))
   $stmt->bindParam(6,$_POST['phone']);
   $stmt->bindParam(7,$_SESSION['ngo_id']);
   $stmt->execute();
+  $stmt1=$pdo->prepare("update users set name=?, email=? where role_id=? and role=?");
+  $stmt1->bindParam(1,$_POST['name']);
+  $stmt1->bindParam(2,$_POST['email']);
+  $stmt1->bindParam(3,$_SESSION['ngo_id']);
+  $stmt1->bindValue(4,"NGO");
+  $stmt1->execute();
   if($stmt) 
     header("Location: ngo-profile-registration.php");
 }
