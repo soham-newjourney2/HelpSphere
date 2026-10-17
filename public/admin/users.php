@@ -137,19 +137,31 @@ if($_SERVER['REQUEST_METHOD']==='POST')
     {
         try
         {
-            $stmt=$pdo->prepare("delete from ".$cfg['table']." where id=?");
-            $stmt->bindParam(1, $uid);
-            $stmt->execute();
-            if($stmt->rowCount()>0)
-                $_SESSION['flash']=['success', $cfg['label'].' deleted successfully.'];
-            else
-                $_SESSION['flash']=['error','User not found.'];
-        }
-        catch(PDOException $e)
-        {
-            error_log('users.php delete: '.$e->getMessage());
-            $_SESSION['flash']=['error','Could not delete this user. It may be linked to other records (e.g. assistance requests).'];
-        }
+          $pdo->beginTransaction();
+
+          $stmt=$pdo->prepare("delete from ".$cfg['table']." where id=?");
+          $stmt->execute([$uid]);
+
+          if($stmt->rowCount()>0)
+          {
+              $stmt=$pdo->prepare("delete from users where role_id=? and role=?");
+              $stmt->execute([$uid, $cfg['label']]);
+
+              $pdo->commit();
+              $_SESSION['flash']=['success', $cfg['label'].' deleted successfully.'];
+          }
+          else
+          {
+              $pdo->rollBack();
+              $_SESSION['flash']=['error','User not found.'];
+          }
+      }
+      catch(PDOException $e)
+      {
+          if($pdo->inTransaction()) $pdo->rollBack();
+          error_log('users.php delete: '.$e->getMessage());
+          $_SESSION['flash']=['error','Could not delete this user. It may be linked to other records (e.g. assistance requests).'];
+      }
         header('Location: '.list_url($filters));
         exit;
     }
@@ -209,21 +221,29 @@ if($_SERVER['REQUEST_METHOD']==='POST')
             }
             $params[]=$uid;
             try
-            {
-                $stmt=$pdo->prepare("update ".$cfg['table']." set ".implode(', ', $set)." where id=?");
-                $stmt->execute($params);
-                $_SESSION['flash']=['success', $cfg['label'].' updated successfully.'];
-                header('Location: '.list_url($filters));
-                exit;
-            }
-            catch(PDOException $e)
-            {
-                error_log('users.php update: '.$e->getMessage());
-                if($e->getCode()==='23000')
-                    $form_errors[]='That email address is already in use.';
-                else
-                    $form_errors[]='Could not save changes. Please try again.';
-            }
+{
+    $pdo->beginTransaction();
+
+    $stmt=$pdo->prepare("update ".$cfg['table']." set ".implode(', ', $set)." where id=?");
+    $stmt->execute($params);
+
+    $stmt=$pdo->prepare("update users set name=?, email=? where role_id=? and role=?");
+    $stmt->execute([$posted['name'], $posted['email'], $uid, $cfg['label']]);
+
+    $pdo->commit();
+    $_SESSION['flash']=['success', $cfg['label'].' updated successfully.'];
+    header('Location: '.list_url($filters));
+    exit;
+}
+catch(PDOException $e)
+{
+    if($pdo->inTransaction()) $pdo->rollBack();
+    error_log('users.php update: '.$e->getMessage());
+    if($e->getCode()==='23000')
+        $form_errors[]='That email address is already in use.';
+    else
+        $form_errors[]='Could not save changes. Please try again.';
+}
         }
         $action='edit'; // re-show the form with the errors
     }
