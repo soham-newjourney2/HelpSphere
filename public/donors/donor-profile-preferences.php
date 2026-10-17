@@ -24,6 +24,12 @@ if(isset($_POST['save-btn']))
     $stmt1->bindParam(5,$_POST['preferred_ngo_cause']);
     $stmt1->bindParam(6,$_SESSION['donor_id']);
     $stmt1->execute();
+    $stmt2=$pdo->prepare("update users set name=?, email=? where role_id=? and role=?");
+    $stmt2->bindParam(1,$_POST['name']);
+    $stmt2->bindParam(2,$_POST['email']);
+    $stmt2->bindParam(3,$_SESSION['donor_id']);
+    $stmt2->bindValue(4,"Donor");
+    $stmt2->execute();
     if($stmt1)
     {
         header("Location: donor-profile-preferences.php");
