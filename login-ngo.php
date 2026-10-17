@@ -1,6 +1,6 @@
 <?php
+//login-ngo.php
 require_once __DIR__.'/inc/auth.php';
-// ngo_require_login();
 try
 {
    if(isset($_POST['login-btn'])) 
@@ -14,13 +14,22 @@ try
    $ngo=$stmt->fetch(PDO::FETCH_ASSOC);
    
    if($ngo && password_verify($password,$ngo['password']))
-   {
-     $_SESSION['ngo_name']=$ngo['name'];
-     $_SESSION['ngo_email']=$ngo['email'];  
-     $_SESSION['ngo_id']=$ngo['id'];   
-     header("Location: public\dashboards\\ngo-dashboard.php");
-     exit();
-   }
+{
+  if (session_status() === PHP_SESSION_ACTIVE) session_regenerate_id(true);   // keeps session data
+  $_SESSION['ngo_name']=$ngo['name'];
+  $_SESSION['ngo_email']=$ngo['email'];
+  $_SESSION['ngo_id']=$ngo['id'];
+
+  // Fix 41: go back to the email link if the NGO came from one
+  $to = (string)($_SESSION['ngo_return_to'] ?? '');
+  unset($_SESSION['ngo_return_to']);
+  if (preg_match('/^ngo-food-accept\.php\?notif_id=\d+&token=[a-f0-9]{64}$/', $to)) {
+      header('Location: public/ngos/' . $to);
+  } else {
+      header('Location: public/dashboards/ngo-dashboard.php');   // forward slashes, not backslashes
+  }
+  exit();
+}
    else
    {
      echo "Invalid email or password";
