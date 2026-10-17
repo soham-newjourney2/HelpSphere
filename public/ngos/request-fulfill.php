@@ -1,31 +1,67 @@
 <?php
-require_once __DIR__. '/../../inc/auth.php';
+require_once __DIR__ . '/../../inc/auth.php';
 ngo_require_login();
 
-if(isset($_POST['submit-btn'])){
-$stmt=$pdo->prepare("update assistance_requests set status=? where id=?");
-$stmt->bindValue(1,"Fulfilled");
-$stmt->bindParam(2, $_GET['request_id']);
-$stmt->execute();
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
 
-$stmt1=$pdo->prepare("insert into fulfillment_status (beneficiary_id, request_id, fulfilled_at, support_type, provider, delivery_method) values (?,?,?,?,?,?)");
-    $stmt1->bindParam(1,$_GET['beneficiary_id']);
-    $stmt1->bindParam(2, $_GET['request_id']);    
-    $stmt1->bindValue(3, isset($_POST['time'])?$_POST['time']:'');
-    $stmt1->bindValue(4, isset($_POST['type'])?$_POST['type']:'');
-    $stmt1->bindParam(5, $_POST['provider']);
-    $stmt1->bindParam(6, $_POST['delivery_method']);
-    $stmt1->execute();
-    if($stmt1)
-        header("Location: ngo-beneficiaries-fulfillment.php");
+$request_id = (int)($_GET['request_id'] ?? 0);
+$error = '';
+
+if (isset($_POST['submit-btn'])) {
+    if (!hash_equals($_SESSION['csrf'], (string)($_POST['csrf'] ?? ''))) {
+        http_response_code(403);
+        die("Invalid session token. Please go back and try again.");
+    }
+
+    $time     = trim((string)($_POST['time'] ?? ''));
+    $type     = trim((string)($_POST['type'] ?? ''));
+    $provider = trim((string)($_POST['provider'] ?? ''));
+    $delivery = trim((string)($_POST['delivery_method'] ?? ''));
+
+    if ($time === '') {
+        $time = date('H:i:s');   // blank time -> current server time
+    } elseif (!preg_match('/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $time)) {
+        $error = 'Enter a valid time.';
+    }
+    if ($request_id <= 0) $error = 'Invalid request.';
+
+    if ($error === '') {
+        try {
+            $pdo->beginTransaction();
+
+            // Take beneficiary_id from the request itself, not from the URL
+            $s = $pdo->prepare("select beneficiary_id from assistance_requests where id=?");
+            $s->execute([$request_id]);
+            $beneficiary_id = $s->fetchColumn();
+            if ($beneficiary_id === false) throw new RuntimeException('not-found');
+
+            // Only a request that isn't already fulfilled
+            $s = $pdo->prepare("update assistance_requests set status='Fulfilled' where id=? and status <> 'Fulfilled'");
+            $s->execute([$request_id]);
+            if ($s->rowCount() === 0) throw new RuntimeException('already');
+
+            $s = $pdo->prepare("insert into fulfillment_status (beneficiary_id, request_id, fulfilled_at, support_type, provider, delivery_method) values (?,?,?,?,?,?)");
+            $s->execute([$beneficiary_id, $request_id, $time, $type, $provider, $delivery]);
+
+            $pdo->commit();
+            header("Location: ngo-beneficiaries-fulfillment.php");
+            exit;
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            if ($e->getMessage() === 'not-found')    $error = 'Request not found.';
+            elseif ($e->getMessage() === 'already')  $error = 'This request is already fulfilled.';
+            else { error_log('request-fulfill: ' . $e->getMessage()); $error = 'Could not save. Please try again.'; }
+        }
+    }
 }
-?> 
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Create Campaign</title>
+  <title>Fulfill Request</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../assets/css/ngo.css">
 </head>
@@ -149,23 +185,28 @@ $stmt1=$pdo->prepare("insert into fulfillment_status (beneficiary_id, request_id
 
           <div class="request-item">
             <label class="label">Time of Fulfillment</label>
-            <input type="time" placeholder="e.g. Winter Relief Drive" name="time">
+            <input type="time" name="time">
           </div>
 
           <div class="request-item">
             <label class="label">Support Type</label>
-            <input type="text" placeholder="Purpose of the campaign" name="type">
+            <input type="text" name="type">
           </div>
 
           <div class="request-item">
             <label class="label">Provider</label>
-            <input type="text" placeholder="Food kits / Amount / Supplies" name="provider">
+            <input type="text" name="provider">
           </div>
 
           <div class="request-item">
             <label class="label">Delivery Type</label>
             <input type="text" name="delivery_method">
           </div>
+
+          <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8'); ?>" />
+          <?php if ($error !== ''): ?>
+          <div style="color:#f87171;margin-bottom:12px"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+          <?php endif ?>
 
           <button class="menu" name="submit-btn" >
             Fulfill Request
