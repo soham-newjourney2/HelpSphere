@@ -2,231 +2,48 @@
 /**
  * ngo-food-accept.php
  *
- * NGOs land here from the email link:
- *   ?notif_id=X&token=Y
+ * NGOs land here from the email link:  ?notif_id=X&token=Y
  *
- * On every page load this script also runs the escalation engine —
- * so no cron job is required. Any NGO hitting the page (or any other
- * page that includes this file) will trigger the next round automatically
- * if the current round has expired.
+ * Escalation (next-round emails) no longer runs here. It is run every minute
+ * by scripts/run_escalation_loop.php (started by start_escalation.bat).
  */
 require_once __DIR__ . '/../../inc/auth.php';
-require_once __DIR__ . '/../../inc/smtp_mail.php';   // <-- add this
+
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+if (!function_exists('h')) {
+    function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+}
+
+// ── Fix 41: remember the email link so login can send the NGO straight back ──
+if (empty($_SESSION['ngo_id'])) {
+    $ret_notif = (int) ($_GET['notif_id'] ?? 0);
+    $ret_token = (string) ($_GET['token'] ?? '');
+    if ($ret_notif > 0 && preg_match('/^[a-f0-9]{64}$/', $ret_token)) {
+        $_SESSION['ngo_return_to'] = 'ngo-food-accept.php?notif_id=' . $ret_notif . '&token=' . $ret_token;
+    }
+    header('Location: ../../login-ngo.php');   // redirect here, before auth.php's check can print a warning
+    exit;
+}
 ngo_require_login();
 
-define('APP_URL',            'url of your app');
-define('ESCALATION_MINUTES', 7);
-define('BATCH_SIZE',         5);
-define('MAIL_FROM',          'your email');
-
-// ════════════════════════════════════════════════════════════
-//  ESCALATION ENGINE  (runs on every page load)
-// ════════════════════════════════════════════════════════════
-function locationScore(string $a, string $b): int {
-    $words = fn($s) => array_filter(
-        explode(' ', strtolower(preg_replace('/[^a-z0-9\s]/i', ' ', $s)))
-    );
-    return count(array_intersect($words($a), $words($b)));
-}
-
-function createRoundNotifications(PDO $pdo, int $batch_id, array $ngo_ids, int $round_no): array {
-    $expires_at = date('Y-m-d H:i:s', strtotime('+' . ESCALATION_MINUTES . ' minutes'));
-    $si = $pdo->prepare(
-        "INSERT INTO food_donation_notifications
-           (batch_id, ngo_id, round_no, token, expires_at, status)
-         VALUES (?,?,?,?,?,'Pending')"
-    );
-    $items = [];
-    foreach ($ngo_ids as $ngo_id) {
-        $token = bin2hex(random_bytes(32));
-        $si->execute([$batch_id, (int) $ngo_id, $round_no, $token, $expires_at]);
-        $items[] = [
-            'notif_id' => (int) $pdo->lastInsertId(),
-            'ngo_id'   => (int) $ngo_id,
-            'token'    => $token,
-        ];
-    }
-    return ['expires_at' => $expires_at, 'items' => $items];
-}
-
-function sendRoundEmails(PDO $pdo, array $round, array $b): void {
-    $expires_at = $round['expires_at'];
-    $exp_label  = date('h:i A', strtotime($expires_at));
-    $se = $pdo->prepare("SELECT name, email FROM ngo_master WHERE id = ?");
-
-    foreach ($round['items'] as $item) {
-        $se->execute([$item['ngo_id']]);
-        $ngo = $se->fetch(PDO::FETCH_ASSOC);
-        if (!$ngo || empty($ngo['email'])) {
-            continue;
-        }
-
-        $accept_url = APP_URL . "/public/ngos/ngo-food-accept.php"
-                    . "?notif_id={$item['notif_id']}&token={$item['token']}";
-
-        $subject = "HelpSphere: Immediate Food Donation – Accept by {$exp_label}";
-        $body    =
-            "Dear {$ngo['name']},\n\n"
-          . "The previous batch of NGOs did not accept this donation in time.\n"
-          . "You are now in the next batch. Please respond quickly.\n\n"
-          . "-------------------------------------------\n"
-          . " DONATION DETAILS\n"
-          . "-------------------------------------------\n"
-          . " Food Type     : {$b['food_type']}\n"
-          . " Quantity      : {$b['quantity']}\n"
-          . " Pickup Address: {$b['pickup_address']}\n"
-          . " Pickup Within : {$b['pickup_within']} hour(s)\n"
-          . " Urgency       : High\n"
-          . "-------------------------------------------\n\n"
-          . "You have until {$exp_label} to accept.\n\n"
-          . ">>> ACCEPT HERE:\n{$accept_url}\n\n"
-          . "- HelpSphere Platform";
-
-        // One failed email must not stop the rest
-        try {
-            smtp_mail($ngo['email'], $subject, $body);
-        } catch (Throwable $e) {
-            error_log('smtp_mail failed for NGO ' . $item['ngo_id'] . ': ' . $e->getMessage());
-        }
-    }
-}
-
-function runEscalationEngine(PDO $pdo): void {
-    $now = date('Y-m-d H:i:s');
-
-    // 1. Expire all overdue Pending notifications
-    $pdo->prepare(
-        "UPDATE food_donation_notifications
-         SET status = 'Expired'
-         WHERE status = 'Pending' AND expires_at < ?"
-    )->execute([$now]);
-
-    // 2. Candidate batches (re-checked under a lock below)
-    $stmtB = $pdo->prepare(
-        "SELECT DISTINCT fdb.id AS batch_id, fdb.food_type, fdb.quantity,
-                fdb.pickup_address, fdb.pickup_within
-         FROM food_donation_batches fdb
-         JOIN food_donation_notifications fdn ON fdn.batch_id = fdb.id
-         WHERE fdb.status = 'Pending'"
-    );
-    $stmtB->execute();
-    $batches = $stmtB->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($batches as $batch) {
-        $bid   = (int) $batch['batch_id'];
-        $round = null;
-
-        try {
-            $pdo->beginTransaction();
-
-            // Lock the batch row. A second request waits here until the first commits.
-            $lk = $pdo->prepare("SELECT status FROM food_donation_batches WHERE id = ? FOR UPDATE");
-            $lk->execute([$bid]);
-            if ($lk->fetchColumn() !== 'Pending') {
-                $pdo->rollBack();
-                continue;
-            }
-
-            // Re-read everything AFTER taking the lock
-            $lr = $pdo->prepare("SELECT MAX(round_no) FROM food_donation_notifications WHERE batch_id = ?");
-            $lr->execute([$bid]);
-            $last_round = (int) $lr->fetchColumn();
-
-            $sc = $pdo->prepare(
-                "SELECT COUNT(*) FROM food_donation_notifications
-                 WHERE batch_id = ? AND round_no = ? AND status = 'Pending'"
-            );
-            $sc->execute([$bid, $last_round]);
-            if ((int) $sc->fetchColumn() > 0) {
-                $pdo->rollBack();
-                continue; // round still open (or another request just started the next one)
-            }
-
-            $sa = $pdo->prepare(
-                "SELECT COUNT(*) FROM food_donation_notifications
-                 WHERE batch_id = ? AND status = 'Accepted'"
-            );
-            $sa->execute([$bid]);
-            if ((int) $sa->fetchColumn() > 0) {
-                $pdo->rollBack();
-                continue; // already handled
-            }
-
-            $sn = $pdo->prepare("SELECT DISTINCT ngo_id FROM food_donation_notifications WHERE batch_id = ?");
-            $sn->execute([$bid]);
-            $already_notified = array_column($sn->fetchAll(PDO::FETCH_ASSOC), 'ngo_id');
-
-            if ($already_notified) {
-                $placeholders = implode(',', array_fill(0, count($already_notified), '?'));
-                $whereClause  = "WHERE status = 'Verified' AND id NOT IN ($placeholders)";
-            } else {
-                $whereClause  = "WHERE status = 'Verified'";
-            }
-
-            $sg = $pdo->prepare("SELECT id, address FROM ngo_master $whereClause");
-            $sg->execute($already_notified);
-            $remaining = $sg->fetchAll(PDO::FETCH_ASSOC);
-
-            if (empty($remaining)) {
-                $pdo->prepare("UPDATE food_donation_batches SET status='Expired' WHERE id=?")
-                    ->execute([$bid]);
-                $pdo->commit();
-                continue;
-            }
-
-            usort($remaining, fn($a, $b) =>
-                locationScore($batch['pickup_address'], $b['address']) -
-                locationScore($batch['pickup_address'], $a['address'])
-            );
-            $next5 = array_slice(array_column($remaining, 'id'), 0, BATCH_SIZE);
-
-            // Only DB work happens while the lock is held
-            $round = createRoundNotifications($pdo, $bid, $next5, $last_round + 1);
-            $pdo->commit();
-
-        } catch (Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
-            error_log('Escalation engine (batch ' . $bid . '): ' . $e->getMessage());
-            continue;
-        }
-
-        // Emails go out AFTER the commit, with no lock held
-        if ($round !== null) {
-            sendRoundEmails($pdo, $round, [
-                'food_type'      => $batch['food_type'],
-                'quantity'       => $batch['quantity'],
-                'pickup_address' => $batch['pickup_address'],
-                'pickup_within'  => $batch['pickup_within'],
-            ]);
-        }
-    }
-}
-
-// ── Run escalation every time this page is loaded ───────────────────────────
-try {
-    runEscalationEngine($pdo);
-} catch (Throwable $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-    error_log('Escalation engine failed: ' . $e->getMessage());
-}
+$logged_ngo_id = (int) ($_SESSION['ngo_id'] ?? 0);
 
 // ════════════════════════════════════════════════════════════
 //  ACCEPT HANDLER
 // ════════════════════════════════════════════════════════════
 $notif_id = (int) ($_GET['notif_id'] ?? 0);
-$token    = trim($_GET['token'] ?? '');
+$token    = trim((string) ($_GET['token'] ?? ''));
 
-$state    = 'invalid';   // invalid | expired | already_taken | already_accepted | success
+$state    = 'invalid';   // invalid | wrong_account | expired | already_taken | already_accepted | success | error
 $ngo_name = '';
 $batch    = null;
 
+// Database clock, the same clock the cron job uses
+$db_now = (string) $pdo->query("SELECT NOW()")->fetchColumn();
+
 if ($notif_id > 0 && $token !== '') {
 
-    // Fetch notification row
     $sn = $pdo->prepare(
         "SELECT fdn.*, fdb.food_type, fdb.quantity, fdb.pickup_address,
                 fdb.pickup_within, fdb.status AS batch_status, fdb.donor_id,
@@ -239,8 +56,12 @@ if ($notif_id > 0 && $token !== '') {
     $sn->execute([$notif_id]);
     $notif = $sn->fetch(PDO::FETCH_ASSOC);
 
-    if (!$notif || $notif['token'] !== $token) {
+    if (!$notif || !hash_equals((string) $notif['token'], $token)) {
         $state = 'invalid';
+
+    // ── Fix 42: the logged-in NGO must be the NGO that was notified ──
+    } elseif ((int) $notif['ngo_id'] !== $logged_ngo_id) {
+        $state = 'wrong_account';
 
     } elseif ($notif['status'] === 'Accepted') {
         $state    = 'already_accepted';
@@ -249,11 +70,11 @@ if ($notif_id > 0 && $token !== '') {
     } elseif ($notif['batch_status'] === 'Accepted') {
         $state = 'already_taken';
 
-    } elseif ($notif['status'] === 'Expired' || $notif['expires_at'] < date('Y-m-d H:i:s')) {
+    } elseif ($notif['status'] === 'Expired' || $notif['expires_at'] < $db_now) {
         $state = 'expired';
 
     } else {
-                // ── Valid, live notification — process the accept ──
+        // ── Valid, live notification: process the accept ──
         $batch_id  = (int) $notif['batch_id'];
         $ngo_id    = (int) $notif['ngo_id'];
         $donor_id  = (int) $notif['donor_id'];
@@ -262,7 +83,7 @@ if ($notif_id > 0 && $token !== '') {
         try {
             $pdo->beginTransaction();
 
-            // Race condition guard: only first NGO to hit UPDATE wins
+            // Race guard: only the first NGO to run this UPDATE wins
             $su = $pdo->prepare(
                 "UPDATE food_donation_batches
                  SET status = 'Accepted', ngo_id = ?
@@ -271,7 +92,6 @@ if ($notif_id > 0 && $token !== '') {
             $su->execute([$ngo_id, $batch_id]);
 
             if ($su->rowCount() === 1) {
-                // We won the race ✔
 
                 // 1. Mark this notification as Accepted
                 $pdo->prepare(
@@ -292,7 +112,7 @@ if ($notif_id > 0 && $token !== '') {
                         status, pickup_address, pickup_time, urgency, donation_type, is_requested_by_ngo)
                      VALUES (?,?,?,?,?,?,?,?,?,?,?)"
                 );
-                $pickup_time = date('H:i:s', strtotime('+' . (int)$notif['pickup_within'] . ' hours'));
+                $pickup_time = date('H:i:s', strtotime('+' . (int) $notif['pickup_within'] . ' hours'));
                 $si->execute([
                     $donor_id,
                     $notif['food_type'],
@@ -307,12 +127,11 @@ if ($notif_id > 0 && $token !== '') {
                     'No'
                 ]);
 
-                // 4. Update donations table (generic log)
-                $sd = $pdo->prepare(
+                // 4. Generic donations log
+                $pdo->prepare(
                     "INSERT INTO donations (donor_id, target_id, target_role, status, donation_type)
                      VALUES (?,?,'NGO','Donated','Food')"
-                );
-                $sd->execute([$donor_id, $ngo_id]);
+                )->execute([$donor_id, $ngo_id]);
 
                 $pdo->commit();
                 $state = 'success';
@@ -328,7 +147,7 @@ if ($notif_id > 0 && $token !== '') {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-            error_log($e->getMessage());
+            error_log('ngo-food-accept: ' . $e->getMessage());
             $state = 'error';
         }
     }
@@ -388,12 +207,6 @@ if ($notif_id > 0 && $token !== '') {
             transition: all 0.2s;
         }
         .btn-back:hover { background: rgba(99,179,237,0.35); color: #fff; }
-
-        /* state colours */
-        .state-success  .icon-wrap { color: #4ade80; }
-        .state-expired  .icon-wrap { color: #fbbf24; }
-        .state-taken    .icon-wrap { color: #f87171; }
-        .state-invalid  .icon-wrap { color: #f87171; }
     </style>
 </head>
 <body>
@@ -405,23 +218,23 @@ if ($notif_id > 0 && $token !== '') {
         <?php if ($state === 'success'): ?>
             <div class="icon">✅</div>
             <h2>Donation Accepted!</h2>
-            <p>Thank you, <strong><?php echo htmlspecialchars($ngo_name); ?></strong>!<br>
+            <p>Thank you, <strong><?php echo h($ngo_name); ?></strong>!<br>
                You have successfully accepted this food donation.</p>
 
             <div class="detail-grid">
-                <p><strong>Food Type:</strong> <?php echo htmlspecialchars($batch['food_type']); ?></p>
-                <p><strong>Quantity:</strong> <?php echo htmlspecialchars($batch['quantity']); ?></p>
-                <p><strong>Pickup Address:</strong> <?php echo htmlspecialchars($batch['pickup_address']); ?></p>
-                <p><strong>Pickup Within:</strong> <?php echo (int)$batch['pickup_within']; ?> hour(s)</p>
+                <p><strong>Food Type:</strong> <?php echo h($batch['food_type']); ?></p>
+                <p><strong>Quantity:</strong> <?php echo h($batch['quantity']); ?></p>
+                <p><strong>Pickup Address:</strong> <?php echo h($batch['pickup_address']); ?></p>
+                <p><strong>Pickup Within:</strong> <?php echo (int) $batch['pickup_within']; ?> hour(s)</p>
                 <p><strong>Urgency:</strong> <span style="color:#f87171;font-weight:700;">High</span></p>
             </div>
-            <p>Please arrange pickup as soon as possible. The donor has been notified.</p>
+            <p>Please arrange pickup as soon as possible. The donation is now recorded under your NGO.</p>
             <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
 
         <?php elseif ($state === 'already_accepted'): ?>
             <div class="icon">✅</div>
             <h2>You Already Accepted This</h2>
-            <p>You have already accepted this donation, <strong><?php echo htmlspecialchars($ngo_name); ?></strong>.<br>
+            <p>You have already accepted this donation, <strong><?php echo h($ngo_name); ?></strong>.<br>
                Please proceed with pickup.</p>
             <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
 
@@ -429,22 +242,30 @@ if ($notif_id > 0 && $token !== '') {
             <div class="icon">⚡</div>
             <h2>Already Claimed</h2>
             <p>Another NGO accepted this donation just before you.<br>
-               Thank you for your willingness — we'll notify you of future requests.</p>
+               Thank you for your willingness. We'll notify you of future requests.</p>
             <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
 
         <?php elseif ($state === 'expired'): ?>
             <div class="icon">⏰</div>
             <h2>This Link Has Expired</h2>
             <p>The acceptance window for this donation has closed.<br>
-               The request has been forwarded to the next batch of NGOs.</p>
+               The request is being forwarded to the next batch of NGOs.</p>
             <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
 
+        <?php elseif ($state === 'wrong_account'): ?>
+            <div class="icon">🔒</div>
+            <h2>Different NGO Account</h2>
+            <p>This link was sent to a different NGO account than the one you are signed in with.<br>
+               Please sign out, sign in with the NGO that received the email, and open the link again.</p>
+            <a class="btn-back" href="../../inc/logout.php">Sign Out</a>
+
         <?php elseif ($state === 'error'): ?>
-        <div class="icon">⚠️</div>
-        <h2>Something Went Wrong</h2>
-        <p>We couldn't process your acceptance. Nothing was changed.<br>
-           Please try the link again, or contact the platform administrator.</p>
-        <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
+            <div class="icon">⚠️</div>
+            <h2>Something Went Wrong</h2>
+            <p>We couldn't process your acceptance. Nothing was changed.<br>
+               Please try the link again, or contact the platform administrator.</p>
+            <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
+
         <?php else: ?>
             <div class="icon">❌</div>
             <h2>Invalid Link</h2>
