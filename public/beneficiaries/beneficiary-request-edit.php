@@ -151,8 +151,6 @@ if(isset($_POST['edit-btn']))
                         <select name="category">
                             <option <?php echo ($cat == "Food" ? "selected" : ""); ?>>Food</option>
                             <option <?php echo ($cat == "Resources" ? "selected" : ""); ?>>Resources</option>
-                            <option <?php echo ($cat == "Money" ? "selected" : ""); ?>>Money</option>
-                            <option <?php echo ($cat == "Blood" ? "selected" : ""); ?>>Blood</option>
                         </select>
                     </div>
 
