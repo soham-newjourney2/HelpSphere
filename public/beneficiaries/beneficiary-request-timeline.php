@@ -2,26 +2,39 @@
 require_once __DIR__. '/../../inc/auth.php';
 require_login();
 
-$request_id=isset($_GET['id'])? $_GET['id'] : 0;
-$doc_status='';
+$request_id=(int)($_GET['id'] ?? 0);
+$beneficiary_id=(int)($_SESSION['beneficiary_id'] ?? 0);
+
 if($request_id <= 0)
 {
     echo "Invalid Request ID";
     exit;
 }
-else
+
+$stmt=$pdo->prepare("select * from assistance_requests where id=? and beneficiary_id=?");
+$stmt->execute([$request_id, $beneficiary_id]);
+$record=$stmt->fetch(PDO::FETCH_ASSOC);
+if(!$record)
 {
-    $stmt=$pdo->prepare("select * from assistance_requests where id=?");
-    $stmt->bindParam(1, $request_id);
-    $stmt->execute();
-    if(($stmt->rowCount()>0))
-    {
-        $record=$stmt->fetch(PDO::FETCH_ASSOC);
-        $cat=$record['category'];
-        $status=$record['status'];
-        $created_at=$record['created_at'];
-    }
+    echo "Request not found";
+    exit;
 }
+$cat=$record['category'];
+$status=$record['status'];
+$created_at=$record['created_at'];
+
+/* Document progress: summarised across all of this beneficiary's documents */
+$stmt=$pdo->prepare("select count(*) as total,
+                            coalesce(sum(status='Verified'),0) as verified,
+                            max(uploaded_at) as last_upload
+                     from beneficiary_documents where beneficiary_id=?");
+$stmt->execute([$beneficiary_id]);
+$docs=$stmt->fetch(PDO::FETCH_ASSOC);
+
+$doc_total=(int)$docs['total'];
+$docs_uploaded=$doc_total>0;
+$docs_verified=$doc_total>0 && (int)$docs['verified']===$doc_total;
+$doc_last=$docs['last_upload'];
 ?>
 
 <!DOCTYPE html>
@@ -130,72 +143,40 @@ else
 
             <div class="timeline">
 
-                <div class="timeline-item">
-                    <strong>Request Submitted</strong>
-                    <p><strong>Submission Date and Time:</strong> <?php echo $created_at ?></p>
-                    <p>Your request has been successfully submitted.</p>
-                </div>
+            <div class="timeline-item">
+                <strong>Request Submitted</strong>
+                <p><strong>Submission Date and Time:</strong> <?php echo $created_at ?></p>
+                <p>Your request has been successfully submitted.</p>
+            </div>
 
-                <?php 
-                $stmt1=$pdo->prepare("select * from beneficiary_documents where beneficiary_id=?");
-                $stmt1->bindParam(1, $_SESSION['beneficiary_id']);
-                $stmt1->execute();
-                if($stmt1->rowCount()>0)
-                {
-                    $result=$stmt1->fetch(PDO::FETCH_ASSOC);
-                    $doc_status=isset($result['status'])?$result['status']:'';
-                }
-                ?>
-                <?php if($doc_status=="Uploaded"): ?>
-                <div class="timeline-item">
-                    <strong>Documents Uploaded</strong>
-                    <p><strong>Uploaded at: </strong><?php  ?></p>
-                    <p>Required documents were uploaded for verification.</p>
-                </div>
-                <?php endif ?>
+            <?php if($docs_uploaded): ?>
+            <div class="timeline-item">
+                <strong>Documents Uploaded</strong>
+                <p><strong>Uploaded at: </strong><?php echo htmlspecialchars(date('d M Y, h:i A', strtotime($doc_last))) ?></p>
+                <p>Required documents were uploaded for verification.</p>
+            </div>
+            <?php endif ?>
 
-                <?php if($doc_status=="Under Verification"): ?>
-                <div class="timeline-item">
-                    <strong>Verification In Progress</strong>
-                    <p>The NGO team is currently reviewing your documents.</p>
-                </div>
-                <?php endif ?>
+            <?php if($docs_verified): ?>
+            <div class="timeline-item">
+                <strong>Verification Completed</strong>
+                <p>All your documents have been successfully verified</p>
+            </div>
+            <?php endif ?>
 
-                <?php if($doc_status=="Verified"): ?>
-                <div class="timeline-item">
-                    <strong>Verification Completed</strong>
-                    <p>All your documents have been successfully verified</p>
-                </div>
-                <?php endif ?>
+            <?php if($status==="Approved" || $status==="Fulfilled"): ?>
+            <div class="timeline-item">
+                <strong>Request Approved!</strong>
+                <p>The NGO Team has approved your request</p>
+            </div>
+            <?php endif ?>
 
-                <?php if($status=="Approved"): ?>
-                <div class="timeline-item">
-                    <strong>Request Approved!</strong>
-                    <p>The NGO Team has approved your request</p>
-                </div>
-                <?php endif ?>
-
-                <?php if($doc_status=="Verification Failed"): ?>
-                <div class="timeline-item">
-                    <strong>Verification Failed</strong>
-                    <p>Documents could not be verified properly. Contact NGO </p>
-                </div>
-                <?php endif ?>
-
-                <?php if($status=="Rejected"): ?>
-                <div class="timeline-item">
-                    <strong>Request Rejected</strong>
-                    <p>Your Request has been rejected</p>
-                </div>
-                <?php endif ?>
-
-                <?php if($status=="Fulfilled"): ?>
-                <div class="timeline-item">
-                    <strong>Request Fulfilled!</strong>
-                    <p>The NGO Team has fulfilled your request</p>
-                </div>
-                <?php endif ?>
-
+            <?php if($status==="Fulfilled"): ?>
+            <div class="timeline-item">
+                <strong>Request Fulfilled!</strong>
+                <p>The NGO Team has fulfilled your request</p>
+            </div>
+            <?php endif ?>
             </div>
         </section>
 
