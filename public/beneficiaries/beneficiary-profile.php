@@ -18,10 +18,11 @@ if($stmt->rowCount()>0)
 
 if(isset($_POST['update-btn']))
 {
-    $stmt=$pdo->prepare("update users set name=?,email=? where id=?");
+    $stmt=$pdo->prepare("update users set name=?,email=? where role_id=? and role=?");
     $stmt->bindParam(1,$_POST['name']);
     $stmt->bindParam(2,$_POST['email']);
     $stmt->bindParam(3,$_SESSION['beneficiary_id']);
+    $stmt->bindValue(4, "Beneficiary");
     $stmt->execute();
     
     $stmt=$pdo->prepare("update beneficiary_master set name=?,email=?,dob=?,gender=?,address=?,phone=? where id=?");
