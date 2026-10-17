@@ -7,7 +7,6 @@ global $count1;
 global $count2;
 global $count3;
 global $count4;
-global $count5;
 
 $stmt=$pdo->prepare("select * from donations where donor_id=?");
 $stmt->bindParam(1,$_SESSION['donor_id']);
@@ -16,18 +15,9 @@ if($stmt){
 $count=$stmt->rowCount();
 }
 
-$stmt=$pdo->prepare("select * from donations where donor_id=? and status=?");
+$stmt=$pdo->prepare("select * from donations where donor_id=? and target_role=?");
 $stmt->bindParam(1,$_SESSION['donor_id']);
-$stmt->bindValue(2,"Initiated");
-$stmt->execute();
-if($stmt){
-$count1=$stmt->rowCount();
-}
-
-$stmt=$pdo->prepare("select * from donations where donor_id=? and status=? and target_role=?");
-$stmt->bindParam(1,$_SESSION['donor_id']);
-$stmt->bindValue(2,"Completed");
-$stmt->bindValue(3,"Beneficiary");
+$stmt->bindValue(2,"NGO");
 $stmt->execute();
 if($stmt){
 $count2=$stmt->rowCount();
@@ -47,12 +37,6 @@ if($stmt){
 $count4=$stmt->rowCount();
 }
 
-// $stmt=$pdo->prepare("select * from campaigns where status=?");
-// $stmt->bindValue(1,"Ongoing");
-// $stmt->execute();
-// if($stmt){
-// $count4=$stmt->rowCount();
-// }
 ?>
 
 <!DOCTYPE html>
@@ -170,12 +154,7 @@ $count4=$stmt->rowCount();
       </div>
 
       <div class="card stat-card">
-        <h4>Active Donations</h4>
-        <h2><?php echo $count1 ?></h2>
-      </div>
-
-      <div class="card stat-card">
-        <h4>Beneficiaries Helped</h4>
+        <h4>NGOs Helped</h4>
         <h2><?php echo $count2 ?></h2>
       </div>
 
@@ -188,11 +167,7 @@ $count4=$stmt->rowCount();
         <h4>Campaigns Ongoing</h4>
         <h2><?php echo $count4 ?></h2>
       </div>
-
-      <!-- <div class="card stat-card">
-        <h4>Active Volunteers</h4>
-        <h2><?php echo $count5 ?></h2>
-      </div> -->
+      
     </div>
   </section>
 
