@@ -1,124 +1,89 @@
 <?php
+//donor-food-immediate.php
 require_once __DIR__ . '/../../inc/auth.php';
-require_once __DIR__ . '/../../inc/smtp_mail.php';
+require_once __DIR__ . '/../../inc/escalation.php';   // shared: APP_URL, BATCH_SIZE, ESCALATION_MINUTES, engine functions
+
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
+
 donor_require_login();
 $donor_id = (int) $_SESSION['donor_id'];
 
-define('APP_URL',            'url of your app');
-define('ESCALATION_MINUTES', 7);
-define('BATCH_SIZE',         5);
-define('MAIL_FROM',          'your email');
-
-// ─── Location proximity scorer (word-overlap; swap for Haversine in production)
-function locationScore(string $a, string $b): int {
-    $words = fn($s) => array_filter(
-        explode(' ', strtolower(preg_replace('/[^a-z0-9\s]/i', ' ', $s)))
-    );
-    return count(array_intersect($words($a), $words($b)));
-}
-
-// ─── Send one round of emails + insert notification rows
-function dispatchRound(PDO $pdo, int $batch_id, array $ngo_ids, int $round_no, array $b): void {
-    $expires_at = date('Y-m-d H:i:s', strtotime('+' . ESCALATION_MINUTES . ' minutes'));
-    foreach ($ngo_ids as $ngo_id) {
-        $token = bin2hex(random_bytes(32));
-        $sn = $pdo->prepare(
-            "INSERT INTO food_donation_notifications
-               (batch_id, ngo_id, round_no, token, expires_at, status)
-             VALUES (?,?,?,?,?,'Pending')"
-        );
-        $sn->execute([$batch_id, $ngo_id, $round_no, $token, $expires_at]);
-        $notif_id = (int) $pdo->lastInsertId();
-
-        $se = $pdo->prepare("SELECT name, email FROM ngo_master WHERE id = ?");
-        $se->execute([$ngo_id]);
-        $ngo = $se->fetch(PDO::FETCH_ASSOC);
-        if (!$ngo || empty($ngo['email'])) continue;
-
-        $accept_url = APP_URL . "/public/ngos/ngo-food-accept.php"
-                    . "?notif_id={$notif_id}&token={$token}";
-        $exp_label  = date('h:i A', strtotime($expires_at));
-
-        $subject = "HelpSphere: Immediate Food Donation Near You – Accept by {$exp_label}";
-        $body    =
-            "Dear {$ngo['name']},\n\n"
-          . "An urgent food donation is available near your area.\n\n"
-          . "-------------------------------------------\n"
-          . " DONATION DETAILS\n"
-          . "-------------------------------------------\n"
-          . " Food Type     : {$b['food_type']}\n"
-          . " Quantity      : {$b['quantity']}\n"
-          . " Pickup Address: {$b['pickup_address']}\n"
-          . " Pickup Within : {$b['pickup_within']} hour(s)\n"
-          . " Urgency       : High\n"
-          . "-------------------------------------------\n\n"
-          . "You have until {$exp_label} to accept.\n"
-          . "After that, this request will be forwarded to the next batch of NGOs.\n\n"
-          . ">>> ACCEPT HERE:\n{$accept_url}\n\n"
-          . "- HelpSphere Platform";
-
-        $headers = "From: HelpSphere <" . MAIL_FROM . ">\r\n"
-                 . "Reply-To: " . MAIL_FROM . "\r\n"
-                 . "Content-Type: text/plain; charset=UTF-8\r\n";
-        smtp_mail($ngo['email'], $subject, $body);
-    }
-}
-
-// ─── Handle submission
-$success = false;
 $errors  = [];
+$success = isset($_GET['sent']);   // set after redirect, so a refresh can't resubmit
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_donation'])) {
-    $food_type     = $_POST['food_type']           ?? 'Cooked';
-    $quantity      = trim($_POST['quantity']       ?? '');
-    $pickup_addr   = trim($_POST['pickup_address'] ?? '');
+    if (!hash_equals($_SESSION['csrf'], (string)($_POST['csrf'] ?? ''))) {
+        http_response_code(403);
+        die("Invalid session token. Please go back and try again.");
+    }
+
+    $food_type     = (string)($_POST['food_type'] ?? 'Cooked');
+    $quantity      = trim((string)($_POST['quantity'] ?? ''));
+    $pickup_addr   = trim((string)($_POST['pickup_address'] ?? ''));
     $pickup_within = (int)($_POST['pickup_within'] ?? 1);
 
-    if (!in_array($food_type, ['Cooked','Packaged','Raw']))
-                             $errors[] = "Invalid food type.";
-    if (empty($quantity))    $errors[] = "Quantity is required.";
-    if (empty($pickup_addr)) $errors[] = "Pickup address is required.";
-    if ($pickup_within < 1 || $pickup_within > 8)
-                             $errors[] = "Pickup within must be between 1 and 8 hours.";
+    if (!in_array($food_type, ['Cooked', 'Packaged', 'Raw'], true)) $errors[] = "Invalid food type.";
+    if ($quantity === '')    $errors[] = "Quantity is required.";
+    if ($pickup_addr === '') $errors[] = "Pickup address is required.";
+    if ($pickup_within < 1 || $pickup_within > 8) $errors[] = "Pickup within must be between 1 and 8 hours.";
 
     if (empty($errors)) {
-        // 1. Insert batch record
-        $sb = $pdo->prepare(
-            "INSERT INTO food_donation_batches
-               (donor_id, food_type, quantity, pickup_address, pickup_within, urgency, status)
-             VALUES (?,?,?,?,?,'High','Pending')"
-        );
-        $sb->execute([$donor_id, $food_type, $quantity, $pickup_addr, $pickup_within]);
-        $batch_id = (int) $pdo->lastInsertId();
-        
-        // 2. Donor location
-        $dl = $pdo->prepare("SELECT location FROM donor_master WHERE id = ?");
-        $dl->execute([$donor_id]);
-        $dlRow     = $dl->fetch(PDO::FETCH_ASSOC);
-        $donor_loc = $dlRow['location'] ?? '';
+        $round = null;
+        try {
+            $pdo->beginTransaction();
 
-        // 3. Rank verified NGOs by proximity
-        $ng = $pdo->prepare("SELECT id, address FROM ngo_master WHERE status = 'Verified'");
-        $ng->execute();
-        $ngos = $ng->fetchAll(PDO::FETCH_ASSOC);
-        usort($ngos, fn($a, $b) =>
-            locationScore($donor_loc, $b['address']) -
-            locationScore($donor_loc, $a['address'])
-        );
-        $top5 = array_slice(array_column($ngos, 'id'), 0, BATCH_SIZE);
+            // 1. Batch record
+            $sb = $pdo->prepare(
+                "INSERT INTO food_donation_batches
+                   (donor_id, food_type, quantity, pickup_address, pickup_within, urgency, status)
+                 VALUES (?,?,?,?,?,'High','Pending')"
+            );
+            $sb->execute([$donor_id, $food_type, $quantity, $pickup_addr, $pickup_within]);
+            $batch_id = (int) $pdo->lastInsertId();
 
-        // 4. Dispatch round 1
-        dispatchRound($pdo, $batch_id, $top5, 1, [
-            'food_type'      => $food_type,
-            'quantity'       => $quantity,
-            'pickup_address' => $pickup_addr,
-            'pickup_within'  => $pickup_within,
-        ]);
-        $success = true;
+            // 2. Rank verified NGOs by proximity to the pickup address (same rule the later rounds use)
+            $ngos = $pdo->query("SELECT id, address FROM ngo_master WHERE status = 'Verified'")
+                        ->fetchAll(PDO::FETCH_ASSOC);
+            if (!$ngos) throw new RuntimeException('no-ngos');
+            usort($ngos, fn($x, $y) =>
+                locationScore($pickup_addr, (string)$y['address']) -
+                locationScore($pickup_addr, (string)$x['address'])
+            );
+            $top5 = array_slice(array_column($ngos, 'id'), 0, BATCH_SIZE);
+
+            // 3. Round 1 notifications (expiry from the MySQL clock, like every later round)
+            $round = createRoundNotifications($pdo, $batch_id, $top5, 1);
+
+            $pdo->commit();
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            $round = null;
+            if ($e->getMessage() === 'no-ngos') {
+                $errors[] = "No verified NGOs are available right now.";
+            } else {
+                error_log('donor-food-immediate: ' . $e->getMessage());
+                $errors[] = "Could not submit your donation. Please try again.";
+            }
+        }
+
+        // Emails go out after the commit
+        if ($round !== null) {
+            sendRoundEmails($pdo, $round, [
+                'food_type'      => $food_type,
+                'quantity'       => $quantity,
+                'pickup_address' => $pickup_addr,
+                'pickup_within'  => $pickup_within,
+            ], 1);
+            header('Location: donor-food-immediate.php?sent=1');
+            exit;
+        }
     }
 }
-// Donation with status=Pending NOT inserted into food_donations or donations tables . Only if an NGO Accepts, the donation is inserted into these 2 tables with status=Donated. 
-?>
+// A Pending donation is NOT inserted into food_donations / donations.
+// Only when an NGO accepts (ngo-food-accept.php) are the rows created with status=Donated.
+?> 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -246,6 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_donation'])) {
                                    placeholder="e.g. 5 kg, 20 packs, 3 trays"
                                    value="<?php echo htmlspecialchars($_POST['quantity'] ?? ''); ?>"
                                    required>
+                            <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
 
                         <div class="form-group">
