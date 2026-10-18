@@ -4,6 +4,7 @@ require_once __DIR__.'/inc/config.php';
 $value=1;
 $val=1;
 $flag=0;
+$password="";
 try
 {
 if(isset($_POST['register-beneficiary']))
@@ -32,8 +33,13 @@ if(isset($_POST['register-beneficiary']))
     }
 
     // Hashing the Password before storing in Database 
-    $password=password_hash($_POST['password'], PASSWORD_ARGON2ID); 
-    $confirm_password=$_POST['cpassword'];
+    $password='';
+    $confirm_password=$_POST['cpassword'] ?? '';
+    $pw_short=strlen($_POST['password'])<6;
+    if(!$pw_short)
+    {
+        $password=password_hash($_POST['password'], PASSWORD_ARGON2ID);
+    }
 
     // Checking if username or email exists
     $stmt=$pdo->prepare("Select * from beneficiary_master where email=?");
@@ -45,12 +51,12 @@ if(isset($_POST['register-beneficiary']))
     }
     
     // Password Verification
-    if(password_verify($confirm_password,$password)==FALSE)
+    if(!$pw_short && password_verify($confirm_password,$password)==FALSE)
     {
         $value=0;
     }
 
-    if($value==1 && $val==1)
+    if($value==1 && $val==1 && !$pw_short && filter_var($email, FILTER_VALIDATE_EMAIL))
     {
     // Insert data into table patient_master and prevent SQL Injection Attacks
     $stmt=$pdo->prepare("insert into beneficiary_master (name, email, password, last_login, created_at) values (?,?,?,NOW(),NOW())");
@@ -69,6 +75,10 @@ if(isset($_POST['register-beneficiary']))
     echo "Registered Successfully. Redirecting to Login Page...";
     exit();
     }
+    else if($pw_short)
+    {
+        echo "<h1>Password must be at least 6 characters</h1>";
+    }
     else if($value==0)
     {
         echo "<h1>Passwords Do Not Match. Please Enter Correct Password</h1>";
@@ -81,8 +91,6 @@ if(isset($_POST['register-beneficiary']))
         echo "Full Name Required";
     else if(!filter_var($email, FILTER_VALIDATE_EMAIL))
         echo "Valid Email ID Required";
-    else if(strlen($password) < 6)
-        echo "Password must be >= 6 chars";
 }
 else if(isset($_POST['login-beneficiary']))
 {
