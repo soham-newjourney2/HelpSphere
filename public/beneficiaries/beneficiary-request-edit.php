@@ -2,40 +2,50 @@
 require_once __DIR__. '/../../inc/auth.php';
 require_login();
 
-$request_id=isset($_GET['id'])? $_GET['id'] : 0;
-if($request_id <= 0 && !isset($_POST['edit-btn']))
+$allowed_categories=['Food','Resources'];
+$beneficiary_id=(int)($_SESSION['beneficiary_id'] ?? 0);
+$request_id=(int)($_GET['id'] ?? 0);
+$error='';
+
+if($request_id <= 0)
 {
     echo "Invalid Request ID";
     exit;
 }
-else
+
+// Load the request, only if it belongs to the logged-in beneficiary
+$stmt=$pdo->prepare("select * from assistance_requests where id=? and beneficiary_id=?");
+$stmt->execute([$request_id, $beneficiary_id]);
+$record=$stmt->fetch(PDO::FETCH_ASSOC);
+if(!$record)
 {
-    $stmt=$pdo->prepare("select * from assistance_requests where id=?");
-    $stmt->bindParam(1, $request_id);
-    $stmt->execute();
-    if(($stmt->rowCount()>0))
-    {
-        $record=$stmt->fetch(PDO::FETCH_ASSOC);
-        $cat=$record['category'];
-        $description=$record['description'];
-        $status=$record['status'];
-        $created_at=$record['created_at'];
-    }
+    echo "Request not found";
+    exit;
 }
+$cat=$record['category'];
+$description=$record['description'];
+$status=$record['status'];
+$created_at=$record['created_at'];
 
 if(isset($_POST['edit-btn']))
 {
-    $stmt1=$pdo->prepare("update assistance_requests set category=?, description=? where id=?");
-    $stmt1->bindParam(1, $_POST['category']);
-    $stmt1->bindParam(2, $_POST['description']);
-    $stmt1->bindParam(3, $request_id);
-    $stmt1->execute();
-    if($stmt1){
-        echo "Updation Successful";
-        header("Location: ../beneficiaries/beneficiary-request-management.php");
-    }
+    $new_cat=trim($_POST['category'] ?? '');
+    $new_desc=trim($_POST['description'] ?? '');
+
+    if(!in_array($new_cat, $allowed_categories, true))
+        $error='Please select a valid category.';
+    elseif($new_desc==='')
+        $error='Description is required.';
+    elseif($status!=='Pending')
+        $error='Only pending requests can be edited.';
     else
-        echo "Failed to update assistance";
+    {
+        $stmt1=$pdo->prepare("update assistance_requests set category=?, description=? where id=? and beneficiary_id=? and status='Pending'");
+        $stmt1->execute([$new_cat, $new_desc, $request_id, $beneficiary_id]);
+        header("Location: ../beneficiaries/beneficiary-request-management.php");
+        exit;
+    }
+    $description=$new_desc;   // validation failed: keep what the user typed
 }
 ?>
 
@@ -143,6 +153,9 @@ if(isset($_POST['edit-btn']))
                 <h3>Edit Request</h3>
             </div>
 
+            <?php if($error!==''): ?>
+                <p class="form-error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
             <div class="request-item">
                 <form class="request-form" action="" method="POST">
 
@@ -156,9 +169,7 @@ if(isset($_POST['edit-btn']))
 
                     <div class="form-group">
                         <label>Description</label>
-                        <textarea rows="7" name="description">
-                        <?php echo $description ?>
-                        </textarea>
+                        <textarea rows="7" name="description" required><?php echo htmlspecialchars($description) ?></textarea>
                     </div>
 
                     <div class="form-info">
