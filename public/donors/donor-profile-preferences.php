@@ -1,19 +1,21 @@
 <?php
+//donor-profile-preferences.php
 require_once __DIR__. '/../../inc/auth.php';
 donor_require_login();
 
 $stmt=$pdo->prepare("select * from donor_master where id=?");
-$stmt->bindParam(1,$_SESSION['donor_id']);
-$stmt->execute();
-if($stmt->rowCount()>0)
+$stmt->execute([(int)($_SESSION['donor_id'] ?? 0)]);
+$result=$stmt->fetch(PDO::FETCH_ASSOC);
+if(!$result)
 {
-    $result=$stmt->fetch(PDO::FETCH_ASSOC);
-    $name=$result['name'];
-    $email=$result['email'];
-    $phone=$result['phone'];
-    $preferred_type=$result['preferred_type'];
-    $preferred_ngo_cause=$result['preferred_ngo_cause'];
+    echo "Donor profile not found";
+    exit;
 }
+$name=$result['name'];
+$email=$result['email'];
+$phone=$result['phone'];
+$preferred_type=$result['preferred_type'];
+$preferred_ngo_cause=$result['preferred_ngo_cause'];
 if(isset($_POST['save-btn']))
 {
     $stmt1=$pdo->prepare("update donor_master set name=?, email=?, phone=?, preferred_type=?, preferred_ngo_cause=? where id=?");
@@ -137,17 +139,17 @@ if(isset($_POST['save-btn']))
             <div class="card">
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" value="<?php echo $name ?>" name="name">
+                    <input type="text" value="<?php echo htmlspecialchars((string)$name) ?>" name="name">
                 </div>
 
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" value="<?php echo $email ?>" name="email">
+                    <input type="email" value="<?php echo htmlspecialchars((string)$email) ?>" name="email">
                 </div>
 
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="number" value="<?php echo $phone ?>" name="phone">
+                    <input type="number" value="<?php echo htmlspecialchars((string)$phone) ?>" name="phone">
                 </div>
             </div>
         </section>
@@ -171,7 +173,7 @@ if(isset($_POST['save-btn']))
 
                 <div class="form-group">
                     <label>Preferred NGOs / Causes</label>
-                    <input type="text" value="<?php echo $preferred_ngo_cause ?>" name="preferred_ngo_cause">
+                    <input type="text" value="<?php echo htmlspecialchars((string)$preferred_ngo_cause) ?>" name="preferred_ngo_cause">
                 </div>
             </div>
         </section>
