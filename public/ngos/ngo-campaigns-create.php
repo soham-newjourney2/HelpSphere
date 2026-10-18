@@ -14,6 +14,7 @@ if(isset($_POST['create-btn']))
   $stmt->execute();
   if($stmt)
     header("Location: ngo-campaigns.php");
+    exit;
 }
 ?>
 
