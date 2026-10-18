@@ -14,7 +14,7 @@ function require_login()
 }
 function admin_require_login()
 {
-    if($_SESSION['admin_id'] < 1 || !isset($_SESSION['admin_id']))
+    if(!isset($_SESSION['admin_id']) || $_SESSION['admin_id'] < 1)
     {
         header('Location: ../../login-admin.php');
         unset($_SESSION['admin_id']);
@@ -23,7 +23,7 @@ function admin_require_login()
 }
 function donor_require_login()
 {
-    if($_SESSION['donor_id'] < 1 || !isset($_SESSION['donor_id']))
+    if(!isset($_SESSION['donor_id']) || $_SESSION['donor_id'] < 1)
     {
         header('Location: ../../login-donor.php');
         unset($_SESSION['donor_id']);
@@ -32,7 +32,7 @@ function donor_require_login()
 }
 function ngo_require_login()
 {
-    if($_SESSION['ngo_id'] < 1 || !isset($_SESSION['ngo_id']))
+    if(!isset($_SESSION['ngo_id']) || $_SESSION['ngo_id'] < 1)
     {
         header('Location: ../../login-ngo.php');
         unset($_SESSION['ngo_id']);
