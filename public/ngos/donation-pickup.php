@@ -34,6 +34,7 @@ if($type=="Scheduled"){
         $stmt3->execute();
 
         header("Location: ngo-donations-food.php");
+        exit;
 
     }
     else {
@@ -58,6 +59,7 @@ if($type=="Scheduled"){
         $stmt1->execute();
 
         header("Location: ngo-donations-food.php");
+        exit;
     }
 
 }
@@ -82,5 +84,6 @@ else if($type=="Immediate"){
     $stmt1->execute();
 
     header("Location: ngo-donations-food.php");
+    exit;
 }
 ?>
