@@ -21,6 +21,7 @@ if(isset($_POST['save-btn']))
   $stmt1->execute();
   if($stmt) 
     header("Location: ngo-profile-registration.php");
+  exit;
 }
 ?>
 
