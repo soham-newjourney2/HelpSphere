@@ -25,6 +25,7 @@ if(isset($_POST['confirm-btn']))
     if($stmt && $stmt1)
     {
         header("Location: donor-resource-donation.php");
+        exit;
     }
 }
 ?>
