@@ -20,6 +20,10 @@ $beneficiary_name = $benRow ? $benRow['name'] : 'Unknown';
 
 $alert_message = '';
 $alert_type    = '';
+if (!empty($_SESSION['flash'])) {
+  [$alert_type, $alert_message] = $_SESSION['flash'];
+  unset($_SESSION['flash']);   // show it once
+}
 
 // ─── Handle Approve — sets status to Verified globally ───────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approve_doc'])) {
@@ -27,9 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approve_doc'])) {
   if ($doc_id > 0) {
     $stmtApprove = $pdo->prepare("UPDATE beneficiary_documents SET status = 'Verified' WHERE id = ? AND beneficiary_id = ?");
     $stmtApprove->execute([$doc_id, $beneficiary_id]);
-    $alert_message = 'Document approved successfully.';
-    $alert_type    = 'success';
-  }
+    $_SESSION['flash'] = ['success', 'Document approved successfully.'];
+}
   header("Location: ngo-beneficiaries-documents.php?beneficiary_id={$beneficiary_id}&request_id={$request_id}");
   exit;
 }
@@ -38,14 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approve_doc'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_doc'])) {
   $doc_id = (int) $_POST['reject_doc'];
   if ($doc_id > 0) {
-    // INSERT IGNORE so duplicate rejections by the same NGO are silently skipped
+  // INSERT IGNORE so duplicate rejections by the same NGO are silently skipped
     $stmtReject = $pdo->prepare(
-      "INSERT IGNORE INTO ngo_document_rejections (ngo_id, document_id) VALUES (?, ?)"
+    "INSERT IGNORE INTO ngo_document_rejections (ngo_id, document_id) VALUES (?, ?)"
     );
     $stmtReject->execute([$_SESSION['ngo_id'], $doc_id]);
-    $alert_message = 'Document rejected. It will no longer appear in your view.';
-    $alert_type    = 'success';
-  }
+    $_SESSION['flash'] = ['success', 'Document rejected. It will no longer appear in your view.'];
+}
   header("Location: ngo-beneficiaries-documents.php?beneficiary_id={$beneficiary_id}&request_id={$request_id}");
   exit;
 }
@@ -57,17 +59,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['report']) && $_GET['re
   $doc_name    = trim($_POST['doc_name']    ?? '');
 
   if ($doc_id > 0 && !empty($report_text)) {
-    $stmtRep = $pdo->prepare(
-      "INSERT INTO document_reports (ngo_id, ngo_name, beneficiary_name, document_name, report)
-       VALUES (?, ?, ?, ?, ?)"
-    );
-    $stmtRep->execute([$_SESSION['ngo_id'], $ngo_name, $beneficiary_name, $doc_name, $report_text]);
-    $alert_message = 'Report submitted successfully.';
-    $alert_type    = 'success';
-  } else {
-    $alert_message = 'Report text cannot be empty.';
-    $alert_type    = 'error';
-  }
+  $stmtRep = $pdo->prepare(
+    "INSERT INTO document_reports (ngo_id, ngo_name, beneficiary_name, document_name, report)
+     VALUES (?, ?, ?, ?, ?)"
+  );
+  $stmtRep->execute([$_SESSION['ngo_id'], $ngo_name, $beneficiary_name, $doc_name, $report_text]);
+  $_SESSION['flash'] = ['success', 'Report submitted successfully.'];
+} else {
+  $_SESSION['flash'] = ['error', 'Report text cannot be empty.'];
+}
   header("Location: ngo-beneficiaries-documents.php?beneficiary_id={$beneficiary_id}&request_id={$request_id}");
   exit;
 }
@@ -429,9 +429,8 @@ $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
                     </form>
 
                     <!-- Report — opens modal -->
-                    <button type="button" class="btn-report"
-                            onclick="openModal(<?php echo $doc_id; ?>, '<?php echo addslashes($doc_name); ?>')">
-                      🚩 Report
+                    <button type="button" class="btn-report" data-doc-id="<?php echo $doc_id; ?>" data-doc-name="<?php echo $doc_name; ?>">
+                    🚩 Report
                     </button>
 
                   </div>
@@ -479,6 +478,12 @@ $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
       document.getElementById('reportModal').classList.remove('active');
       document.getElementById('reportForm').reset();
     }
+
+    document.querySelectorAll('.btn-report').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+    openModal(this.dataset.docId, this.dataset.docName);
+    });
+    });
 
     document.getElementById('reportModal').addEventListener('click', function(e) {
       if (e.target === this) closeModal();
