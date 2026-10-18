@@ -2,37 +2,43 @@
 require_once __DIR__. '/../../inc/auth.php';
 require_login();
 
-$request_id=isset($_GET['id'])? $_GET['id'] : 0;
-$category=isset($_GET['category'])? $_GET['category'] : 0;
+$request_id=(int)($_GET['id'] ?? 0);
+$beneficiary_id=(int)($_SESSION['beneficiary_id'] ?? 0);
 if($request_id <= 0)
 {
     echo "Invalid Request ID";
     exit;
 }
-else
-{
-    $stmt=$pdo->prepare("select * from assistance_requests where id=?");
-    $stmt->bindParam(1, $request_id);
-    $stmt->execute();
-    if(($stmt->rowCount()>0))
-    {
-        $record=$stmt->fetch(PDO::FETCH_ASSOC);
-        $cat=$record['category'];
-        $status=$record['status'];
-        $created_at=$record['created_at'];
-    }
-}
-   $stmt2=$pdo->prepare("select * from fulfillment_status where request_id=?");
-   $stmt2->bindParam(1,$request_id);
-   $stmt2->execute();
-   $res2=$stmt2->fetch(PDO::FETCH_ASSOC);  
-   if($res2){
-   $fulfilled_at=$res2['fulfilled_at'];
-   $support_type=$res2['support_type'];
-   $provider=$res2['provider'];
-   $delivery_method=$res2['delivery_method'];  
-   }
 
+// Only load the request if it belongs to the logged-in beneficiary
+$stmt=$pdo->prepare("select * from assistance_requests where id=? and beneficiary_id=?");
+$stmt->execute([$request_id, $beneficiary_id]);
+$record=$stmt->fetch(PDO::FETCH_ASSOC);
+if(!$record)
+{
+    echo "Request not found";
+    exit;
+}
+$cat=$record['category'];
+$status=$record['status'];
+$created_at=$record['created_at'];
+
+// Defaults, so the page works when no fulfillment row exists yet
+$fulfilled_at='';
+$support_type='';
+$provider='';
+$delivery_method='';
+
+$stmt2=$pdo->prepare("select * from fulfillment_status where request_id=?");
+$stmt2->execute([$request_id]);
+$res2=$stmt2->fetch(PDO::FETCH_ASSOC);
+if($res2)
+{
+    $fulfilled_at=$res2['fulfilled_at'];
+    $support_type=$res2['support_type'];
+    $provider=$res2['provider'];
+    $delivery_method=$res2['delivery_method'];
+}
 ?>
 
 
@@ -131,7 +137,7 @@ else
                 <strong><?php echo $cat ?> Assistance</strong>
                 <div class="status fulfilled"><?php echo $status ?></div>
                 <p>Submitted: <?php echo $created_at ?></p>
-                <p>Fulfilled: <?php echo $fulfilled_at ?></p>
+                <p>Fulfilled: <?php echo $fulfilled_at!=='' ? htmlspecialchars($fulfilled_at) : 'Not recorded yet' ?></p>
             </div>
         </section>
 
@@ -144,17 +150,17 @@ else
             <div class="request-item">
                 <p>
                     <strong>Type of Support:</strong><br>
-                    <?php echo isset($support_type)?$support_type : '' ?>
+                    <?php echo htmlspecialchars((string)$support_type) ?>
                 </p>
 
                 <p>
                     <strong>Provider:</strong><br>
-                    <?php echo isset($provider)?$provider : '' ?>
+                    <?php echo htmlspecialchars((string)$provider) ?>
                 </p>
 
                 <p>
                     <strong>Delivery Method:</strong><br>
-                    <?php echo isset($delivery_method)?$delivery_method : '' ?>
+                    <?php echo htmlspecialchars((string)$delivery_method) ?>
                 </p>
 
             </div>
