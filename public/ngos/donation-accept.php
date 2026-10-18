@@ -34,6 +34,7 @@ if($type=="Scheduled"){
         $stmt3->execute();
 
         header("Location: ngo-donations-food.php");
+        exit;
     }
     else {
         $stmt=$pdo->prepare("UPDATE food_donations SET status=?, target_id=? WHERE id=?");
@@ -57,6 +58,7 @@ if($type=="Scheduled"){
         $stmt1->execute();
 
         header("Location: ngo-donations-food.php");
+        exit;
     }
 }
 ?>
