@@ -16,5 +16,6 @@ else
     if($stmt)
     {
         header("Location: ../beneficiaries/beneficiary-request-management.php");
+        exit;
     }
 }
