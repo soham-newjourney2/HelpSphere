@@ -1,23 +1,24 @@
 <?php
+//login-donor.php
 require_once __DIR__.'/inc/auth.php';
 try
 {
    if(isset($_POST['login-donor'])) 
    {
    $email=$_POST['email'];
-   $password=$_POST['password'];   
+   $password=$_POST['password'];
    $stmt=$pdo->prepare("Select * from donor_master where email=?");
    $stmt->bindParam(1,$email);
    $stmt->execute();
    
    $admin=$stmt->fetch(PDO::FETCH_ASSOC);
    
-   if($admin && $password == $admin['password'])
+   if($admin && password_verify($password, $admin['password']))
    {
      $_SESSION['donor_name']=$admin['name'];
      $_SESSION['donor_email']=$admin['email'];  
      $_SESSION['donor_id']=$admin['id'];   
-     header("Location: public\dashboards\donor-dashboard.php");
+     header("Location: public/dashboards/donor-dashboard.php");
      exit();
    }
    else
