@@ -1,4 +1,5 @@
 <?php 
+//ngo-dashboard.php
 require_once __DIR__. '/../../inc/auth.php';
 ngo_require_login();
 global $c;
@@ -191,6 +192,7 @@ if($stmt2)
                 $description=$result['description'];
                 $created_at=$result['created_at'];
                 $ben_id=$result['beneficiary_id'];
+                $name=null;
                 $stmt1=$pdo->prepare("select * from beneficiary_master where id=?");
                 $stmt1->bindValue(1,$ben_id);
                 $stmt1->execute();
