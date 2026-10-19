@@ -16,26 +16,45 @@ $email=$result['email'];
 $phone=$result['phone'];
 $preferred_type=$result['preferred_type'];
 $preferred_ngo_cause=$result['preferred_ngo_cause'];
+$error='';
+$allowed_types=['Food','Money','Resources','Blood'];
 if(isset($_POST['save-btn']))
 {
-    $stmt1=$pdo->prepare("update donor_master set name=?, email=?, phone=?, preferred_type=?, preferred_ngo_cause=? where id=?");
-    $stmt1->bindParam(1,$_POST['name']);
-    $stmt1->bindParam(2,$_POST['email']);
-    $stmt1->bindParam(3,$_POST['phone']);
-    $stmt1->bindParam(4,$_POST['type']);
-    $stmt1->bindParam(5,$_POST['preferred_ngo_cause']);
-    $stmt1->bindParam(6,$_SESSION['donor_id']);
-    $stmt1->execute();
-    $stmt2=$pdo->prepare("update users set name=?, email=? where role_id=? and role=?");
-    $stmt2->bindParam(1,$_POST['name']);
-    $stmt2->bindParam(2,$_POST['email']);
-    $stmt2->bindParam(3,$_SESSION['donor_id']);
-    $stmt2->bindValue(4,"Donor");
-    $stmt2->execute();
-    if($stmt1)
+    $donor_id=(int)($_SESSION['donor_id'] ?? 0);
+    $new_name=trim($_POST['name'] ?? '');
+    $new_email=trim($_POST['email'] ?? '');
+    $new_phone=trim($_POST['phone'] ?? '');
+    $new_type=$_POST['type'] ?? '';
+    $new_cause=trim($_POST['preferred_ngo_cause'] ?? '');
+
+    if(!in_array($new_type, $allowed_types, true))
     {
-        header("Location: donor-profile-preferences.php");
-        exit;
+        $error='Please choose a valid donation type.';
+    }
+    else
+    {
+        try
+        {
+            $pdo->beginTransaction();
+
+            $stmt1=$pdo->prepare("update donor_master set name=?, email=?, phone=?, preferred_type=?, preferred_ngo_cause=? where id=?");
+            $stmt1->execute([$new_name, $new_email, $new_phone, $new_type, $new_cause, $donor_id]);
+
+            $stmt2=$pdo->prepare("update users set name=?, email=? where role_id=? and role=?");
+            $stmt2->execute([$new_name, $new_email, $donor_id, 'Donor']);
+
+            $pdo->commit();
+            header("Location: donor-profile-preferences.php");
+            exit;
+        }
+        catch(PDOException $e)
+        {
+            if($pdo->inTransaction()) $pdo->rollBack();
+            error_log('donor-profile-preferences: '.$e->getMessage());
+            $error = ($e->getCode()==='23000')
+                ? 'That email address is already in use.'
+                : 'Could not save changes. Please try again.';
+        }
     }
 }
 
@@ -129,6 +148,9 @@ if(isset($_POST['save-btn']))
   <div class="user-name">Book Donation Slot</div>
   <div class="menu-toggle" id="menuToggle">☰</div>
 </header>
+<?php if($error!==''): ?>
+<div style="color:#f87171;margin:0 0 16px"><?php echo htmlspecialchars($error); ?></div>
+<?php endif; ?>
     <form action="" method="POST">
         <!-- PERSONAL DETAILS -->
         <section>
@@ -149,7 +171,7 @@ if(isset($_POST['save-btn']))
 
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="number" value="<?php echo htmlspecialchars((string)$phone) ?>" name="phone">
+                    <input type="tel" value="<?php echo htmlspecialchars((string)$phone) ?>" name="phone">
                 </div>
             </div>
         </section>
