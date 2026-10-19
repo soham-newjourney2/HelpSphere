@@ -1,4 +1,5 @@
 <?php 
+//ngo-beneficiaries-fulfillment.php
 require_once __DIR__. '/../../inc/auth.php';
 ngo_require_login();
 ?>
@@ -146,6 +147,7 @@ ngo_require_login();
               $description=$rec['description'];
               $status=$rec['status'];
               $created_at=$rec['created_at'];
+              $name='—';
               $stmt1=$pdo->prepare("select * from beneficiary_master where id=?");
               $stmt1->bindParam(1, $id);
               $stmt1->execute();
