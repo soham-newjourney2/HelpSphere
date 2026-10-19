@@ -1,4 +1,5 @@
 <?php
+//login-admin.php
 require_once __DIR__.'/inc/auth.php';
 try
 {
@@ -17,7 +18,7 @@ try
      $_SESSION['ad_name']=$admin['name'];
      $_SESSION['ad_email']=$admin['email'];  
      $_SESSION['admin_id']=$admin['id'];   
-     header("Location: public\admin\index.php");
+     header("Location: public/admin/index.php");
      exit();
    }
    else
