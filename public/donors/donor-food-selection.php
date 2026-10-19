@@ -1,4 +1,5 @@
 <?php
+//donor-food-selection.php
 require_once __DIR__. '/../../inc/auth.php';
 donor_require_login();
 ?>
@@ -163,6 +164,7 @@ donor_require_login();
                 {
                     while($result=$stmt->fetch(PDO::FETCH_ASSOC))
                     {
+                        $ngo_name='';
                         $food_type=$result['food_type'];
                         $status=$result['status'];
                         $request_type=$result['request_type'];
@@ -250,7 +252,8 @@ donor_require_login();
                if($stmt->rowCount()>0)
                {
                   while($rec=$stmt->fetch(PDO::FETCH_ASSOC))
-                  { 
+                  {
+                    $ngo_name=''; 
                     $id=isset($rec['id'])?$rec['id']:0;
                     $request_type=isset($rec['request_type'])?$rec['request_type']:'';
                     $ngo_id=isset($rec['ngo_id'])?$rec['ngo_id']:0;
