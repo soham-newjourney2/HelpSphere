@@ -1,4 +1,5 @@
 <?php
+//ngo-donations-food.php
 require_once __DIR__. '/../../inc/auth.php';
 ngo_require_login();
 ?>
@@ -216,6 +217,7 @@ ngo_require_login();
           {
             while($rec=$stmt->fetch(PDO::FETCH_ASSOC))
             {
+              $name='';
               $id=$rec['id'];
               $donor_id=$rec['donor_id'];
               $donated_at=$rec['created_at'];
@@ -253,6 +255,7 @@ ngo_require_login();
           {
             while($rec=$stmt->fetch(PDO::FETCH_ASSOC))
             {
+              $name='';
               $id1=$rec['id'];
               $donor_id=$rec['donor_id'];
               $donated_at=$rec['created_at'];
@@ -291,6 +294,7 @@ ngo_require_login();
           {
             while($rec=$stmt->fetch(PDO::FETCH_ASSOC))
             {
+              $name='';
               $id1=$rec['id'];
               $donor_id=$rec['donor_id'];
               $donated_at=$rec['created_at'];
