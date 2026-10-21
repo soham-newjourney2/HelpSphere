@@ -171,10 +171,10 @@ ngo_require_login();
             <td><?php echo $quantity ?></td>
             <td><?php echo $status ?></td>
             <?php if($status=="Donated" && $request_type=="Scheduled"): ?>
-            <td><button><a href="donation-accept.php?id=<?php echo $id ?>&type=Scheduled&donor_id=<?php echo $donor_id ?>&donation=requested">Accept</a></button></td>
+            <td><?php echo action_button('donation-accept.php', ['type'=>'Scheduled','donation'=>'requested','id'=>$id], 'Accept') ?></td>
             <?php endif ?>
             <?php if($status=="Accepted" && $request_type=="Scheduled"): ?>
-            <td><button><a href="donation-pickup.php?id=<?php echo $id ?>&type=Scheduled&donor_id=<?php echo $donor_id ?>&donation=requested">Pick Up</a></button></td>
+            <td><?php echo action_button('donation-pickup.php', ['type'=>'Scheduled','donation'=>'requested','id'=>$id], 'Pick Up') ?></td>
             <?php endif ?>
             <?php if($status=="Picked Up" && $request_type=="Scheduled"): ?>
               <td>None</td>
@@ -239,7 +239,7 @@ ngo_require_login();
             <td><?php echo $food_type ?></td>
             <td><?php echo $quantity ?></td>
             <td><?php echo $status ?></td>
-            <td><button><a href="donation-accept.php?id=<?php echo $id ?>&type=Scheduled&donor_id=<?php echo $donor_id ?>&donation=voluntary">Accept</a></button></td>
+            <td><?php echo action_button('donation-accept.php', ['type'=>'Scheduled','donation'=>'voluntary','id'=>$id], 'Accept') ?></td>
           </tr>
               <?php
             }
@@ -277,7 +277,7 @@ ngo_require_login();
             <td><?php echo $food_type ?></td>
             <td><?php echo $quantity ?></td>
             <td><?php echo $status ?></td>
-            <td><button><a href="donation-pickup.php?id=<?php echo $id1 ?>&type=Scheduled&donor_id=<?php echo $donor_id ?>&donation=voluntary">Pick Up</a></button></td>
+            <td><?php echo action_button('donation-pickup.php', ['type'=>'Scheduled','donation'=>'voluntary','id'=>$id1], 'Pick Up') ?></td>
           </tr>
               <?php
             }
@@ -372,7 +372,7 @@ ngo_require_login();
             <td><?php echo $quantity ?></td>
             <td><?php echo $status ?></td>
             <?php if($status=="Donated" && $request_type=="Immediate"): ?>
-            <td><button><a href="donation-pickup.php?id=<?php echo $id ?>&type=Immediate&donor_id=<?php echo $donor_id ?>">Pick Up</a></button></td>
+            <td><?php echo action_button('donation-pickup.php', ['type'=>'Immediate','id'=>$id], 'Pick Up') ?></td>
             <?php endif ?>
             <?php if($status=="Picked Up" && $request_type=="Immediate"): ?>
               <td>None</td>
