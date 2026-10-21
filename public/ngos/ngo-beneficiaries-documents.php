@@ -6,6 +6,14 @@ ngo_require_login();
 $beneficiary_id = isset($_GET['beneficiary_id']) ? (int) $_GET['beneficiary_id'] : 0;
 $request_id     = isset($_GET['request_id'])     ? (int) $_GET['request_id']     : 0;
 
+require_once __DIR__.'/../../inc/serve-upload.php';
+if(isset($_GET['doc']))
+{
+    $stmt=$pdo->prepare("SELECT file_path FROM beneficiary_documents WHERE id=? AND beneficiary_id=?");
+    $stmt->execute([(int)$_GET['doc'], $beneficiary_id]);
+    serve_upload(__DIR__.'/../../uploads/beneficiary_documents', (string)$stmt->fetchColumn());
+}
+
 // ─── Fetch NGO name ───────────────────────────────────────────────────────────
 $stmtNgo  = $pdo->prepare("SELECT name FROM ngo_master WHERE id = ?");
 $stmtNgo->execute([$_SESSION['ngo_id']]);
@@ -394,7 +402,7 @@ $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
                 $doc_name = htmlspecialchars($doc['document_name'] ?? '');
                 $doc_file = htmlspecialchars($doc['file_path'] ?? '');
                 $doc_date = isset($doc['uploaded_at']) ? date('M d, Y', strtotime($doc['uploaded_at'])) : '—';
-                $file_url = '../../uploads/beneficiary_documents/' . $doc_file;
+                $file_url = 'ngo-beneficiaries-documents.php?doc='.$doc_id.'&beneficiary_id='.$beneficiary_id;
               ?>
               <tr>
                 <td><?php echo $doc_name; ?></td>
