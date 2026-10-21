@@ -14,7 +14,6 @@ if(isset($_POST['register-beneficiary']))
     {
         $data=trim($data,"_");
         $data=stripslashes($data);
-        $data=htmlspecialchars($data);
         return $data;
     }
 
@@ -105,6 +104,8 @@ else if(isset($_POST['login-beneficiary']))
 
    if($user && password_verify($password,$user['password']))
    {
+    if (session_status() === PHP_SESSION_ACTIVE) 
+        session_regenerate_id(true);
      $_SESSION['beneficiary_id']=$user['id'];
      $_SESSION['fullname']=$user['name'];
      $_SESSION['beneficiary_email']=$user['email'];     
@@ -118,7 +119,8 @@ else if(isset($_POST['login-beneficiary']))
 }
 } catch(PDOException $e)
 {
-    echo "Error : " . $e->getMessage();
+    error_log('login: '.$e->getMessage()); 
+    echo "Something went wrong. Please try again.";
 }
 $conn=null;
 ?>
