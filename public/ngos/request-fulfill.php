@@ -1,4 +1,5 @@
 <?php
+//request-fulfill.php
 require_once __DIR__ . '/../../inc/auth.php';
 ngo_require_login();
 
@@ -30,16 +31,17 @@ if (isset($_POST['submit-btn'])) {
         try {
             $pdo->beginTransaction();
 
-            // Take beneficiary_id from the request itself, not from the URL
-            $s = $pdo->prepare("select beneficiary_id from assistance_requests where id=?");
-            $s->execute([$request_id]);
-            $beneficiary_id = $s->fetchColumn();
-            if ($beneficiary_id === false) throw new RuntimeException('not-found');
+            $ngo_id = (int)($_SESSION['ngo_id'] ?? 0);
 
-            // Only a request that isn't already fulfilled
-            $s = $pdo->prepare("update assistance_requests set status='Fulfilled' where id=? and status <> 'Fulfilled'");
-            $s->execute([$request_id]);
-            if ($s->rowCount() === 0) throw new RuntimeException('already');
+            // Only a request this NGO approved, and only once
+            $s = $pdo->prepare("select beneficiary_id from assistance_requests where id=? and status='Approved' and ngo_id=?");
+            $s->execute([$request_id, $ngo_id]);
+            $beneficiary_id = $s->fetchColumn();
+            if ($beneficiary_id === false) throw new RuntimeException('not-allowed');
+
+            $s = $pdo->prepare("update assistance_requests set status='Fulfilled' where id=? and status='Approved' and ngo_id=?");
+            $s->execute([$request_id, $ngo_id]);
+            if ($s->rowCount() === 0) throw new RuntimeException('not-allowed');
 
             $s = $pdo->prepare("insert into fulfillment_status (beneficiary_id, request_id, fulfilled_at, support_type, provider, delivery_method) values (?,?,?,?,?,?)");
             $s->execute([$beneficiary_id, $request_id, $time, $type, $provider, $delivery]);
@@ -49,8 +51,7 @@ if (isset($_POST['submit-btn'])) {
             exit;
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) $pdo->rollBack();
-            if ($e->getMessage() === 'not-found')    $error = 'Request not found.';
-            elseif ($e->getMessage() === 'already')  $error = 'This request is already fulfilled.';
+            if ($e->getMessage() === 'not-allowed') $error = 'Only the NGO that approved this request can fulfill it, and only once.';
             else { error_log('request-fulfill: ' . $e->getMessage()); $error = 'Could not save. Please try again.'; }
         }
     }
@@ -231,7 +232,7 @@ if (isset($_POST['submit-btn'])) {
 
   <div class="snow-accumulation"></div> -->
 
-  <script src="sidebar.js"></script>
+  <script src="../assets/js/sidebar.js"></script>
 
 </body>
 </html>
