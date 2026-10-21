@@ -1,4 +1,5 @@
 <?php
+//beneficiary-document-upload.php
 require_once __DIR__. '/../../inc/auth.php';
 require_login();
 
@@ -7,6 +8,7 @@ $alert_type    = '';
 
 // ─── Handle upload ────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['documents'])) {
+  csrf_require_post();
   $doc_names  = $_POST['docname'] ?? [];   // array, one name per file row
   $files      = $_FILES['documents'];
   $file_count = count($files['name']);
@@ -55,7 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['documents'])) {
     }
 
     // Save file
-    $ext         = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+    $ext_map     = ['application/pdf'=>'pdf','image/jpeg'=>'jpg','image/jpg'=>'jpg','image/png'=>'png'];
+    $ext         = $ext_map[$mime];
     $unique_name = 'ben_' . $_SESSION['beneficiary_id'] . '_' . time() . '_' . uniqid() . '.' . $ext;
     $destination = $upload_dir . $unique_name;
 
@@ -265,6 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['documents'])) {
                         <div class="field-file">
                           <label>File <span style="opacity:0.6; font-size:0.78rem;">(PDF, JPG, PNG · max 5MB)</span></label>
                           <input type="file" name="documents[]" accept=".pdf,.jpg,.jpeg,.png" required>
+                          <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(csrf_token()) ?>">
                         </div>
                         <!-- No remove button on the first row -->
                       </div>
