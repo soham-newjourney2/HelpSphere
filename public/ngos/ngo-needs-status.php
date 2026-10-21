@@ -1,4 +1,5 @@
 <?php 
+//ngo-needs-status.php
 require_once __DIR__. '/../../inc/auth.php';
 ngo_require_login();    
 ?>
@@ -127,16 +128,6 @@ ngo_require_login();
           <h3>All Posted Requests</h3>
         </div>
 
-        <?php 
-        if(isset($_POST['update-btn-food']))
-          {
-            $status=$_POST['change_status'];
-            $stmt=$pdo->prepare("update food_donation_requests set status=? where id=?");
-            $stmt->bindParam(1,$status);
-            $stmt->bindParam(2,$_POST['id']);
-            $stmt->execute();
-          }
-        ?>
         <table class="document-table">
           <tr>
             <th>Need</th>
@@ -157,7 +148,7 @@ ngo_require_login();
               $status=$res['status'];
               ?>
           <tr>
-            <td><?php echo $description ?></td>
+            <td><?php echo htmlspecialchars($description) ?></td>
             <td>Food</td>
             <td><?php echo $status ?></td>
           </tr>
