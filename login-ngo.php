@@ -37,7 +37,8 @@ try
 }
 } catch(PDOException $e)
 { 
-    echo "Error : " . $e->getMessage();
+    error_log('login: '.$e->getMessage()); 
+    echo "Something went wrong. Please try again.";
 }
 ?>
 
