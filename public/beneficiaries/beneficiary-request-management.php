@@ -1,4 +1,5 @@
 <?php
+//beneficiary-request-management.php
 require_once __DIR__. '/../../inc/auth.php';
 require_login();
 ?>
@@ -134,7 +135,7 @@ require_login();
                          <strong><?php echo $category ?> Assistance</strong>
                          <div class="status review"><?php echo $status ?></div>
                          <p><strong>Submitted: </strong><?php echo $created_at ?></p>
-                         <p><strong>Request: </strong><?php echo $description ?></p>
+                         <p><strong>Request: </strong><?php echo htmlspecialchars($description) ?></p>
 
                     <div class="action-row">
                         <?php if($status=="Pending"): ?>
@@ -142,10 +143,8 @@ require_login();
                             Edit
                         </a>
                         <?php endif ?>
-                        <?php if($status!="Fulfilled" && $status!="Approved"): ?>
-                        <a href="../beneficiaries/request-cancel.php?id=<?php echo $id ?>" class="action-btn danger">
-                            Cancel
-                        </a>
+                        <?php if($status=="Pending"): ?>
+                        <?php echo action_button('../beneficiaries/request-cancel.php', ['id'=>$id], 'Cancel', 'action-btn danger') ?>
                         <?php endif ?>
                         <a href="../beneficiaries/beneficiary-request-timeline.php?id=<?php echo $id ?>" class="action-btn secondary">
                             Timeline
