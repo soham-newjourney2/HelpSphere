@@ -39,3 +39,29 @@ function ngo_require_login()
         exit;
     }
 }
+function csrf_token()
+{
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    return $_SESSION['csrf'];
+}
+
+function csrf_require_post()
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !hash_equals(csrf_token(), (string)($_POST['csrf'] ?? '')))
+    {
+        http_response_code(403);
+        exit('Invalid request.');
+    }
+}
+
+// A one-button POST form, used instead of a link that changes data
+function action_button($url, array $fields, $label, $class = '')
+{
+    $html  = '<form method="POST" action="' . htmlspecialchars($url) . '" style="display:inline">';
+    $html .= '<input type="hidden" name="csrf" value="' . htmlspecialchars(csrf_token()) . '">';
+    foreach ($fields as $k => $v)
+        $html .= '<input type="hidden" name="' . htmlspecialchars($k) . '" value="' . htmlspecialchars((string)$v) . '">';
+    $html .= '<button type="submit" class="' . htmlspecialchars($class) . '">' . htmlspecialchars($label) . '</button></form>';
+    return $html;
+}
