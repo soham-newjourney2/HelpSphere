@@ -106,7 +106,7 @@ donor_require_login();
             View all NGOs 
             </button>
 
-            <a href="../donors/donor-food-immediate.php?donation=voluntary&donor_id=<?php echo htmlspecialchars($_SESSION['donor_id']); ?>" class="btn">
+            <a href="../donors/donor-food-immediate.php?donation=voluntary" class="btn">
             Immediate Donation
             </a>
 
@@ -272,7 +272,7 @@ donor_require_login();
                     <div class="card">
                     <h4><?php echo isset($request_type)?$request_type:'' ?> Food Donation</h4>
                     <p>
-                        <?php echo isset($description)?$description:'' ?>
+                        <?php echo isset($description)?htmlspecialchars($description):'' ?>
                     </p>
                     <h4>Donate to: <?php echo $ngo_name ?></h4>
                     <h4>Urgency: <?php echo $urgency ?></h4>
