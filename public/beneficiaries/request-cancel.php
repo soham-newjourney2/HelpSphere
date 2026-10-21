@@ -1,21 +1,17 @@
 <?php
+//request-cancel.php
 require_once __DIR__. '/../../inc/auth.php';
 require_login();
+csrf_require_post();
 
-$request_id=isset($_GET['id'])? $_GET['id'] : 0;
-if($request_id <= 0 && !isset($_POST['edit-btn']))
+$request_id=(int)($_POST['id'] ?? 0);
+$beneficiary_id=(int)($_SESSION['beneficiary_id'] ?? 0);
+
+if($request_id > 0)
 {
-    echo "Invalid Request ID";
-    exit;
+    // Only your own request, and only while it is still Pending
+    $stmt=$pdo->prepare("delete from assistance_requests where id=? and beneficiary_id=? and status='Pending'");
+    $stmt->execute([$request_id, $beneficiary_id]);
 }
-else
-{
-    $stmt=$pdo->prepare("delete from assistance_requests where id=?");
-    $stmt->bindParam(1, $request_id);
-    $stmt->execute();
-    if($stmt)
-    {
-        header("Location: ../beneficiaries/beneficiary-request-management.php");
-        exit;
-    }
-}
+header("Location: ../beneficiaries/beneficiary-request-management.php");
+exit;
