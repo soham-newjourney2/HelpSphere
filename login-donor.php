@@ -15,6 +15,8 @@ try
    
    if($admin && password_verify($password, $admin['password']))
    {
+    if (session_status() === PHP_SESSION_ACTIVE) 
+        session_regenerate_id(true);
      $_SESSION['donor_name']=$admin['name'];
      $_SESSION['donor_email']=$admin['email'];  
      $_SESSION['donor_id']=$admin['id'];   
@@ -28,7 +30,8 @@ try
 }
 } catch(PDOException $e)
 { 
-    echo "Error : " . $e->getMessage();
+    error_log('login: '.$e->getMessage()); 
+    echo "Something went wrong. Please try again.";
 }
 ?>
 <!-- Admin login -->
