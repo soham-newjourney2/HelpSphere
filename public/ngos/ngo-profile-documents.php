@@ -1,6 +1,15 @@
 <?php
+//ngo-profile-documents.php
 require_once __DIR__ . '/../../inc/auth.php';
 ngo_require_login();
+
+require_once __DIR__.'/../../inc/serve-upload.php';
+if(isset($_GET['doc']))
+{
+    $stmt=$pdo->prepare("SELECT file_path FROM ngo_documents WHERE id=? AND ngo_id=?");
+    $stmt->execute([(int)$_GET['doc'], (int)$_SESSION['ngo_id']]);
+    serve_upload(__DIR__.'/../../uploads/ngo_documents', (string)$stmt->fetchColumn());
+}
 
 $upload_error = '';
 $upload_success = '';
@@ -55,7 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
           mkdir($upload_dir, 0755, true);
         }
 
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $ext_map=['application/pdf'=>'pdf','image/jpeg'=>'jpg','image/jpg'=>'jpg','image/png'=>'png','application/msword'=>'doc','application/vnd.openxmlformats-officedocument.wordprocessingml.document'=>'docx'];
+        $ext=$ext_map[$mime];
         $unique_name = 'ngo_' . $_SESSION['ngo_id'] . '_' . time() . '_' . uniqid() . '.' . $ext;
         $destination = $upload_dir . $unique_name;
         $file_path = 'uploads/ngo_documents/' . $unique_name;
@@ -292,7 +302,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
               $uploaded   = isset($res['uploaded_at']) ? date('M d, Y', strtotime($res['uploaded_at'])) : '—';
               $file_path  = htmlspecialchars($res['file_path'] ?? '');
               // Build URL relative to web root — adjust base path to match your project structure
-              $file_url   = '../../' . $file_path;
+              $file_url = 'ngo-profile-documents.php?doc=' . $doc_id;
               $badge_class = strtolower($status) === 'verified' ? 'status-verified' : 'status-uploaded';
           ?>
           <tr>
