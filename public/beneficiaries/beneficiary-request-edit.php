@@ -29,6 +29,7 @@ $created_at=$record['created_at'];
 
 if(isset($_POST['edit-btn']))
 {
+    csrf_require_post();
     $new_cat=trim($_POST['category'] ?? '');
     $new_desc=trim($_POST['description'] ?? '');
 
@@ -121,10 +122,10 @@ if(isset($_POST['edit-btn']))
         <article class="card reveal">
           <header class="card__head">
             <div>
-              <h2 class="card__title"><?php echo $cat ?> assistance</h2>
-              <p class="card__sub">Submitted on <?php echo $created_at ?></p>
+              <h2 class="card__title"><?php echo e($cat) ?> assistance</h2>
+              <p class="card__sub">Submitted on <?php echo e($created_at) ?></p>
             </div>
-            <span class="status" data-status="<?php echo isset($status)?$status:'' ?>"><?php echo isset($status)?$status:'' ?></span>
+            <span class="status" data-status="<?php echo e(isset($status)?$status:'') ?>"><?php echo e(isset($status)?$status:'') ?></span>
           </header>
 
             <?php if($error!==''): ?>
@@ -132,6 +133,7 @@ if(isset($_POST['edit-btn']))
             <?php endif; ?>
 
           <form class="form" action="" method="POST">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <div class="field">
               <label for="category">Category of assistance</label>
               <div class="field__control field__control--select">

@@ -20,6 +20,7 @@ $error='';
 $allowed_types=['Food','Money','Resources','Blood'];
 if(isset($_POST['save-btn']))
 {
+    csrf_require_post();
     $donor_id=(int)($_SESSION['donor_id'] ?? 0);
     $new_name=trim($_POST['name'] ?? '');
     $new_email=trim($_POST['email'] ?? '');
@@ -134,6 +135,7 @@ if(isset($_POST['save-btn']))
 <?php endif; ?>
 
       <form class="form" action="" method="POST">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
         <section class="row row--2">
           <article class="card reveal">
             <header class="card__head">

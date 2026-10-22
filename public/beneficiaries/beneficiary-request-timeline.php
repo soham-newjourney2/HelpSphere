@@ -100,11 +100,11 @@ $doc_last=$docs['last_upload'];
         <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
         <div>
           <p class="page-head__eyebrow">Request timeline</p>
-          <h1 class="page-head__title"><?php echo $cat ?> assistance</h1>
-          <p class="page-head__sub">Submitted on <?php echo $created_at ?></p>
+          <h1 class="page-head__title"><?php echo e($cat) ?> assistance</h1>
+          <p class="page-head__sub">Submitted on <?php echo e($created_at) ?></p>
         </div>
         <div class="page-head__actions">
-          <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+          <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
         </div>
       </section>
 
@@ -122,7 +122,7 @@ $doc_last=$docs['last_upload'];
               <span class="timeline__dot"></span>
               <div>
                 <strong>Request submitted</strong>
-                <p><?php echo $created_at ?> — your request has been successfully submitted.</p>
+                <p><?php echo e($created_at) ?> — your request has been successfully submitted.</p>
               </div>
             </li>
             <?php if($docs_uploaded): ?>

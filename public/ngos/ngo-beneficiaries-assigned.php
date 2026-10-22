@@ -115,12 +115,12 @@ ngo_require_login();
               }
               ?>
               <?php if($status=="Pending" || $status!=="Pending" && $ngo_id==$_SESSION['ngo_id'] ): ?>
-              <tr data-status="<?php echo $status ?>">
-                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span><strong><?php echo $name ?></strong></div></td>
-                <td class="text-cell"><?php echo $description ?></td>
-                <td class="text-cell"><?php echo $address ?></td>
-                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
-                <td class="date-cell"><?php echo $created_at ?></td>
+              <tr data-status="<?php echo e($status) ?>">
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span><strong><?php echo e($name) ?></strong></div></td>
+                <td class="text-cell"><?php echo e($description) ?></td>
+                <td class="text-cell"><?php echo e($address) ?></td>
+                <td><span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span></td>
+                <td class="date-cell"><?php echo e($created_at) ?></td>
               </tr>
               <?php endif ?>
               <?php

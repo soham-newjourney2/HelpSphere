@@ -51,7 +51,7 @@ CREATE TABLE `assistance_requests` (
   `description` varchar(255) DEFAULT NULL,
   `status` enum('Pending','Approved','Fulfilled') DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `ngo_id` int(11) NOT NULL
+  `ngo_id` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -132,7 +132,7 @@ CREATE TABLE `document_reports` (
 CREATE TABLE `donations` (
   `id` int(11) NOT NULL,
   `donor_id` int(11) NOT NULL,
-  `target_id` int(11) NOT NULL,
+  `target_id` int(11) NOT NULL DEFAULT 0,
   `target_role` enum('NGO','Beneficiary') NOT NULL,
   `status` enum('Pending','Accepted','Donated','Picked Up') NOT NULL,
   `donation_type` enum('Food','Money','Resource','Blood') NOT NULL,
@@ -213,14 +213,14 @@ CREATE TABLE `food_donation_notifications` (
 
 CREATE TABLE `food_donation_requests` (
   `id` int(11) NOT NULL,
-  `status` enum('Pending','Donated','Accepted','Picked Up') NOT NULL,
+  `status` enum('Pending','Donated','Accepted','Picked Up') NOT NULL DEFAULT 'Pending',
   `request_type` enum('Scheduled') NOT NULL,
   `ngo_id` int(11) NOT NULL,
   `description` varchar(200) NOT NULL,
   `urgency` enum('N/A') NOT NULL,
-  `donor_id` int(11) NOT NULL,
-  `quantity` varchar(200) NOT NULL,
-  `food_type` enum('Cooked','Packaged','Raw') NOT NULL,
+  `donor_id` int(11) NOT NULL DEFAULT 0,
+  `quantity` varchar(200) NOT NULL DEFAULT '',
+  `food_type` enum('Cooked','Packaged','Raw') DEFAULT NULL,
   `donated_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

@@ -16,5 +16,5 @@ define('UPLOAD_URL', '/uploads');
 date_default_timezone_set('Asia/Kolkata');
 
 function e($s){
-    return htmlspecialchars($s, ENT_QUOTES);
+    return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 } 

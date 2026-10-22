@@ -22,6 +22,7 @@ if ($by_ngo) {
     $stmt = $pdo->prepare("select * from food_donation_requests where request_type=? and id=?");
     $stmt->execute(['Scheduled', $id]);
     $record = $stmt->fetch(PDO::FETCH_ASSOC);   // false if not found
+    if ($record) $ngo_id = (int)$record['ngo_id'];   // the request decides the NGO, not the URL
 }
 
 if (isset($_POST['donate-btn'])) {
@@ -36,8 +37,10 @@ if (isset($_POST['donate-btn'])) {
     $form['time']     = trim((string)($_POST['time'] ?? ''));
     $form['address']  = trim((string)($_POST['address'] ?? ''));
 
-    // ----- validation (fixes findings 21-24) -----
-    if (!in_array($form['type'], $TYPES, true)) {
+    // ----- validation -----
+    if ($by_ngo && (!$record || $record['status'] !== 'Pending')) {
+        $error = 'This request has already been answered by another donor.';
+    } elseif (!in_array($form['type'], $TYPES, true)) {
         $error = 'Please choose a valid food type.';
     } elseif ($form['date'] === '') {
         $error = 'Please choose a pickup date.';
@@ -47,6 +50,8 @@ if (isset($_POST['donate-btn'])) {
         $error = 'Please choose a pickup time.';
     } elseif (!preg_match('/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $form['time'])) {
         $error = 'Enter a valid pickup time.';
+    } elseif ($form['address'] === '') {
+        $error = 'Please enter the pickup address.';
     }
 
     if ($error === '') {
@@ -57,20 +62,23 @@ if (isset($_POST['donate-btn'])) {
 
         try {
             $pdo->beginTransaction();
+            // One timestamp for all rows: accepting/picking up later matches these rows by it
+            $now = (string)$pdo->query("SELECT NOW()")->fetchColumn();
 
-            $run($pdo->prepare("insert into donations (donor_id, target_id, target_role, status, donation_type) values (?,?,?,?,?)"),
-                 [$donor_id, $ngo_id, 'NGO', 'Donated', 'Food']);
+            $run($pdo->prepare("insert into donations (donor_id, target_id, target_role, status, donation_type, created_at) values (?,?,?,?,?,?)"),
+                 [$donor_id, $ngo_id, 'NGO', 'Donated', 'Food', $now]);
 
             if ($by_ngo) {
-                $run($pdo->prepare("update food_donation_requests set donor_id=?, food_type=?, quantity=?, status=?, donated_at=NOW() where id=?"),
-                     [$donor_id, $form['type'], $form['quantity'], 'Donated', $id]);
+                $s = $pdo->prepare("update food_donation_requests set donor_id=?, food_type=?, quantity=?, status=?, donated_at=? where id=? and status='Pending'");
+                $run($s, [$donor_id, $form['type'], $form['quantity'], 'Donated', $now, $id]);
+                if ($s->rowCount() === 0) throw new RuntimeException('already-answered');
 
-                $run($pdo->prepare("insert into food_donations (donor_id, food_type, target_type, target_id, quantity, status, created_at, pickup_address, pickup_date, pickup_time, urgency, donation_type, is_requested_by_ngo) values (?,?,?,?,?,?,NOW(),?,?,?,?,?,?)"),
-                     [$donor_id, $form['type'], 'NGO', $ngo_id, $form['quantity'], 'Donated',
+                $run($pdo->prepare("insert into food_donations (donor_id, food_type, target_type, target_id, quantity, status, created_at, pickup_address, pickup_date, pickup_time, urgency, donation_type, is_requested_by_ngo) values (?,?,?,?,?,?,?,?,?,?,?,?,?)"),
+                     [$donor_id, $form['type'], 'NGO', $ngo_id, $form['quantity'], 'Donated', $now,
                       $form['address'], $form['date'], $form['time'], 'N/A', 'Scheduled', 'Yes']);
             } else {
-                $run($pdo->prepare("insert into food_donations (donor_id, food_type, target_type, quantity, status, created_at, pickup_address, pickup_date, pickup_time, urgency, donation_type, is_requested_by_ngo) values (?,?,?,?,?,NOW(),?,?,?,?,?,?)"),
-                     [$donor_id, $form['type'], 'NGO', $form['quantity'], 'Donated',
+                $run($pdo->prepare("insert into food_donations (donor_id, food_type, target_type, quantity, status, created_at, pickup_address, pickup_date, pickup_time, urgency, donation_type, is_requested_by_ngo) values (?,?,?,?,?,?,?,?,?,?,?,?)"),
+                     [$donor_id, $form['type'], 'NGO', $form['quantity'], 'Donated', $now,
                       $form['address'], $form['date'], $form['time'], 'N/A', 'Scheduled', 'No']);
             }
 
@@ -80,7 +88,9 @@ if (isset($_POST['donate-btn'])) {
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) $pdo->rollBack();
             error_log('donor-food-scheduled: ' . $e->getMessage());
-            $error = 'Could not save your donation. Please try again.';
+            $error = $e->getMessage() === 'already-answered'
+                ? 'This request has already been answered by another donor.'
+                : 'Could not save your donation. Please try again.';
         }
     }
 }

@@ -4,6 +4,7 @@ ngo_require_login();
 
 // ─── Handle Close Campaign ────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['close_campaign'])) {
+  csrf_require_post();
   $campaign_id = (int) $_POST['close_campaign'];
   if ($campaign_id > 0) {
     $stmtClose = $pdo->prepare("UPDATE campaigns SET status = 'Completed' WHERE id = ? AND ngo_id = ?");
@@ -107,16 +108,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['close_campaign'])) {
         <article class="mini-card">
           <div class="mini-card__top">
             <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg></span>
-            <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+            <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
           </div>
-          <h3><?php echo $name ?></h3>
-          <p><?php echo $desc ?></p>
+          <h3><?php echo e($name) ?></h3>
+          <p><?php echo e($desc) ?></p>
           <div class="mini-card__meta">
-            <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Starts <?php echo $st_date ?></span>
-            <span><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Ends <?php echo $end_date ?></span>
+            <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Starts <?php echo e($st_date) ?></span>
+            <span><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Ends <?php echo e($end_date) ?></span>
           </div>
           <div class="mini-card__foot">
             <form method="POST" data-confirm="Mark this campaign as completed?">
+              <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
               <button type="submit" name="close_campaign" value="<?php echo $campaign_id; ?>" class="act act--dark"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Close campaign</button>
             </form>
             <a href="../ngos/ngo-volunteers.php" class="act act--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>

@@ -2,7 +2,20 @@
 require_once __DIR__. '/../../inc/auth.php';
 ngo_require_login();
 
+$error='';
 if(isset($_POST['create-btn']))
+{
+  csrf_require_post();
+  $st=DateTime::createFromFormat('Y-m-d', (string)($_POST['st_date'] ?? ''));
+  $en=DateTime::createFromFormat('Y-m-d', (string)($_POST['end_date'] ?? ''));
+  if(trim($_POST['title'] ?? '')==='')
+    $error='Campaign title is required.';
+  elseif(!$st || !$en || $st->format('Y-m-d')!==$_POST['st_date'] || $en->format('Y-m-d')!==$_POST['end_date'])
+    $error='Choose valid start and end dates.';
+  elseif($en < $st)
+    $error='The end date cannot be before the start date.';
+}
+if(isset($_POST['create-btn']) && $error==='')
 {
   $stmt=$pdo->prepare("insert into campaigns (ngo_id, title, description, st_date, end_date, status) values (?,?,?,?,?,?)");
   $stmt->bindParam(1, $_SESSION['ngo_id']);
@@ -12,9 +25,8 @@ if(isset($_POST['create-btn']))
   $stmt->bindParam(5, $_POST['end_date']);
   $stmt->bindValue(6, "Ongoing");
   $stmt->execute();
-  if($stmt)
-    header("Location: ngo-campaigns.php");
-    exit;
+  header("Location: ngo-campaigns.php");
+  exit;
 }
 ?>
 
@@ -88,9 +100,14 @@ if(isset($_POST['create-btn']))
         </div>
       </section>
 
+      <?php if ($error !== ''): ?>
+      <p class="alert alert--error"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg><span><?php echo e($error) ?></span></p>
+      <?php endif ?>
+
       <section class="row row--2-1">
         <article class="card reveal">
           <form class="form" action="" method="POST">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <div class="field">
               <label for="title">Campaign title</label>
               <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-megaphone"/></svg><input type="text" id="title" placeholder="e.g. Winter Relief Drive" name="title" required></div>

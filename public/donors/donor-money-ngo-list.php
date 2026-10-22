@@ -95,12 +95,12 @@ donor_require_login();
             <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
             <span class="status" data-status="Verified">Verified</span>
           </div>
-          <h3><?php echo $name ?></h3>
+          <h3><?php echo e($name) ?></h3>
           <div class="mini-card__meta">
-            <span><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg>Focus: <?php echo $focus ?></span>
+            <span><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg>Focus: <?php echo e($focus) ?></span>
           </div>
           <div class="mini-card__foot">
-            <a class="btn btn--dark btn--xs" href="tel:<?php echo $phone ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-phone"/></svg><?php echo $phone ?></a>
+            <a class="btn btn--dark btn--xs" href="tel:<?php echo e($phone) ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-phone"/></svg><?php echo e($phone) ?></a>
           </div>
         </article>
                 <?php endif ?>

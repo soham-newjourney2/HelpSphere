@@ -113,11 +113,11 @@ ngo_require_login();
               }
               ?>
               <tr>
-                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo isset($name)?$name:'' ?></strong></div></td>
-                <td><?php echo $request_type ?></td>
-                <td><?php echo $food_type ?></td>
-                <td><?php echo $quantity ?></td>
-                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo e(isset($name)?$name:'') ?></strong></div></td>
+                <td><?php echo e($request_type) ?></td>
+                <td><?php echo e($food_type) ?></td>
+                <td><?php echo e($quantity) ?></td>
+                <td><span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span></td>
             <?php if($status=="Donated" && $request_type=="Scheduled"): ?>
                 <td><div class="actions actions--yes"><?php echo action_button('donation-accept.php', ['type'=>'Scheduled','donation'=>'requested','id'=>$id], 'Accept') ?></div></td>
             <?php endif ?>
@@ -184,11 +184,11 @@ ngo_require_login();
               }
               ?>
               <tr>
-                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo $name ?></strong></div></td>
-                <td class="date-cell"><?php echo $donated_at ?></td>
-                <td><?php echo $food_type ?></td>
-                <td><?php echo $quantity ?></td>
-                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo e($name) ?></strong></div></td>
+                <td class="date-cell"><?php echo e($donated_at) ?></td>
+                <td><?php echo e($food_type) ?></td>
+                <td><?php echo e($quantity) ?></td>
+                <td><span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span></td>
                 <td><div class="actions actions--yes"><?php echo action_button('donation-accept.php', ['type'=>'Scheduled','donation'=>'voluntary','id'=>$id], 'Accept') ?></div></td>
               </tr>
               <?php
@@ -222,11 +222,11 @@ ngo_require_login();
               }
               ?>
               <tr>
-                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo $name ?></strong></div></td>
-                <td class="date-cell"><?php echo $donated_at ?></td>
-                <td><?php echo $food_type ?></td>
-                <td><?php echo $quantity ?></td>
-                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo e($name) ?></strong></div></td>
+                <td class="date-cell"><?php echo e($donated_at) ?></td>
+                <td><?php echo e($food_type) ?></td>
+                <td><?php echo e($quantity) ?></td>
+                <td><span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span></td>
                 <td><div class="actions"><?php echo action_button('donation-pickup.php', ['type'=>'Scheduled','donation'=>'voluntary','id'=>$id1], 'Pick Up') ?></div></td>
               </tr>
               <?php
@@ -261,11 +261,11 @@ ngo_require_login();
               }
               ?>
               <tr>
-                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo $name ?></strong></div></td>
-                <td class="date-cell"><?php echo $donated_at ?></td>
-                <td><?php echo $food_type ?></td>
-                <td><?php echo $quantity ?></td>
-                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo e($name) ?></strong></div></td>
+                <td class="date-cell"><?php echo e($donated_at) ?></td>
+                <td><?php echo e($food_type) ?></td>
+                <td><?php echo e($quantity) ?></td>
+                <td><span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span></td>
                 <td><span class="muted">Done</span></td>
               </tr>
               <?php
@@ -324,11 +324,11 @@ ngo_require_login();
               }
               ?>
               <tr>
-                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo isset($name)?$name:'' ?></strong></div></td>
-                <td><?php echo $request_type ?></td>
-                <td><?php echo $food_type ?></td>
-                <td><?php echo $quantity ?></td>
-                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo e(isset($name)?$name:'') ?></strong></div></td>
+                <td><?php echo e($request_type) ?></td>
+                <td><?php echo e($food_type) ?></td>
+                <td><?php echo e($quantity) ?></td>
+                <td><span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span></td>
             <?php if($status=="Donated" && $request_type=="Immediate"): ?>
                 <td><div class="actions"><?php echo action_button('donation-pickup.php', ['type'=>'Immediate','id'=>$id], 'Pick Up') ?></div></td>
             <?php endif ?>

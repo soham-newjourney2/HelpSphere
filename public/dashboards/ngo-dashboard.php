@@ -107,17 +107,17 @@ if($stmt2)
       <section class="kpis" aria-label="Key figures">
         <article class="kpi kpi--dark reveal">
           <div class="kpi__top"><span class="kpi__label">Pending requests</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-pin"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $c ?></p>
+          <p class="kpi__value" data-count><?php echo e($c) ?></p>
           <p class="kpi__note">From beneficiaries, waiting for an NGO</p>
         </article>
         <article class="kpi reveal">
           <div class="kpi__top"><span class="kpi__label">Donations received</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-gift"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $c1 ?></p>
+          <p class="kpi__value" data-count><?php echo e($c1) ?></p>
           <p class="kpi__note">All donations made to your NGO</p>
         </article>
         <article class="kpi reveal">
           <div class="kpi__top"><span class="kpi__label">Awaiting pickup</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-truck"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $c2 ?></p>
+          <p class="kpi__value" data-count><?php echo e($c2) ?></p>
           <p class="kpi__note">Accepted, not yet picked up</p>
         </article>
       </section>
@@ -160,11 +160,11 @@ if($stmt2)
               <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span>
               <div class="item__body">
                 <div class="item__top">
-                  <span class="item__title"><?php echo $name ?></span>
+                  <span class="item__title"><?php echo e($name) ?></span>
                   <span class="status" data-status="Pending">Pending</span>
                 </div>
-                <p class="item__text"><?php echo $description ?></p>
-                <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $created_at ?></span></div>
+                <p class="item__text"><?php echo e($description) ?></p>
+                <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo e($created_at) ?></span></div>
               </div>
             </div>
                 <?php

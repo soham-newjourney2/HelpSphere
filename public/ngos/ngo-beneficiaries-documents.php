@@ -33,6 +33,9 @@ if (!empty($_SESSION['flash'])) {
   unset($_SESSION['flash']);   // show it once
 }
 
+// Every POST on this page (approve, reject, report) needs the session token
+if ($_SERVER['REQUEST_METHOD'] === 'POST') csrf_require_post();
+
 // ─── Handle Approve — sets status to Verified globally ───────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approve_doc'])) {
   $doc_id = (int) $_POST['approve_doc'];
@@ -170,7 +173,7 @@ $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
       </section>
 
       <?php if ($alert_message): ?>
-      <div class="alert alert-<?php echo $alert_type; ?>">
+      <div class="alert alert-<?php echo e($alert_type); ?>">
         <svg class="icon"><use href="../assets/img/icons.svg#i-info"/></svg><span><?php echo htmlspecialchars($alert_message); ?></span>
       </div>
       <?php endif; ?>
@@ -186,6 +189,7 @@ $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
             <button type="button" class="icon-btn" data-modal-close aria-label="Close"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
           </div>
           <form method="POST" id="reportForm" class="form">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <div class="field">
               <label for="report_text">What is the issue?</label>
               <div class="field__control field__control--area">
@@ -225,10 +229,10 @@ $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
               ?>
               <tr>
                 <td><div class="who"><span class="doc-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg></span><strong><?php echo $doc_name; ?></strong></div></td>
-                <td class="date-cell"><?php echo $doc_date; ?></td>
+                <td class="date-cell"><?php echo e($doc_date); ?></td>
                 <td>
                   <?php if (!empty($doc_file)): ?>
-                    <a href="<?php echo $file_url; ?>" target="_blank" rel="noopener" class="act act--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-eye"/></svg>View</a>
+                    <a href="<?php echo e($file_url); ?>" target="_blank" rel="noopener" class="act act--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-eye"/></svg>View</a>
                   <?php else: ?>
                     <span class="muted">N/A</span>
                   <?php endif; ?>
@@ -237,12 +241,12 @@ $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
                 <td>
                   <div class="actions">
                     <form method="POST"
-                          action="ngo-beneficiaries-documents.php?beneficiary_id=<?php echo $beneficiary_id; ?>&request_id=<?php echo $request_id; ?>"
+                          action="ngo-beneficiaries-documents.php?beneficiary_id=<?php echo e($beneficiary_id); ?><input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">&request_id=<?php echo e($request_id); ?>"
                           data-confirm="Approve this document? It will be marked Verified for all NGOs.">
                       <button type="submit" name="approve_doc" value="<?php echo $doc_id; ?>" class="act act--yes"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Approve</button>
                     </form>
                     <form method="POST"
-                          action="ngo-beneficiaries-documents.php?beneficiary_id=<?php echo $beneficiary_id; ?>&request_id=<?php echo $request_id; ?>"
+                          action="ngo-beneficiaries-documents.php?beneficiary_id=<?php echo e($beneficiary_id); ?><input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">&request_id=<?php echo e($request_id); ?>"
                           data-confirm="Reject this document? It will be hidden from your view only.">
                       <button type="submit" name="reject_doc" value="<?php echo $doc_id; ?>" class="act act--no"><svg class="icon"><use href="../assets/img/icons.svg#i-x"/></svg>Reject</button>
                     </form>

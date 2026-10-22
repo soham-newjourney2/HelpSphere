@@ -113,8 +113,8 @@ ngo_require_login();
               <tr data-status="<?php echo htmlspecialchars($status); ?>">
                 <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo $donor; ?></strong></div></td>
                 <td><span class="pill pill--muted"><?php echo $type; ?></span></td>
-                <td class="date-cell"><?php echo $date; ?></td>
-                <td><span class="status <?php echo $badgeClass; ?>" data-status="<?php echo htmlspecialchars($status); ?>"><?php echo htmlspecialchars($status); ?></span></td>
+                <td class="date-cell"><?php echo e($date); ?></td>
+                <td><span class="status <?php echo e($badgeClass); ?>" data-status="<?php echo htmlspecialchars($status); ?>"><?php echo htmlspecialchars($status); ?></span></td>
               </tr>
           <?php
             endwhile;

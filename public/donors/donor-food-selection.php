@@ -123,10 +123,10 @@ donor_require_login();
               <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-food"/></svg></span>
               <div class="item__body">
                 <div class="item__top">
-                  <span class="item__title"><?php echo $food_type ?> food</span>
-                  <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+                  <span class="item__title"><?php echo e($food_type) ?> food</span>
+                  <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
                 </div>
-                <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $datetime ?></span></div>
+                <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo e($datetime) ?></span></div>
               </div>
             </div>
                         <?php
@@ -172,12 +172,12 @@ donor_require_login();
               <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg></span>
               <div class="item__body">
                 <div class="item__top">
-                  <span class="item__title"><?php echo $food_type ?> food · <?php echo $request_type ?></span>
-                  <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+                  <span class="item__title"><?php echo e($food_type) ?> food · <?php echo e($request_type) ?></span>
+                  <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
                 </div>
                 <div class="item__meta">
-                  <span><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg><?php echo $ngo_name ?></span>
-                  <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $datetime ?></span>
+                  <span><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg><?php echo e($ngo_name) ?></span>
+                  <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo e($datetime) ?></span>
                 </div>
               </div>
             </div>
@@ -216,13 +216,13 @@ donor_require_login();
                 <?php if($status=="Verified"): ?>
           <article class="mini-card">
             <div class="mini-card__top">
-              <h3><?php echo $name ?></h3>
+              <h3><?php echo e($name) ?></h3>
               <span class="status" data-status="Verified">Verified</span>
             </div>
             <div class="mini-card__meta">
-              <span><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg>Focus: <?php echo $focus ?></span>
-              <span><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg><?php echo $address ?></span>
-              <span><svg class="icon"><use href="../assets/img/icons.svg#i-phone"/></svg><?php echo $phone ?></span>
+              <span><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg>Focus: <?php echo e($focus) ?></span>
+              <span><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg><?php echo e($address) ?></span>
+              <span><svg class="icon"><use href="../assets/img/icons.svg#i-phone"/></svg><?php echo e($phone) ?></span>
             </div>
           </article>
                 <?php endif ?>
@@ -268,13 +268,13 @@ donor_require_login();
                     ?>
           <article class="mini-card">
             <div class="mini-card__top">
-              <h3><?php echo isset($request_type)?$request_type:'' ?> food request</h3>
-              <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+              <h3><?php echo e(isset($request_type)?$request_type:'') ?> food request</h3>
+              <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
             </div>
             <p><?php echo isset($description)?htmlspecialchars($description):'' ?></p>
             <div class="mini-card__meta">
-              <span><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg><?php echo $ngo_name ?></span>
-              <span><svg class="icon"><use href="../assets/img/icons.svg#i-clock"/></svg>Urgency: <?php echo $urgency ?></span>
+              <span><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg><?php echo e($ngo_name) ?></span>
+              <span><svg class="icon"><use href="../assets/img/icons.svg#i-clock"/></svg>Urgency: <?php echo e($urgency) ?></span>
             </div>
                     <?php if($request_type=="Scheduled"): ?>
             <span class="pill pill--muted"><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Planned</span>
@@ -282,7 +282,7 @@ donor_require_login();
             <div class="mini-card__foot">
                         <?php if($status=="Pending"): ?>
                         <?php if($request_type=="Scheduled"): ?>
-              <a href="../donors/donor-food-scheduled.php?id=<?php echo $id ?>&ngo_id=<?php echo $ngo_id ?>&donation=requested_by_NGO" class="btn btn--dark btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Donate to this request</a>
+              <a href="../donors/donor-food-scheduled.php?id=<?php echo e($id) ?>&ngo_id=<?php echo e($ngo_id) ?>&donation=requested_by_NGO" class="btn btn--dark btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Donate to this request</a>
                         <?php endif ?>
                         <?php endif ?>
                         <?php if($status=="Donated"): ?>

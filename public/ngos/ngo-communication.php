@@ -83,11 +83,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'poll_admin') {
 // ─── AJAX: Send direct message ────────────────────────────────────────────────
 if (isset($_GET['action']) && $_GET['action'] === 'send' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   header('Content-Type: application/json');
-  $message       = trim($_POST['message'] ?? '');
+  $message       = mb_substr(trim($_POST['message'] ?? ''), 0, 255);
   $receiver_role = trim($_POST['receiver_role'] ?? '');
   $receiver_id   = (int) ($_POST['receiver_id'] ?? 0);
 
-  if (!empty($message) && !empty($receiver_role) && $receiver_id > 0) {
+  if (hash_equals(csrf_token(), (string)($_POST['csrf'] ?? '')) && $message !== ''
+      && in_array($receiver_role, ['Beneficiary', 'Donor', 'NGO'], true) && $receiver_id > 0) {
     $stmt = $pdo->prepare(
       "INSERT INTO general_messages (sender_id, sender_role, receiver_id, receiver_role, message)
        VALUES (?, ?, ?, ?, ?)"
@@ -103,9 +104,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'send' && $_SERVER['REQUEST_ME
 // ─── AJAX: Send broadcast message to all Admins ───────────────────────────────
 if (isset($_GET['action']) && $_GET['action'] === 'send_admin' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   header('Content-Type: application/json');
-  $message = trim($_POST['message'] ?? '');
+  $message = mb_substr(trim($_POST['message'] ?? ''), 0, 255);
 
-  if (!empty($message)) {
+  if (hash_equals(csrf_token(), (string)($_POST['csrf'] ?? '')) && $message !== '') {
     $stmt = $pdo->prepare(
       "INSERT INTO general_messages (sender_id, sender_role, receiver_id, receiver_role, message)
        VALUES (?, 'NGO', 0, 'Admin', ?)"
@@ -126,6 +127,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'send_admin' && $_SERVER['REQU
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Communication · NGO | HelpSphere</title>
   <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <meta name="csrf" content="<?php echo e(csrf_token()) ?>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />

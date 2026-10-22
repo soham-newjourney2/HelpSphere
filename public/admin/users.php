@@ -506,7 +506,7 @@ $filters_active=($type!=='all' || $q!=='');
 
         <div class="pagination" id="pagination">
           <div>
-            Showing <strong><?php echo $page_start ?></strong>–<strong><?php echo $page_end ?></strong> of <strong><?php echo $total ?></strong> users
+            Showing <strong><?php echo e($page_start) ?></strong>–<strong><?php echo e($page_end) ?></strong> of <strong><?php echo $total ?></strong> users
           </div>
           <div class="pagination__controls">
           <?php if($page>1): ?>
@@ -521,7 +521,7 @@ $filters_active=($type!=='all' || $q!=='');
               <?php if($p==='...'): ?>
               <span class="pagination__page is-disabled">…</span>
               <?php else: ?>
-              <a class="pagination__page <?php if($p===$page) echo 'active' ?>" href="<?php echo h(list_url($filters, ['page'=>$p])) ?>"><?php echo $p ?></a>
+              <a class="pagination__page <?php if($p===$page) echo 'active' ?>" href="<?php echo h(list_url($filters, ['page'=>$p])) ?>"><?php echo e($p) ?></a>
               <?php endif ?>
             <?php endforeach ?>
             </div>

@@ -6,6 +6,7 @@ $allowed_categories = ['Food', 'Resources'];
 $error = '';
 
 if (isset($_POST['submit-btn'])) {
+    csrf_require_post();
     $cat  = trim($_POST['category'] ?? '');
     $desc = trim($_POST['description'] ?? '');
 
@@ -98,6 +99,7 @@ if (isset($_POST['submit-btn'])) {
             <p class="alert alert--error"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg><span><?php echo htmlspecialchars($error); ?></span></p>
             <?php endif; ?>
           <form class="form" action="" method="POST">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <div class="field">
               <label for="category">Category of assistance</label>
               <div class="field__control field__control--select">

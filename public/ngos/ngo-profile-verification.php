@@ -101,7 +101,7 @@ ngo_require_login();
               $created_at = isset($res['uploaded_at']) ? $res['uploaded_at'] : '';
           ?>
                 <tr>
-                  <td><div class="who"><span class="doc-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg></span><strong><?php echo $docname ?></strong></div></td>
+                  <td><div class="who"><span class="doc-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg></span><strong><?php echo e($docname) ?></strong></div></td>
                   <td>
               <?php if ($status == "Uploaded"): ?>
                     <span class="status" data-status="Under Review">Under review</span>
@@ -109,7 +109,7 @@ ngo_require_login();
                     <span class="status" data-status="Verified">Verified</span>
               <?php endif ?>
                   </td>
-                  <td class="date-cell"><?php echo $created_at ?></td>
+                  <td class="date-cell"><?php echo e($created_at) ?></td>
                   <td class="muted">Compliance team</td>
                 </tr>
           <?php

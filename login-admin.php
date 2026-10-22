@@ -1,37 +1,36 @@
 <?php
 //login-admin.php
 require_once __DIR__.'/inc/auth.php';
+$error='';
 try
 {
-   if(isset($_POST['login-admin'])) 
+   if(isset($_POST['login-admin']))
    {
-   $email=$_POST['email'];
-   $password=$_POST['password'];   
+   $password=(string)($_POST['password'] ?? '');
    $stmt=$pdo->prepare("Select * from admin_master where email=?");
-   $stmt->bindParam(1,$email);
-   $stmt->execute();
-   
+   $stmt->execute([(string)($_POST['email'] ?? '')]);
    $admin=$stmt->fetch(PDO::FETCH_ASSOC);
-   
-   if($admin && $password == $admin['password'])
+
+   // Hashed passwords are verified; an old plain-text password is accepted once and upgraded to a hash
+   $ok=$admin && (password_verify($password, $admin['password'])
+                  || (password_get_info($admin['password'])['algo'] === null && hash_equals($admin['password'], $password)));
+   if($ok)
    {
-    if (session_status() === PHP_SESSION_ACTIVE) 
-        session_regenerate_id(true);
+     if(password_needs_rehash($admin['password'], PASSWORD_ARGON2ID))
+       $pdo->prepare("update admin_master set password=? where id=?")->execute([password_hash($password, PASSWORD_ARGON2ID), $admin['id']]);
+     session_regenerate_id(true);
      $_SESSION['ad_name']=$admin['name'];
-     $_SESSION['ad_email']=$admin['email'];  
-     $_SESSION['admin_id']=$admin['id'];   
+     $_SESSION['ad_email']=$admin['email'];
+     $_SESSION['admin_id']=$admin['id'];
      header("Location: public/admin/index.php");
      exit();
    }
-   else
-   {
-     echo "Invalid email or password";
-   }
+   $error='Invalid email or password.';
 }
 } catch(PDOException $e)
-{ 
-    error_log('login: '.$e->getMessage()); 
-    echo "Something went wrong. Please try again.";
+{
+    error_log('login: '.$e->getMessage());
+    $error='Something went wrong. Please try again.';
 }
 ?>
 <!DOCTYPE html>
@@ -105,6 +104,10 @@ try
         <a class="role-opt" href="login-ngo.php"><svg class="icon"><use href="public/assets/img/icons.svg#i-building"/></svg>NGO</a>
         <a class="role-opt" href="login-admin.php" aria-current="page"><svg class="icon"><use href="public/assets/img/icons.svg#i-shield"/></svg>Admin</a>
       </nav>
+
+      <?php if ($error !== ''): ?>
+      <p class="alert alert--error" role="alert"><svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-alert"/></svg><span><?php echo e($error) ?></span></p>
+      <?php endif ?>
 
       <div class="mode-tabs mode-tabs--single">
         <span class="mode-tab is-active">Sign in</span>

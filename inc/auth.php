@@ -58,7 +58,7 @@ function csrf_require_post()
 // A one-button POST form, used instead of a link that changes data
 function action_button($url, array $fields, $label, $class = '')
 {
-    $html  = '<form method="POST" action="' . htmlspecialchars($url) . '" style="display:inline">';
+    $html  = '<form method="POST" action="' . htmlspecialchars($url) . '" class="inline-form">';
     $html .= '<input type="hidden" name="csrf" value="' . htmlspecialchars(csrf_token()) . '">';
     foreach ($fields as $k => $v)
         $html .= '<input type="hidden" name="' . htmlspecialchars($k) . '" value="' . htmlspecialchars((string)$v) . '">';

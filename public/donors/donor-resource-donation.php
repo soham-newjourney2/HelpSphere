@@ -2,30 +2,50 @@
 require_once __DIR__. '/../../inc/auth.php';
 donor_require_login();
 
+$error='';
 if(isset($_POST['confirm-btn']))
 {
-    $stmt=$pdo->prepare("insert into resource_donations (donor_id, resource_type, quantity, description, resource_condition, pickup_address, pickup_date, pickup_time, status) values (?,?,?,?,?,?,?,?,?)");
-    $stmt->bindParam(1, $_SESSION['donor_id']);
-    $stmt->bindParam(2, $_POST['type']);
-    $stmt->bindParam(3, $_POST['quantity']);
-    $stmt->bindParam(4, $_POST['description']);
-    $stmt->bindParam(5, $_POST['condition']);
-    $stmt->bindParam(6, $_POST['address']);
-    $stmt->bindParam(7, $_POST['date']);
-    $stmt->bindParam(8, $_POST['time']);
-    $stmt->bindValue(9, "Pending");
-    $stmt->execute();
+    csrf_require_post();
+    $type=$_POST['type'] ?? '';
+    $quantity=(int)($_POST['quantity'] ?? 0);
+    $description=trim($_POST['description'] ?? '');
+    $condition=$_POST['condition'] ?? '';
+    $address=trim($_POST['address'] ?? '');
+    $date=trim($_POST['date'] ?? '');
+    $time=trim($_POST['time'] ?? '');
+    $d=DateTime::createFromFormat('Y-m-d', $date);
 
-    $stmt1=$pdo->prepare("insert into donations (donor_id, target_role, status, donation_type) values (?,?,?,?)");
-    $stmt1->bindParam(1, $_SESSION['donor_id']);
-    $stmt1->bindValue(2, "NGO");
-    $stmt1->bindValue(3, "Pending");
-    $stmt1->bindValue(4, "Resource");
-    $stmt1->execute();
-    if($stmt && $stmt1)
+    if(!in_array($type, ['Clothes','Books','Medical Supplies','Stationery','Other'], true))
+        $error='Choose a resource type.';
+    elseif($quantity<1)
+        $error='Quantity must be at least 1.';
+    elseif(!in_array($condition, ['New','Gently Used'], true))
+        $error='Choose the condition.';
+    elseif($address==='')
+        $error='Pickup address is required.';
+    elseif(!$d || $d->format('Y-m-d')!==$date)
+        $error='Choose a valid pickup date.';
+    elseif(!preg_match('/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $time))
+        $error='Choose a valid pickup time.';
+    else
     {
-        header("Location: donor-resource-donation.php");
-        exit;
+        try
+        {
+            $pdo->beginTransaction();
+            $stmt=$pdo->prepare("insert into resource_donations (donor_id, resource_type, quantity, description, resource_condition, pickup_address, pickup_date, pickup_time, status) values (?,?,?,?,?,?,?,?,?)");
+            $stmt->execute([$_SESSION['donor_id'], $type, $quantity, $description, $condition, $address, $date, $time, 'Pending']);
+            $stmt1=$pdo->prepare("insert into donations (donor_id, target_role, status, donation_type) values (?,?,?,?)");
+            $stmt1->execute([$_SESSION['donor_id'], 'NGO', 'Pending', 'Resource']);
+            $pdo->commit();
+            header("Location: donor-resource-donation.php");
+            exit;
+        }
+        catch(PDOException $e)
+        {
+            if($pdo->inTransaction()) $pdo->rollBack();
+            error_log('donor-resource-donation: '.$e->getMessage());
+            $error='Could not save your donation. Please try again.';
+        }
     }
 }
 ?>
@@ -99,6 +119,10 @@ if(isset($_POST['confirm-btn']))
         </div>
       </section>
 
+      <?php if ($error !== ''): ?>
+      <p class="alert alert--error"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg><span><?php echo e($error) ?></span></p>
+      <?php endif ?>
+
       <div class="tabs" aria-label="Resource donation">
         <button type="button" class="tabs__btn is-active" data-show-panel="form" data-panel-group="res" aria-expanded="true"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-box"/></svg>Donate resources</button>
         <button type="button" class="tabs__btn" data-show-panel="history" data-panel-group="res" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-history"/></svg>Donation history</button>
@@ -108,6 +132,7 @@ if(isset($_POST['confirm-btn']))
       <section class="row row--2-1 panel" data-panel="form" data-panel-group="res">
         <article class="card">
           <form class="form" action="" method="POST">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <div class="form__grid">
               <div class="field">
                 <label for="type">Resource type</label>
@@ -124,7 +149,7 @@ if(isset($_POST['confirm-btn']))
               </div>
               <div class="field">
                 <label for="quantity">Quantity</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-list"/></svg><input type="number" id="quantity" min="1" placeholder="e.g. 20" name="quantity"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-list"/></svg><input type="number" id="quantity" min="1" placeholder="e.g. 20" name="quantity" required></div>
               </div>
               <div class="field field--full">
                 <label for="description">Description</label>
@@ -139,15 +164,15 @@ if(isset($_POST['confirm-btn']))
               </div>
               <div class="field field--full">
                 <label for="address">Pickup address</label>
-                <div class="field__control field__control--area"><textarea id="address" rows="3" name="address" placeholder="Where can the NGO collect it?"></textarea></div>
+                <div class="field__control field__control--area"><textarea id="address" rows="3" name="address" placeholder="Where can the NGO collect it?" required></textarea></div>
               </div>
               <div class="field">
                 <label for="date">Pickup date</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-calendar"/></svg><input type="date" id="date" name="date"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-calendar"/></svg><input type="date" id="date" name="date" required></div>
               </div>
               <div class="field">
                 <label for="time">Pickup time</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-clock"/></svg><input type="time" id="time" name="time"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-clock"/></svg><input type="time" id="time" name="time" required></div>
               </div>
             </div>
             <div class="card__foot">
@@ -193,14 +218,14 @@ if(isset($_POST['confirm-btn']))
                     $status          = $record['status'];
                     $status_class    = strtolower($status);
             ?>
-          <article class="mini-card" data-kind="<?php echo $status_class; ?>">
+          <article class="mini-card" data-kind="<?php echo e($status_class); ?>">
             <div class="mini-card__top">
               <h3><?php echo $resource_type; ?> · Qty <?php echo $quantity; ?></h3>
               <span class="status" data-status="<?php echo htmlspecialchars($status); ?>"><?php echo htmlspecialchars($status); ?></span>
             </div>
             <div class="mini-card__meta">
               <span><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Condition: <?php echo $condition; ?></span>
-              <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $pickup_date; ?> at <?php echo $pickup_time; ?></span>
+              <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo e($pickup_date); ?> at <?php echo e($pickup_time); ?></span>
               <span><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg><?php echo $pickup_address; ?></span>
             </div>
                         <?php if ($description !== '—'): ?>

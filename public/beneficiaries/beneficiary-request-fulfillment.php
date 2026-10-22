@@ -104,11 +104,11 @@ if($res2)
         <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
         <div>
           <p class="page-head__eyebrow">Fulfillment status</p>
-          <h1 class="page-head__title"><?php echo $cat ?> assistance</h1>
-          <p class="page-head__sub">Submitted <?php echo $created_at ?></p>
+          <h1 class="page-head__title"><?php echo e($cat) ?> assistance</h1>
+          <p class="page-head__sub">Submitted <?php echo e($created_at) ?></p>
         </div>
         <div class="page-head__actions">
-          <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+          <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
         </div>
       </section>
 

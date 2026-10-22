@@ -36,26 +36,26 @@ function list_url($f, $over = [])
     return 'ngo-verification.php' . ($p ? '?' . http_build_query($p) : '');
 }
 /** Small POST form for one action button */
-function act_form($filters, $action, $uid, $label, $cls, $extra = [], $style = '')
+function act_form($filters, $action, $uid, $label, $cls, $extra = [])
 {
-    echo '<form method="post" action="ngo-verification.php" style="display:inline;margin:0">'
+    echo '<form method="post" action="ngo-verification.php" class="inline-form">'
        . '<input type="hidden" name="csrf" value="' . h($_SESSION['csrf']) . '" />'
        . '<input type="hidden" name="action" value="' . h($action) . '" />'
        . '<input type="hidden" name="uid" value="' . (int)$uid . '" />';
     foreach (array_merge($filters, $extra) as $k => $v) echo '<input type="hidden" name="' . h($k) . '" value="' . h($v) . '" />';
-    echo '<button type="submit" class="' . h($cls) . '"' . ($style ? ' style="' . h($style) . '"' : '') . '>' . h($label) . '</button></form>';
+    echo '<button type="submit" class="' . h($cls) . '">' . h($label) . '</button></form>';
 }
 
 /** Reject form: a required "reason" field + red Reject button */
 function reject_form($filters, $action, $uid, $extra, $placeholder, $label)
 {
-    echo '<form method="post" action="ngo-verification.php" style="display:flex;gap:8px;flex:1 1 100%;margin:0">'
+    echo '<form method="post" action="ngo-verification.php" class="reject-form">'
        . '<input type="hidden" name="csrf" value="' . h($_SESSION['csrf']) . '" />'
        . '<input type="hidden" name="action" value="' . h($action) . '" />'
        . '<input type="hidden" name="uid" value="' . (int)$uid . '" />';
     foreach (array_merge($filters, $extra) as $k => $v) echo '<input type="hidden" name="' . h($k) . '" value="' . h($v) . '" />';
-    echo '<input type="text" name="reason" class="form-input" placeholder="' . h($placeholder) . '" maxlength="500" required style="flex:1;min-width:0" />'
-       . '<button type="submit" class="btn btn--primary btn--sm" style="background:var(--clr-danger);border-color:var(--clr-danger);white-space:nowrap">' . h($label) . '</button></form>';
+    echo '<input type="text" name="reason" class="form-input" placeholder="' . h($placeholder) . '" maxlength="500" required />'
+       . '<button type="submit" class="btn btn--danger btn--sm">' . h($label) . '</button></form>';
 }
 
 /* ==================================================================
@@ -319,7 +319,7 @@ $colors = ['linear-gradient(135deg,#2dd4a8,#6ee7b7)', 'linear-gradient(135deg,#5
         <div class="filters">
           <nav class="filter-tabs" aria-label="Filter by status">
           <?php foreach (['pending' => 'Pending', 'verified' => 'Verified', 'rejected' => 'Rejected', 'all' => 'All NGOs'] as $k => $lbl): ?>
-            <a class="filter-tab <?php if ($status === $k) echo 'active' ?>" href="<?php echo h(list_url($filters, ['status' => $k, 'page' => 1])) ?>"><?php echo $lbl ?> <span class="filter-tab__count"><?php echo $counts[$k] ?></span></a>
+            <a class="filter-tab <?php if ($status === $k) echo 'active' ?>" href="<?php echo h(list_url($filters, ['status' => $k, 'page' => 1])) ?>"><?php echo e($lbl) ?> <span class="filter-tab__count"><?php echo e($counts[$k]) ?></span></a>
           <?php endforeach ?>
           </nav>
           <form method="get" action="ngo-verification.php">
@@ -374,13 +374,13 @@ $colors = ['linear-gradient(135deg,#2dd4a8,#6ee7b7)', 'linear-gradient(135deg,#5
         </div>
 
         <div class="pagination">
-          <div>Showing <strong><?php echo $page_start ?></strong>–<strong><?php echo $page_end ?></strong> of <strong><?php echo $total ?></strong> NGOs</div>
+          <div>Showing <strong><?php echo e($page_start) ?></strong>–<strong><?php echo e($page_end) ?></strong> of <strong><?php echo $total ?></strong> NGOs</div>
           <div class="pagination__controls">
           <?php if ($page > 1): ?><a class="pagination__btn" href="<?php echo h(list_url($filters, ['page' => $page - 1])) ?>" aria-label="Previous page">
           <?php else: ?><span class="pagination__btn is-disabled" aria-disabled="true"><?php endif ?>
             <svg class="icon"><use href="../assets/img/icons.svg#i-arrow-left"/></svg>
           <?php echo $page > 1 ? '</a>' : '</span>' ?>
-            <div class="pagination__pages"><span class="pagination__page active"><?php echo $page ?> / <?php echo $totalPages ?></span></div>
+            <div class="pagination__pages"><span class="pagination__page active"><?php echo e($page) ?> / <?php echo e($totalPages) ?></span></div>
           <?php if ($page < $totalPages): ?><a class="pagination__btn" href="<?php echo h(list_url($filters, ['page' => $page + 1])) ?>" aria-label="Next page">
           <?php else: ?><span class="pagination__btn is-disabled" aria-disabled="true"><?php endif ?>
             <svg class="icon"><use href="../assets/img/icons.svg#i-arrow"/></svg>

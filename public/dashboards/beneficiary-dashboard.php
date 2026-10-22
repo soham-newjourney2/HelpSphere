@@ -93,7 +93,7 @@ $c3=$stmt->rowCount();
         <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
         <div>
           <p class="page-head__eyebrow" data-today>Today</p>
-          <h1 class="page-head__title"><span data-greeting>Hello</span>, <?php echo isset($_SESSION['fullname'])?$_SESSION['fullname']:'' ?></h1>
+          <h1 class="page-head__title"><span data-greeting>Hello</span>, <?php echo e(isset($_SESSION['fullname'])?$_SESSION['fullname']:'') ?></h1>
           <p class="page-head__sub">Here is where your assistance requests stand.</p>
         </div>
         <div class="page-head__actions">
@@ -106,17 +106,17 @@ $c3=$stmt->rowCount();
       <section class="kpis" aria-label="Your requests">
         <article class="kpi reveal">
           <div class="kpi__top"><span class="kpi__label">Pending requests</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-clock"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $c ?></p>
+          <p class="kpi__value" data-count><?php echo e($c) ?></p>
           <p class="kpi__note">Waiting for an NGO to review</p>
         </article>
         <article class="kpi reveal">
           <div class="kpi__top"><span class="kpi__label">Approved requests</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-check"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $c1 ?></p>
+          <p class="kpi__value" data-count><?php echo e($c1) ?></p>
           <p class="kpi__note">An NGO is working on these</p>
         </article>
         <article class="kpi kpi--dark reveal">
           <div class="kpi__top"><span class="kpi__label">Fulfilled requests</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-heart"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $c3 ?></p>
+          <p class="kpi__value" data-count><?php echo e($c3) ?></p>
           <p class="kpi__note">Help that has reached you</p>
         </article>
       </section>
@@ -150,11 +150,11 @@ $c3=$stmt->rowCount();
               <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg></span>
               <div class="item__body">
                 <div class="item__top">
-                  <span class="item__title"><?php echo $category ?> assistance</span>
-                  <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+                  <span class="item__title"><?php echo e($category) ?> assistance</span>
+                  <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
                 </div>
-                <p class="item__text"><?php echo $description ?></p>
-                <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $created_at ?></span></div>
+                <p class="item__text"><?php echo e($description) ?></p>
+                <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo e($created_at) ?></span></div>
               </div>
             </div>
                         <?php

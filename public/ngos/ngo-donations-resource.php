@@ -5,9 +5,10 @@ $ngo_id = (int) $_SESSION['ngo_id'];
 
 // ─── Handle Accept ────────────────────────────────────────────────────────────
 if (isset($_POST['accept_id'])) {
+    csrf_require_post();
     $res_id   = (int) $_POST['accept_id'];
-    $donor_id = (int) $_POST['donor_id'];
 
+    $pdo->beginTransaction();
     // 1. Mark resource_donations as Approved, record which NGO accepted
     $stmt = $pdo->prepare(
         "UPDATE resource_donations
@@ -16,17 +17,20 @@ if (isset($_POST['accept_id'])) {
     );
     $stmt->execute([$ngo_id, $res_id]);
 
-    // 2. Update the matching donations row: mark Donated, set target_id to this NGO
-    //    Match on donor_id + donation_type='Resource' + status='Pending',
-    //    most recently created first, limit 1
-    $stmt2 = $pdo->prepare(
-        "UPDATE donations
-         SET status = 'Donated', target_id = ?
-         WHERE donor_id = ? AND donation_type = 'Resource' AND status = 'Pending'
-         ORDER BY created_at DESC
-         LIMIT 1"
-    );
-    $stmt2->execute([$ngo_id, $donor_id]);
+    // 2. Only if this NGO won it: update the matching donations row (donor taken from the database, not the form)
+    if ($stmt->rowCount() === 1) {
+        $sd = $pdo->prepare("SELECT donor_id FROM resource_donations WHERE id = ?");
+        $sd->execute([$res_id]);
+        $stmt2 = $pdo->prepare(
+            "UPDATE donations
+             SET status = 'Donated', target_id = ?
+             WHERE donor_id = ? AND donation_type = 'Resource' AND status = 'Pending'
+             ORDER BY created_at DESC
+             LIMIT 1"
+        );
+        $stmt2->execute([$ngo_id, (int) $sd->fetchColumn()]);
+    }
+    $pdo->commit();
 
     header("Location: ngo-donations-resource.php");
     exit;
@@ -149,6 +153,7 @@ $donations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td>
               <?php if ($status === 'Pending'): ?>
                   <form method="POST" action="" data-confirm="Accept this resource donation?">
+                    <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
                     <input type="hidden" name="accept_id" value="<?php echo $res_id; ?>">
                     <input type="hidden" name="donor_id"  value="<?php echo $donor_id; ?>">
                     <button type="submit" class="act act--yes"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Accept</button>

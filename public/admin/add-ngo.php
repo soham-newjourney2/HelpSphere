@@ -6,6 +6,7 @@ $message = '';   // error text shown inside the page body
 $success = false;
 
 if (isset($_POST['submit-btn'])) {
+    csrf_require_post();
     $fullname         = trim($_POST['ngo-name'] ?? '');
     $email            = trim($_POST['email'] ?? '');
     $password_raw     = $_POST['password'] ?? '';
@@ -137,6 +138,7 @@ if (isset($_POST['submit-btn'])) {
       <section class="row row--2-1">
         <article class="card reveal">
           <form class="form" id="ngo-form" action="" method="POST">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <header class="card__head">
               <div>
                 <h2 class="card__title">Organisation details</h2>

@@ -4,6 +4,7 @@ ngo_require_login();
 
 if(isset($_POST['save-btn']))
 {
+  csrf_require_post();
   $stmt=$pdo->prepare("update ngo_master set name=?, email=?, focus=?, description=?, address=?, phone=?  where id=?");
   $stmt->bindParam(1,$_POST['name']);
   $stmt->bindParam(2,$_POST['email']);
@@ -117,18 +118,18 @@ if(isset($_POST['save-btn']))
         <article class="card card--dark reveal">
           <header class="card__head">
             <div>
-              <h2 class="card__title"><?php echo $name ?></h2>
-              <p class="card__sub"><?php echo $email ?></p>
+              <h2 class="card__title"><?php echo e($name) ?></h2>
+              <p class="card__sub"><?php echo e($email) ?></p>
             </div>
             <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
           </header>
           <table class="table table--kv">
-            <tr><th>Focus</th><td><?php echo $focus ?></td></tr>
-            <tr><th>Description</th><td><?php echo $description ?></td></tr>
-            <tr><th>Registration no.</th><td><?php echo $reg_no ?></td></tr>
-            <tr><th>Address</th><td><?php echo $address ?></td></tr>
-            <tr><th>Registered on</th><td><?php echo $date ?></td></tr>
-            <tr><th>Phone</th><td><?php echo $phone ?></td></tr>
+            <tr><th>Focus</th><td><?php echo e($focus) ?></td></tr>
+            <tr><th>Description</th><td><?php echo e($description) ?></td></tr>
+            <tr><th>Registration no.</th><td><?php echo e($reg_no) ?></td></tr>
+            <tr><th>Address</th><td><?php echo e($address) ?></td></tr>
+            <tr><th>Registered on</th><td><?php echo e($date) ?></td></tr>
+            <tr><th>Phone</th><td><?php echo e($phone) ?></td></tr>
           </table>
         </article>
 
@@ -140,34 +141,35 @@ if(isset($_POST['save-btn']))
             </div>
           </header>
           <form class="form" action="" method="POST">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <div class="form__grid">
               <div class="field">
                 <label for="ngo-name">NGO name</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-building"/></svg><input type="text" id="ngo-name" value="<?php echo $name ?>" name="name"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-building"/></svg><input type="text" id="ngo-name" value="<?php echo e($name) ?>" name="name"></div>
               </div>
               <div class="field">
                 <label for="ngo-email">NGO email</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-mail"/></svg><input type="email" id="ngo-email" value="<?php echo $email ?>" name="email"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-mail"/></svg><input type="email" id="ngo-email" value="<?php echo e($email) ?>" name="email"></div>
               </div>
               <div class="field">
                 <label for="ngo-focus">Focus area</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-heart"/></svg><input type="text" id="ngo-focus" value="<?php echo $focus ?>" name="focus"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-heart"/></svg><input type="text" id="ngo-focus" value="<?php echo e($focus) ?>" name="focus"></div>
               </div>
               <div class="field">
                 <label for="ngo-phone">Phone number</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-phone"/></svg><input type="tel" id="ngo-phone" value="<?php echo $phone ?>" name="phone"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-phone"/></svg><input type="tel" id="ngo-phone" value="<?php echo e($phone) ?>" name="phone"></div>
               </div>
               <div class="field field--full">
                 <label for="ngo-description">Description</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-file"/></svg><input type="text" id="ngo-description" value="<?php echo $description ?>" name="description"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-file"/></svg><input type="text" id="ngo-description" value="<?php echo e($description) ?>" name="description"></div>
               </div>
               <div class="field field--full">
                 <label for="ngo-address">Registered address</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-pin"/></svg><input type="text" id="ngo-address" value="<?php echo $address ?>" name="address"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-pin"/></svg><input type="text" id="ngo-address" value="<?php echo e($address) ?>" name="address"></div>
               </div>
               <div class="field">
                 <label for="ngo-reg">Registration number</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-lock"/></svg><input type="text" id="ngo-reg" value="<?php echo $reg_no ?>" readonly></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-lock"/></svg><input type="text" id="ngo-reg" value="<?php echo e($reg_no) ?>" readonly></div>
               </div>
             </div>
             <div class="card__foot">

@@ -93,9 +93,9 @@ ngo_require_login();
             <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg></span>
             <span class="status" data-status="Closed">Closed</span>
           </div>
-          <h3><?php echo $title ?></h3>
+          <h3><?php echo e($title) ?></h3>
           <div class="mini-card__meta">
-            <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $st_date ?> → <?php echo $end_date ?></span>
+            <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo e($st_date) ?> → <?php echo e($end_date) ?></span>
           </div>
         </article>
               <?php

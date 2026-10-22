@@ -1,128 +1,84 @@
 <?php
+//login-beneficiary.php
 require_once __DIR__.'/inc/db.php';
-require_once __DIR__.'/inc/config.php';
-$value=1;
-$val=1;
-$flag=0;
-$password="";
+$error='';
+$notice='';
+$mode='signin';
 try
 {
 if(isset($_POST['register-beneficiary']))
 {
-    // Function to remove leading and trailing whitespaces,'_','\', and prevent Cross Site Scripting (XSS) Attacks 
-    function validateInput($data)
-    {
-        $data=trim($data,"_");
-        $data=stripslashes($data);
-        return $data;
-    }
+    $mode='register';
+    $fullname=trim($_POST['fullname'] ?? '');
+    $email=trim($_POST['email'] ?? '');
+    $dob=trim($_POST['dob'] ?? '');
+    $gender=$_POST['gender'] ?? '';
+    $address=trim($_POST['address'] ?? '');
+    $phone=trim($_POST['phone'] ?? '');
+    $pass=(string)($_POST['password'] ?? '');
+    $d=DateTime::createFromFormat('Y-m-d', $dob);
 
-    // Function To Prevent Cross Site Scripting (XSS) Attacks
-    function XSSPrevention($data)
+    if($fullname==='')
+        $error='Full name is required.';
+    elseif(!filter_var($email, FILTER_VALIDATE_EMAIL))
+        $error='Enter a valid email address.';
+    elseif(!$d || $d->format('Y-m-d')!==$dob || $d > new DateTime())
+        $error='Enter a valid date of birth.';
+    elseif(!in_array($gender, ['Male','Female','Other'], true))
+        $error='Please choose a gender.';
+    elseif($address==='')
+        $error='Address is required.';
+    elseif(!preg_match('/^[0-9+\- ]{7,20}$/', $phone))
+        $error='Enter a valid phone number.';
+    elseif(strlen($pass)<6)
+        $error='Password must be at least 6 characters.';
+    elseif($pass!==(string)($_POST['cpassword'] ?? ''))
+        $error='Passwords do not match.';
+    else
     {
-        $data=htmlspecialchars($data);
-        return $data;
+        $stmt=$pdo->prepare("select id from beneficiary_master where email=?");
+        $stmt->execute([$email]);
+        if($stmt->fetch())
+        {
+            $error='An account with this email already exists.';
+        }
+        else
+        {
+            $pdo->beginTransaction();
+            $stmt=$pdo->prepare("insert into beneficiary_master (name, email, password, dob, gender, address, phone) values (?,?,?,?,?,?,?)");
+            $stmt->execute([$fullname, $email, password_hash($pass, PASSWORD_ARGON2ID), $dob, $gender, $address, $phone]);
+            $stmt1=$pdo->prepare("insert into users (role_id, name, role, email) values (?,?,?,?)");
+            $stmt1->execute([$pdo->lastInsertId(), $fullname, 'Beneficiary', $email]);
+            $pdo->commit();
+            $notice='Account created — please sign in.';
+            $mode='signin';
+            $_POST=[];
+        }
     }
-
-    $fullname=validateInput($_POST['fullname']);
-    $email=validateInput($_POST['email']);
-    if(!$fullname)
-    {
-        $val=-1;        
-    }
-
-    // Hashing the Password before storing in Database 
-    $password='';
-    $confirm_password=$_POST['cpassword'] ?? '';
-    $pw_short=strlen($_POST['password'])<6;
-    if(!$pw_short)
-    {
-        $password=password_hash($_POST['password'], PASSWORD_ARGON2ID);
-    }
-
-    // Checking if username or email exists
-    $stmt=$pdo->prepare("Select * from beneficiary_master where email=?");
-    $stmt->bindParam(1,$email);
-    $stmt->execute();
-    if($stmt->rowCount()>0)
-    {
-        $val=0;
-    }
-    
-    // Password Verification
-    if(!$pw_short && password_verify($confirm_password,$password)==FALSE)
-    {
-        $value=0;
-    }
-
-    if($value==1 && $val==1 && !$pw_short && filter_var($email, FILTER_VALIDATE_EMAIL))
-    {
-    // Insert data into table patient_master and prevent SQL Injection Attacks
-    $stmt=$pdo->prepare("insert into beneficiary_master (name, email, password, last_login, created_at) values (?,?,?,NOW(),NOW())");
-    $stmt->bindParam(1, $fullname);
-    $stmt->bindParam(2, $email);
-    $stmt->bindParam(3, $password);
-    $stmt->execute();
-    $id=$pdo->lastInsertId();
-    $stmt1=$pdo->prepare("insert into users (role_id, name, role, email) values (?,?,?,?)");
-    $stmt1->bindParam(1,$id);
-    $stmt1->bindParam(2,$fullname);
-    $stmt1->bindValue(3, "Beneficiary");
-    $stmt1->bindParam(4,$email);
-    $stmt1->execute();
-    header("refresh:2;url=login-beneficiary.php");
-    echo "Registered Successfully. Redirecting to Login Page...";
-    exit();
-    }
-    else if($pw_short)
-    {
-        echo "<h1>Password must be at least 6 characters</h1>";
-    }
-    else if($value==0)
-    {
-        echo "<h1>Passwords Do Not Match. Please Enter Correct Password</h1>";
-    }
-    else if($val==0)
-    {
-        echo "<h1>Username or Email exists.</h1>";
-    }
-    else if($val==-1)
-        echo "Full Name Required";
-    else if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-        echo "Valid Email ID Required";
 }
 else if(isset($_POST['login-beneficiary']))
 {
-   $email=$_POST['email'];
-   $password=$_POST['password'];
-   
    $stmt=$pdo->prepare("Select * from beneficiary_master where email=?");
-   $stmt->bindParam(1,$email);
-   $stmt->execute();
-
+   $stmt->execute([(string)($_POST['email'] ?? '')]);
    $user=$stmt->fetch(PDO::FETCH_ASSOC);
 
-   if($user && password_verify($password,$user['password']))
+   if($user && password_verify((string)($_POST['password'] ?? ''),$user['password']))
    {
-    if (session_status() === PHP_SESSION_ACTIVE) 
-        session_regenerate_id(true);
+     session_regenerate_id(true);
      $_SESSION['beneficiary_id']=$user['id'];
      $_SESSION['fullname']=$user['name'];
-     $_SESSION['beneficiary_email']=$user['email'];     
+     $_SESSION['beneficiary_email']=$user['email'];
      header("Location: ./public/dashboards/beneficiary-dashboard.php");
      exit();
    }
-   else
-   {
-     echo "Invalid email or password";
-   }
+   $error='Invalid email or password.';
 }
 } catch(PDOException $e)
 {
-    error_log('login: '.$e->getMessage()); 
-    echo "Something went wrong. Please try again.";
+    if($pdo->inTransaction()) $pdo->rollBack();
+    error_log('login: '.$e->getMessage());
+    $error='Something went wrong. Please try again.';
 }
-$conn=null;
 ?>
 <!DOCTYPE html>
 <html lang="en" class="no-js">
@@ -196,7 +152,14 @@ $conn=null;
         <a class="role-opt" href="login-admin.php"><svg class="icon"><use href="public/assets/img/icons.svg#i-shield"/></svg>Admin</a>
       </nav>
 
-      <div class="mode-tabs" role="tablist" id="modeTabs" data-mode="signin">
+      <?php if ($error !== ''): ?>
+      <p class="alert alert--error" role="alert"><svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-alert"/></svg><span><?php echo e($error) ?></span></p>
+      <?php endif ?>
+      <?php if ($notice !== ''): ?>
+      <p class="alert alert--success" role="status"><svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-check"/></svg><span><?php echo e($notice) ?></span></p>
+      <?php endif ?>
+
+      <div class="mode-tabs" role="tablist" id="modeTabs" data-mode="signin" data-start="<?php echo e($mode) ?>">
         <button type="button" role="tab" class="mode-tab is-active" aria-selected="true" data-mode="signin"
                 data-title="Welcome back" data-subtitle="Sign in to track your assistance requests.">Sign in</button>
         <button type="button" role="tab" class="mode-tab" aria-selected="false" data-mode="register"
@@ -238,7 +201,7 @@ $conn=null;
           <label for="rg-name">Full name</label>
           <div class="field__control">
             <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-user"/></svg>
-            <input type="text" id="rg-name" name="fullname" placeholder="Your full name" autocomplete="name" required />
+            <input type="text" id="rg-name" name="fullname" placeholder="Your full name" autocomplete="name" value="<?php echo e($_POST['fullname'] ?? '') ?>" required />
           </div>
         </div>
 
@@ -246,7 +209,44 @@ $conn=null;
           <label for="rg-email">Email address</label>
           <div class="field__control">
             <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-mail"/></svg>
-            <input type="email" id="rg-email" name="email" placeholder="you@example.com" autocomplete="email" required />
+            <input type="email" id="rg-email" name="email" placeholder="you@example.com" autocomplete="email" value="<?php echo e($mode === 'register' ? ($_POST['email'] ?? '') : '') ?>" required />
+          </div>
+        </div>
+
+        <div class="form__grid">
+          <div class="field">
+            <label for="rg-dob">Date of birth</label>
+            <div class="field__control">
+              <input type="date" id="rg-dob" name="dob" max="<?php echo date('Y-m-d') ?>" value="<?php echo e($_POST['dob'] ?? '') ?>" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="rg-gender">Gender</label>
+            <div class="field__control field__control--select">
+              <select id="rg-gender" name="gender" required>
+                <option value="">Select</option>
+                <?php foreach (['Male', 'Female', 'Other'] as $g): ?>
+                <option value="<?php echo $g ?>" <?php if (($_POST['gender'] ?? '') === $g) echo 'selected' ?>><?php echo $g ?></option>
+                <?php endforeach ?>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="rg-phone">Phone</label>
+            <div class="field__control">
+              <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-phone"/></svg>
+              <input type="tel" id="rg-phone" name="phone" placeholder="10-digit mobile" autocomplete="tel" value="<?php echo e($_POST['phone'] ?? '') ?>" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="rg-address">Address</label>
+            <div class="field__control">
+              <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-pin"/></svg>
+              <input type="text" id="rg-address" name="address" placeholder="House, street, city" autocomplete="street-address" value="<?php echo e($_POST['address'] ?? '') ?>" required />
+            </div>
           </div>
         </div>
 

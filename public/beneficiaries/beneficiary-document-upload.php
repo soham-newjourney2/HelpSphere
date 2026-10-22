@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['documents'])) {
       </section>
 
         <?php if ($alert_message): ?>
-          <div class="alert alert-<?php echo $alert_type; ?>">
+          <div class="alert alert-<?php echo e($alert_type); ?>">
             <?php
               $icon = match($alert_type) {
                 'success' => '✅',

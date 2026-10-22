@@ -5,6 +5,7 @@ $donor_id = (int) $_SESSION['donor_id'];
 
 // ─── Handle Volunteer Application ────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['campaign_id'])) {
+    csrf_require_post();
     $campaign_id = (int) $_POST['campaign_id'];
     $skills      = trim($_POST['skills'] ?? '');
 
@@ -124,6 +125,7 @@ foreach ($stmtA->fetchAll(PDO::FETCH_ASSOC) as $row) {
           </dl>
           <p class="muted" data-fill="description"></p>
           <form method="POST" action="" class="form">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <input type="hidden" name="campaign_id" id="modalCampaignId">
             <div class="field">
               <label for="skillsInput">Your skills</label>
@@ -170,7 +172,7 @@ foreach ($stmtA->fetchAll(PDO::FETCH_ASSOC) as $row) {
           <div class="mini-card__foot">
                     <?php if ($isApplied): ?>
             <span class="pill pill--good"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Applied</span>
-            <span class="status <?php echo $statusClass; ?>" data-status="<?php echo $appStatus; ?>"><?php echo $appStatus; ?></span>
+            <span class="status <?php echo e($statusClass); ?>" data-status="<?php echo e($appStatus); ?>"><?php echo e($appStatus); ?></span>
                     <?php else: ?>
             <button type="button" class="btn btn--dark btn--xs" data-modal-open="#volunteerModal"
                     data-fill-campaign_id="<?php echo $cid; ?>"

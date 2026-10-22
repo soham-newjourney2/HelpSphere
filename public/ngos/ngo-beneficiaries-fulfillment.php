@@ -107,11 +107,11 @@ ngo_require_login();
               ?>
               <?php if($status=="Approved" && $rec['ngo_id']==$_SESSION['ngo_id']): ?>
               <tr>
-                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span><strong><?php echo $name ?></strong></div></td>
-                <td class="text-cell"><?php echo $description ?></td>
-                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
-                <td class="date-cell"><?php echo $created_at ?></td>
-                <td><a class="act act--dark" href="request-fulfill.php?beneficiary_id=<?php echo $id ?>&request_id=<?php echo $request_id ?>&category=<?php echo $category ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Fulfil</a></td>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span><strong><?php echo e($name) ?></strong></div></td>
+                <td class="text-cell"><?php echo e($description) ?></td>
+                <td><span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span></td>
+                <td class="date-cell"><?php echo e($created_at) ?></td>
+                <td><a class="act act--dark" href="request-fulfill.php?beneficiary_id=<?php echo e($id) ?>&request_id=<?php echo e($request_id) ?>&category=<?php echo e($category) ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Fulfil</a></td>
               </tr>
           <?php endif ?>
               <?php

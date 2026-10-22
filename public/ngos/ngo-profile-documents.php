@@ -14,6 +14,9 @@ if(isset($_GET['doc']))
 $upload_error = '';
 $upload_success = '';
 
+// Every POST on this page (upload, delete) needs the session token
+if ($_SERVER['REQUEST_METHOD'] === 'POST') csrf_require_post();
+
 // Handle document deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_doc_id'])) {
   $delete_id = (int) $_POST['delete_doc_id'];
@@ -193,16 +196,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
           ?>
                 <tr>
                   <td><div class="who"><span class="doc-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg></span><strong><?php echo $docname; ?></strong></div></td>
-                  <td class="date-cell"><?php echo $uploaded; ?></td>
-                  <td><span class="status <?php echo $badge_class; ?>" data-status="<?php echo $status; ?>"><?php echo $status; ?></span></td>
+                  <td class="date-cell"><?php echo e($uploaded); ?></td>
+                  <td><span class="status <?php echo e($badge_class); ?>" data-status="<?php echo $status; ?>"><?php echo $status; ?></span></td>
                   <td>
                     <div class="actions">
               <?php if (!empty($file_path)): ?>
-                      <a href="<?php echo $file_url; ?>" target="_blank" rel="noopener" class="act act--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-eye"/></svg>View</a>
+                      <a href="<?php echo e($file_url); ?>" target="_blank" rel="noopener" class="act act--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-eye"/></svg>View</a>
               <?php else: ?>
                       <span class="muted">N/A</span>
               <?php endif; ?>
                       <form method="POST" data-confirm="Delete this document? This cannot be undone.">
+                        <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
                         <button type="submit" name="delete_doc_id" value="<?php echo $doc_id; ?>" class="act act--no"><svg class="icon"><use href="../assets/img/icons.svg#i-trash"/></svg>Delete</button>
                       </form>
                     </div>
@@ -231,6 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
             </div>
           </header>
           <form class="form" action="" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <div class="field">
               <label for="document_type">Document type</label>
               <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-file"/></svg><input type="text" id="document_type" name="document_type" placeholder="e.g. Registration certificate" required

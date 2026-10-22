@@ -101,25 +101,25 @@ require_login();
                         $created_at=$record['created_at'];
                         $id=$record['id'];
                         ?>
-          <div class="item" data-status="<?php echo $status ?>">
+          <div class="item" data-status="<?php echo e($status) ?>">
             <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg></span>
             <div class="item__body">
               <div class="item__top">
-                <span class="item__title"><?php echo $category ?> assistance</span>
-                <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+                <span class="item__title"><?php echo e($category) ?> assistance</span>
+                <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
               </div>
               <p class="item__text"><?php echo htmlspecialchars($description) ?></p>
-              <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Submitted <?php echo $created_at ?></span></div>
+              <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Submitted <?php echo e($created_at) ?></span></div>
               <div class="item__actions">
                         <?php if($status=="Pending"): ?>
-                <a href="../beneficiaries/beneficiary-request-edit.php?id=<?php echo $id ?>" class="btn btn--outline btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-edit"/></svg>Edit</a>
+                <a href="../beneficiaries/beneficiary-request-edit.php?id=<?php echo e($id) ?>" class="btn btn--outline btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-edit"/></svg>Edit</a>
                         <?php endif ?>
                         <?php if($status=="Pending"): ?>
                         <?php echo action_button('../beneficiaries/request-cancel.php', ['id'=>$id], 'Cancel', 'action-btn danger') ?>
                         <?php endif ?>
-                <a href="../beneficiaries/beneficiary-request-timeline.php?id=<?php echo $id ?>" class="btn btn--outline btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-history"/></svg>Timeline</a>
+                <a href="../beneficiaries/beneficiary-request-timeline.php?id=<?php echo e($id) ?>" class="btn btn--outline btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-history"/></svg>Timeline</a>
                         <?php if($status=="Fulfilled"): ?>
-                <a href="../beneficiaries/beneficiary-request-fulfillment.php?id=<?php echo $id ?>&category=<?php echo $category ?>" class="btn btn--dark btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Fulfillment details</a>
+                <a href="../beneficiaries/beneficiary-request-fulfillment.php?id=<?php echo e($id) ?>&category=<?php echo e($category) ?>" class="btn btn--dark btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Fulfillment details</a>
                         <?php endif ?>
               </div>
             </div>

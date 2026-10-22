@@ -15,7 +15,7 @@ if (!function_exists('h')) {
     function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 }
 
-// ── Fix 41: remember the email link so login can send the NGO straight back ──
+// ── Remember the email link so login can send the NGO straight back ──
 if (empty($_SESSION['ngo_id'])) {
     $ret_notif = (int) ($_GET['notif_id'] ?? 0);
     $ret_token = (string) ($_GET['token'] ?? '');
@@ -59,7 +59,7 @@ if ($notif_id > 0 && $token !== '') {
     if (!$notif || !hash_equals((string) $notif['token'], $token)) {
         $state = 'invalid';
 
-    // ── Fix 42: the logged-in NGO must be the NGO that was notified ──
+    // ── The logged-in NGO must be the NGO that was notified ──
     } elseif ((int) $notif['ngo_id'] !== $logged_ngo_id) {
         $state = 'wrong_account';
 
@@ -105,12 +105,12 @@ if ($notif_id > 0 && $token !== '') {
                      WHERE batch_id=? AND id != ?"
                 )->execute([$batch_id, $notif_id]);
 
-                // 3. Insert into food_donations
+                // 3. Insert into food_donations (same timestamp as the donations row: pickup matches on it)
                 $si = $pdo->prepare(
                     "INSERT INTO food_donations
                        (donor_id, food_type, target_type, target_id, quantity,
-                        status, pickup_address, pickup_time, urgency, donation_type, is_requested_by_ngo)
-                     VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+                        status, pickup_address, pickup_time, urgency, donation_type, is_requested_by_ngo, created_at)
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
                 );
                 $pickup_time = date('H:i:s', strtotime('+' . (int) $notif['pickup_within'] . ' hours'));
                 $si->execute([
@@ -124,14 +124,15 @@ if ($notif_id > 0 && $token !== '') {
                     $pickup_time,
                     'High',
                     'Immediate',
-                    'No'
+                    'No',
+                    $db_now
                 ]);
 
                 // 4. Generic donations log
                 $pdo->prepare(
-                    "INSERT INTO donations (donor_id, target_id, target_role, status, donation_type)
-                     VALUES (?,?,'NGO','Donated','Food')"
-                )->execute([$donor_id, $ngo_id]);
+                    "INSERT INTO donations (donor_id, target_id, target_role, status, donation_type, created_at)
+                     VALUES (?,?,'NGO','Donated','Food',?)"
+                )->execute([$donor_id, $ngo_id, $db_now]);
 
                 $pdo->commit();
                 $state = 'success';

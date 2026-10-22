@@ -5,6 +5,7 @@ $ngo_id = (int) $_SESSION['ngo_id'];
 
 // ─── Handle Approve / Reject ──────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['volunteer_id'], $_POST['new_status'])) {
+    csrf_require_post();
     $volunteer_id = (int) $_POST['volunteer_id'];
     $new_status   = $_POST['new_status'] === 'Approved' ? 'Approved' : 'Rejected';
     // Security: only update if the campaign belongs to this NGO
@@ -171,17 +172,19 @@ function getVolunteers($pdo, $campaign_id) {
                       <td class="text-cell"><?php echo htmlspecialchars($v['skills'] ?: '—'); ?></td>
                       <td class="date-cell"><?php echo date('d M Y', strtotime($v['applied_at'])); ?></td>
                       <td>
-                        <span class="status <?php echo $statusClass; ?>" data-status="<?php echo htmlspecialchars($v['status']); ?>"><?php echo htmlspecialchars($v['status']); ?></span>
+                        <span class="status <?php echo e($statusClass); ?>" data-status="<?php echo htmlspecialchars($v['status']); ?>"><?php echo htmlspecialchars($v['status']); ?></span>
                       </td>
                       <td>
                         <?php if ($isPending): ?>
                         <div class="actions">
                           <form method="POST" action="">
+                            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
                             <input type="hidden" name="volunteer_id" value="<?php echo (int)$v['vol_id']; ?>">
                             <input type="hidden" name="new_status"   value="Approved">
                             <button type="submit" class="act act--yes"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Approve</button>
                           </form>
                           <form method="POST" action="">
+                            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
                             <input type="hidden" name="volunteer_id" value="<?php echo (int)$v['vol_id']; ?>">
                             <input type="hidden" name="new_status"   value="Rejected">
                             <button type="submit" class="act act--no"><svg class="icon"><use href="../assets/img/icons.svg#i-x"/></svg>Reject</button>
@@ -253,7 +256,7 @@ function getVolunteers($pdo, $campaign_id) {
                       <td class="text-cell"><?php echo htmlspecialchars($v['skills'] ?: '—'); ?></td>
                       <td class="date-cell"><?php echo date('d M Y', strtotime($v['applied_at'])); ?></td>
                       <td>
-                        <span class="status <?php echo $statusClass; ?>" data-status="<?php echo htmlspecialchars($v['status']); ?>"><?php echo htmlspecialchars($v['status']); ?></span>
+                        <span class="status <?php echo e($statusClass); ?>" data-status="<?php echo htmlspecialchars($v['status']); ?>"><?php echo htmlspecialchars($v['status']); ?></span>
                       </td>
                     </tr>
                     <?php endforeach; ?>

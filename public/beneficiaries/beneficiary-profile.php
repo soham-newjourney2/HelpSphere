@@ -16,8 +16,13 @@ if($stmt->rowCount()>0)
     $phone=isset($res['phone'])?$res['phone']:'';
 }
 
+$error='';
 if(isset($_POST['update-btn']))
 {
+    csrf_require_post();
+    try
+    {
+    $pdo->beginTransaction();
     $stmt=$pdo->prepare("update users set name=?,email=? where role_id=? and role=?");
     $stmt->bindParam(1,$_POST['name']);
     $stmt->bindParam(2,$_POST['email']);
@@ -34,10 +39,19 @@ if(isset($_POST['update-btn']))
     $stmt->bindParam(6,$_POST['phone']);
     $stmt->bindParam(7,$_SESSION['beneficiary_id']);
     $stmt->execute();
-    if($stmt){
-        header("Location: beneficiary-profile.php");
-        exit;
-    }        
+    $pdo->commit();
+    $_SESSION['fullname']=$_POST['name'];
+    header("Location: beneficiary-profile.php");
+    exit;
+    }
+    catch(PDOException $e)
+    {
+        if($pdo->inTransaction()) $pdo->rollBack();
+        error_log('beneficiary-profile: '.$e->getMessage());
+        $error = ($e->getCode()==='23000')
+            ? 'That email address is already in use.'
+            : 'Could not save your changes. Please check the details and try again.';
+    }
 }
 ?>
 
@@ -109,7 +123,12 @@ if(isset($_POST['update-btn']))
         </div>
       </section>
 
+      <?php if ($error !== ''): ?>
+      <p class="alert alert--error"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg><span><?php echo e($error) ?></span></p>
+      <?php endif ?>
+
       <form class="form" action="" method="POST">
+        <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
         <section class="row row--2">
           <article class="card reveal">
             <header class="card__head">
@@ -121,11 +140,11 @@ if(isset($_POST['update-btn']))
             <div class="form">
               <div class="field">
                 <label for="pf-name">Full name</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-user"/></svg><input type="text" id="pf-name" value="<?php echo isset($name)?$name:'' ?>" name="name" autocomplete="name"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-user"/></svg><input type="text" id="pf-name" value="<?php echo e(isset($name)?$name:'') ?>" name="name" autocomplete="name"></div>
               </div>
               <div class="field">
                 <label for="pf-dob">Date of birth</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-calendar"/></svg><input type="date" id="pf-dob" value="<?php echo isset($dob)?$dob:'' ?>" name="dob"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-calendar"/></svg><input type="date" id="pf-dob" value="<?php echo e(isset($dob)?$dob:'') ?>" name="dob"></div>
               </div>
                     <?php if(isset($gender)): ?>
               <div class="field">
@@ -156,11 +175,11 @@ if(isset($_POST['update-btn']))
               </div>
               <div class="field">
                 <label for="pf-phone">Phone number</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-phone"/></svg><input type="tel" id="pf-phone" value="<?php echo isset($phone)?$phone:'' ?>" name="phone" autocomplete="tel"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-phone"/></svg><input type="tel" id="pf-phone" value="<?php echo e(isset($phone)?$phone:'') ?>" name="phone" autocomplete="tel"></div>
               </div>
               <div class="field">
                 <label for="pf-email">Email</label>
-                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-mail"/></svg><input type="email" id="pf-email" value="<?php echo isset($email)?$email:'' ?>" name="email" autocomplete="email"></div>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-mail"/></svg><input type="email" id="pf-email" value="<?php echo e(isset($email)?$email:'') ?>" name="email" autocomplete="email"></div>
               </div>
             </div>
           </article>

@@ -189,9 +189,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_donation'])) {
                   <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-food"/></svg>
                   <select id="food_type" name="food_type" required>
                                 <?php foreach (['Cooked','Packaged','Raw'] as $ft): ?>
-                                <option value="<?php echo $ft; ?>"
+                                <option value="<?php echo e($ft); ?>"
                                     <?php echo (($_POST['food_type'] ?? '') === $ft) ? 'selected' : ''; ?>>
-                                    <?php echo $ft; ?>
+                                    <?php echo e($ft); ?>
                                 </option>
                                 <?php endforeach; ?>
                   </select>

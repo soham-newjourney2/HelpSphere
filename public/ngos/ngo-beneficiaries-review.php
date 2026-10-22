@@ -167,7 +167,7 @@ ngo_require_login();
               <tr>
                 <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span><strong><?php echo $name; ?></strong></div></td>
                 <td class="text-cell"><?php echo $description; ?></td>
-                <td class="date-cell"><?php echo $created_at; ?></td>
+                <td class="date-cell"><?php echo e($created_at); ?></td>
                 <td><span class="status" data-status="<?php echo $status; ?>"><?php echo $status; ?></span></td>
                 <td>
                   <div class="actions">

@@ -5,24 +5,28 @@ ngo_require_login();
 $message = "";
 
 if (isset($_POST['submit-need'])) {
+    csrf_require_post();
     $ngo_id = $_SESSION['ngo_id'];
-    $need_type = $_POST['need_type'];
+    $need_type = $_POST['need_type'] ?? '';
 
     try {
-        if ($need_type === 'food') { 
+        if ($need_type === 'food' && trim($_POST['food_desc'] ?? '') === '') {
+            $message = "Please describe what you need.";
+        } elseif ($need_type === 'food') {
             $sql = "INSERT INTO food_donation_requests (ngo_id, description, request_type, urgency) 
                     VALUES (:ngo_id, :description, :request_type, :urgency)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':ngo_id'       => $ngo_id,
-                ':description'  => $_POST['food_desc'],
+                ':description'  => mb_substr(trim($_POST['food_desc']), 0, 200),
                 ':request_type' => "Scheduled",
                 ':urgency'      => "N/A"
             ]);
             $message = "Food request submitted successfully!";
         } 
     } catch (PDOException $e) {
-        $message = "Error: " . $e->getMessage();
+        error_log('ngo-needs-post: ' . $e->getMessage());
+        $message = "Could not save your request. Please try again.";
     }
 }
 ?>
@@ -98,12 +102,13 @@ if (isset($_POST['submit-need'])) {
       </section>
 
         <?php if($message): ?>
-      <p class="alert alert--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-info"/></svg><span><?php echo $message; ?></span></p>
+      <p class="alert alert--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-info"/></svg><span><?php echo e($message); ?></span></p>
         <?php endif; ?>
 
       <section class="row row--2-1">
         <article class="card reveal">
           <form class="form" action="" method="POST">
+            <input type="hidden" name="csrf" value="<?php echo e(csrf_token()) ?>">
             <div class="field">
               <label for="needTypeSelector">Type of need</label>
               <div class="field__control field__control--select">

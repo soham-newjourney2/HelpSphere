@@ -1,6 +1,7 @@
 <?php
 //login-ngo.php
 require_once __DIR__.'/inc/auth.php';
+$error='';
 try
 {
    if(isset($_POST['login-btn'])) 
@@ -20,7 +21,7 @@ try
   $_SESSION['ngo_email']=$ngo['email'];
   $_SESSION['ngo_id']=$ngo['id'];
 
-  // Fix 41: go back to the email link if the NGO came from one
+  // Go back to the email link if the NGO came from one
   $to = (string)($_SESSION['ngo_return_to'] ?? '');
   unset($_SESSION['ngo_return_to']);
   if (preg_match('/^ngo-food-accept\.php\?notif_id=\d+&token=[a-f0-9]{64}$/', $to)) {
@@ -32,13 +33,13 @@ try
 }
    else
    {
-     echo "Invalid email or password";
+     $error = 'Invalid email or password.';
    }
 }
 } catch(PDOException $e)
 { 
     error_log('login: '.$e->getMessage()); 
-    echo "Something went wrong. Please try again.";
+    $error = 'Something went wrong. Please try again.';
 }
 ?>
 <!DOCTYPE html>
@@ -112,6 +113,10 @@ try
         <a class="role-opt" href="login-ngo.php" aria-current="page"><svg class="icon"><use href="public/assets/img/icons.svg#i-building"/></svg>NGO</a>
         <a class="role-opt" href="login-admin.php"><svg class="icon"><use href="public/assets/img/icons.svg#i-shield"/></svg>Admin</a>
       </nav>
+
+      <?php if ($error !== ''): ?>
+      <p class="alert alert--error" role="alert"><svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-alert"/></svg><span><?php echo e($error) ?></span></p>
+      <?php endif ?>
 
       <div class="mode-tabs" role="tablist" id="modeTabs" data-mode="signin">
         <button type="button" role="tab" class="mode-tab is-active" aria-selected="true" data-mode="signin"

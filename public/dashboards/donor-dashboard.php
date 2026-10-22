@@ -117,22 +117,22 @@ $count4=$stmt->rowCount();
       <section class="kpis" aria-label="Donation summary">
         <article class="kpi kpi--dark reveal">
           <div class="kpi__top"><span class="kpi__label">Total donations</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-gift"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $count ?></p>
+          <p class="kpi__value" data-count><?php echo e($count) ?></p>
           <p class="kpi__note">Everything you have given</p>
         </article>
         <article class="kpi reveal">
           <div class="kpi__top"><span class="kpi__label">Donations to NGOs</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-building"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $count2 ?></p>
+          <p class="kpi__value" data-count><?php echo e($count2) ?></p>
           <p class="kpi__note">Given to verified NGOs</p>
         </article>
         <article class="kpi reveal">
           <div class="kpi__top"><span class="kpi__label">Campaigns running</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-megaphone"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $count4 ?></p>
+          <p class="kpi__value" data-count><?php echo e($count4) ?></p>
           <p class="kpi__note">Across HelpSphere — open to volunteers</p>
         </article>
         <article class="kpi reveal">
           <div class="kpi__top"><span class="kpi__label">Campaigns completed</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-check"/></svg></span></div>
-          <p class="kpi__value" data-count><?php echo $count3 ?></p>
+          <p class="kpi__value" data-count><?php echo e($count3) ?></p>
           <p class="kpi__note">Across HelpSphere</p>
         </article>
       </section>
@@ -176,12 +176,12 @@ $count4=$stmt->rowCount();
               <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg></span>
               <div class="item__body">
                 <div class="item__top">
-                  <span class="item__title"><?php echo $type ?> donation</span>
-                  <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+                  <span class="item__title"><?php echo e($type) ?> donation</span>
+                  <span class="status" data-status="<?php echo e($status) ?>"><?php echo e($status) ?></span>
                 </div>
                 <div class="item__meta">
-                  <span><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg><?php echo isset($target)?$target:'' ?> (<?php echo isset($target_role)?$target_role:'' ?>)</span>
-                  <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $created_at ?></span>
+                  <span><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg><?php echo e(isset($target)?$target:'') ?> (<?php echo e(isset($target_role)?$target_role:'') ?>)</span>
+                  <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo e($created_at) ?></span>
                 </div>
               </div>
             </div>
