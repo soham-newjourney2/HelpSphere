@@ -30,158 +30,110 @@ if($stmt2)
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-  <meta charset="UTF-8">
-  <title>NGO Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/ngo.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview · NGO | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
-
 <body>
+<div class="app">
 
-  <div class="overlay" id="overlay"></div>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
 
-  <div class="sky">
-    <div class="aurora a1"></div>
-    <div class="aurora a2"></div>
-    <div class="aurora a3"></div>
-  </div>
+    <span class="sidebar__tag">NGO workspace</span>
 
-  <!-- <div class="moon"></div> -->
+    <nav class="sidebar__nav" aria-label="NGO workspace">
+      <a href="../dashboards/ngo-dashboard.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-needs.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
+      <a href="../ngos/ngo-beneficiaries.php"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
+      <a href="../ngos/ngo-donations.php"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="../ngos/ngo-campaigns.php"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>Campaigns</a>
+      <a href="../ngos/ngo-volunteers.php"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>
+      <a href="../ngos/ngo-communication.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Communication</a>
+      <a href="../ngos/ngo-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Profile &amp; compliance</a>
+    </nav>
 
-  <div class="app">
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand">NGO</div>
-        <button class="sidebar-close" id="sidebarClose">✕</button>
-      </div>
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
 
-      <div class="tagline">Management & Operations</div>
-
-      <nav class="sidebar-nav">
-        <ul>
-
-          <li class="nav-item active">
-            <a href="../dashboards/ngo-dashboard.php active">
-              <span class="icon">📊</span>
-              <span class="label">Dashboard Overview</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-profile.php">
-              <span class="icon">🧾</span>
-              <span class="label">Profile & Compliance</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-needs.php">
-              <span class="icon">📌</span>
-              <span class="label">Needs & Requests</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-beneficiaries.php">
-              <span class="icon">👥</span>
-              <span class="label">Beneficiaries</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-donations.php">
-              <span class="icon">🎁</span>
-              <span class="label">Donations & Resources</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-campaigns.php">
-              <span class="icon">📣</span>
-              <span class="label">Campaigns</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-volunteers.php">
-              <span class="icon">🧑‍🤝‍🧑</span>
-              <span class="label">Volunteers</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-communication.php">
-              <span class="icon">💬</span>
-              <span class="label">Communication</span>
-            </a>
-          </li>
-
-          <li class="nav-item logout">
-            <a href="../../inc/logout.php">
-              <span class="icon">⎋</span>
-              <span class="label">Sign Out</span>
-            </a>
-          </li>
-
-        </ul>
-      </nav>
-    </aside>
-
-
-    <!-- Main Content -->
-    <main class="main-content">
-
-      <div class="topbar">
-        <div class="topbar-left">
-          <button class="menu-toggle" id="menuToggle">☰</button>
-          <div class="section-header">
-            <h3>NGO Dashboard</h3>
-          </div>
-        </div>
-
-        <div class="user-name">
-          NGO Admin
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Overview</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
+          <div class="profile__text"><strong>NGO team</strong><span>NGO workspace</span></div>
         </div>
       </div>
+    </header>
 
-      <!-- Dashboard Summary -->
-      <section class="dashboard-summary">
+    <main class="content" id="content">
 
-        <div class="summary-card">
-          <div class="card-icon">📌</div>
-          <div>
-            <div class="label">Pending Requests</div>
-            <h3><?php echo $c ?></h3>
-          </div>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow" data-today>Today</p>
+          <h1 class="page-head__title"><span data-greeting>Hello</span>, NGO team</h1>
+          <p class="page-head__sub">Requests waiting for review and donations coming your way.</p>
         </div>
-
-        <div class="summary-card">
-          <div class="card-icon">💰</div>
-          <div>
-            <div class="label">Total Donations</div>
-            <h3><?php echo $c1 ?></h3>
-          </div>
+        <div class="page-head__actions">
+          <a href="../ngos/ngo-campaigns-create.php" class="btn btn--outline btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>New campaign</a>
+          <a href="../ngos/ngo-needs-post.php" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-plus"/></svg>Post a need</a>
         </div>
-
-        <div class="summary-card">
-          <div class="card-icon">📦</div>
-          <div>
-            <div class="label">Donations Pending for Pickp</div>
-            <h3><?php echo $c2 ?></h3>
-          </div>
-        </div>
-
       </section>
 
-      <!-- Active Needs -->
-      <section class="active-requests">
-        <div class="section-header">
-          <h3>Pending Requests (Latest 5)</h3>
-        </div>
+      <!-- Key figures -->
+      <section class="kpis" aria-label="Key figures">
+        <article class="kpi kpi--dark reveal">
+          <div class="kpi__top"><span class="kpi__label">Pending requests</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-pin"/></svg></span></div>
+          <p class="kpi__value" data-count><?php echo $c ?></p>
+          <p class="kpi__note">From beneficiaries, waiting for an NGO</p>
+        </article>
+        <article class="kpi reveal">
+          <div class="kpi__top"><span class="kpi__label">Donations received</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-gift"/></svg></span></div>
+          <p class="kpi__value" data-count><?php echo $c1 ?></p>
+          <p class="kpi__note">All donations made to your NGO</p>
+        </article>
+        <article class="kpi reveal">
+          <div class="kpi__top"><span class="kpi__label">Awaiting pickup</span><span class="kpi__icon"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-truck"/></svg></span></div>
+          <p class="kpi__value" data-count><?php echo $c2 ?></p>
+          <p class="kpi__note">Accepted, not yet picked up</p>
+        </article>
+      </section>
 
-        <?php 
+      <section class="row row--2-1">
+        <article class="card reveal">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Pending requests</h2>
+              <p class="card__sub">The five newest requests from beneficiaries</p>
+            </div>
+            <a href="../ngos/ngo-beneficiaries-review.php" class="card__link">Review all <svg class="icon"><use href="../assets/img/icons.svg#i-arrow"/></svg></a>
+          </header>
+
+          <div class="list" id="pendingRequests">
+        <?php
         $stmt=$pdo->prepare("select * from assistance_requests where status=? order by id desc limit 5");
         $stmt->bindValue(1,"Pending");
         $stmt->execute();
@@ -204,34 +156,66 @@ if($stmt2)
                 if(isset($name))
                   {
           ?>
-        <div class="request-list">
-            <div class="request-item"><?php echo $description ?> <br><strong>Created at: </strong><?php echo $created_at ?> <br><strong>Created by: </strong><?php echo $name ?></div><br>
-        </div>
+            <div class="item">
+              <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span>
+              <div class="item__body">
+                <div class="item__top">
+                  <span class="item__title"><?php echo $name ?></span>
+                  <span class="status" data-status="Pending">Pending</span>
+                </div>
+                <p class="item__text"><?php echo $description ?></p>
+                <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $created_at ?></span></div>
+              </div>
+            </div>
                 <?php
                 }
             }
         }
         ?>
-       
+          </div>
+          <div class="empty" data-empty-for="#pendingRequests">
+            <svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>
+            <strong>All caught up</strong>
+            <p>There are no pending requests from beneficiaries right now.</p>
+          </div>
+        </article>
+
+        <aside class="urgent reveal">
+          <svg aria-hidden="true" class="leaf leaf--u1"><use href="../assets/img/icons.svg#leaf"/></svg>
+          <svg aria-hidden="true" class="leaf leaf--u2"><use href="../assets/img/icons.svg#leaf"/></svg>
+          <span class="pill pill--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-clock"/></svg>Immediate food alerts</span>
+          <h2>Respond within 7 minutes</h2>
+          <p>When a donor posts surplus food near you, you get an email with an Accept link. The first NGO to accept gets the donation — after 7 minutes, the next 5 NGOs are alerted.</p>
+          <a href="../ngos/ngo-donations-food.php" class="btn btn--light"><svg class="icon"><use href="../assets/img/icons.svg#i-truck"/></svg>Food donations &amp; pickups</a>
+        </aside>
       </section>
 
-      <div class="footer">
-        © NGO Management System
-      </div>
+      <section class="hub" aria-label="Shortcuts">
+        <a href="../ngos/ngo-beneficiaries-review.php" class="hub-card reveal">
+          <span class="hub-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg></span>
+          <h3>Review requests</h3>
+          <p>Check documents and approve or pass on beneficiary requests.</p>
+          <span class="hub-card__link">Open <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg></span>
+        </a>
+        <a href="../ngos/ngo-donations-food.php" class="hub-card reveal">
+          <span class="hub-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-food"/></svg></span>
+          <h3>Food donations</h3>
+          <p>Accept scheduled donations and mark pickups complete.</p>
+          <span class="hub-card__link">Open <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg></span>
+        </a>
+        <a href="../ngos/ngo-volunteers.php" class="hub-card reveal">
+          <span class="hub-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg></span>
+          <h3>Volunteers</h3>
+          <p>Approve people who applied to your campaigns.</p>
+          <span class="hub-card__link">Open <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg></span>
+        </a>
+      </section>
 
     </main>
-
   </div>
+</div>
 
-  <!-- <div class="snow">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
-
-  <div class="snow-accumulation"></div> -->
-
-  <script src="../assets/js/sidebar.js"></script>
-  <script src="../assets/js/donor.js"></script>
-
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

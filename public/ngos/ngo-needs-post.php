@@ -28,242 +28,125 @@ if (isset($_POST['submit-need'])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-  <meta charset="UTF-8">
-  <title>Post New Need</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/ngo.css">
-  <style>
-    /* Quick fix to ensure hidden forms don't take space */
-    .hidden-form { display: none; }
-    .status-msg { padding: 10px; margin-bottom: 10px; border-radius: 5px; background: rgba(255,255,255,0.1); color: #fff; }
-    .type-select{ width:100%; padding:10px; background:#1a1a2e; color:white; border:1px solid #333; }
-    .type-one{ width:100%; padding:10px; background:#1a1a2e; color:white; border:1px solid #333; }
-    .urgency-type { width:100%; padding:10px; background:#1a1a2e; color:white; border:1px solid #333; }
-    .date-avail { width:100%; padding:10px; background:#1a1a2e; color:white; border:1px solid #333; }
-    .time-avail { width:100%; padding:10px; background:#1a1a2e; color:white; border:1px solid #333; }
-    .submit-btn { display:none; margin-top:20px; }
-
-
-
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post a need · NGO | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
- 
 <body>
+<div class="app">
 
-  <div class="overlay" id="overlay"></div>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
 
-  <div class="sky">
-    <div class="aurora a1"></div>
-    <div class="aurora a2"></div>
-    <div class="aurora a3"></div>
-  </div>
+    <span class="sidebar__tag">NGO workspace</span>
 
-  <!-- <div class="moon"></div> -->
+    <nav class="sidebar__nav" aria-label="NGO workspace">
+      <a href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-needs.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
+      <a href="../ngos/ngo-beneficiaries.php"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
+      <a href="../ngos/ngo-donations.php"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="../ngos/ngo-campaigns.php"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>Campaigns</a>
+      <a href="../ngos/ngo-volunteers.php"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>
+      <a href="../ngos/ngo-communication.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Communication</a>
+      <a href="../ngos/ngo-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Profile &amp; compliance</a>
+    </nav>
 
-  <div class="app">
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand">NGO</div>
-        <button class="sidebar-close" id="sidebarClose">✕</button>
-      </div>
-
-      <div class="tagline">Management & Operations</div>
-
-      <nav class="sidebar-nav">
-        <ul>
-
-          <li class="nav-item">
-            <a href="../dashboards/ngo-dashboard.php active">
-              <span class="icon">📊</span>
-              <span class="label">Dashboard Overview</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-profile.php">
-              <span class="icon">🧾</span>
-              <span class="label">Profile & Compliance</span>
-            </a>
-          </li>
-
-          <li class="nav-item active">
-            <a href="../ngos/ngo-needs.php">
-              <span class="icon">📌</span>
-              <span class="label">Needs & Requests</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-beneficiaries.php">
-              <span class="icon">👥</span>
-              <span class="label">Beneficiaries</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-donations.php">
-              <span class="icon">🎁</span>
-              <span class="label">Donations & Resources</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-campaigns.php">
-              <span class="icon">📣</span>
-              <span class="label">Campaigns</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-volunteers.php">
-              <span class="icon">🧑‍🤝‍🧑</span>
-              <span class="label">Volunteers</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-communication.php">
-              <span class="icon">💬</span>
-              <span class="label">Communication</span>
-            </a>
-          </li>
-
-          <li class="nav-item logout">
-            <a href="../../inc/logout.php">
-              <span class="icon">⎋</span>
-              <span class="label">Sign Out</span>
-            </a>
-          </li>
-
-        </ul>
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-       <main class="main-content">
-      <div class="topbar">
-        <div class="topbar-left">
-          <button class="menu-toggle" id="menuToggle">☰</button>
-          <div class="section-header"><h3>Post New Need</h3></div>
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../ngos/ngo-needs.php">Needs &amp; requests</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Post a need</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
+          <div class="profile__text"><strong>NGO team</strong><span>NGO workspace</span></div>
         </div>
-        <div class="user-name">NGO Administrator</div>
       </div>
+    </header>
 
-      <section class="active-requests">
-        <?php if($message): ?>
-            <div class="status-msg"><?php echo $message; ?></div>
-        <?php endif; ?>
+    <main class="content" id="content">
 
-        <div class="section-header">
-          <h3>Need Details</h3>
-        </div>
-
-        <div class="request-list">
-          <form action="" method="POST">
-            
-            <div class="request-item">
-              <label class="label">Type of Need</label>
-              <br><br>
-              <select name="need_type" id="needTypeSelector" class="request-item type-select"  required>
-                <option value="" disabled selected>Select Category</option>
-                <option value="food">Food</option>
-              </select>
-            </div>
-            <br>
-
-            <div id="foodFields" class="hidden-form">
-                <div class="request-item">
-                  <label class="label">Description</label>
-                  <br><br>
-                  <textarea name="food_desc" rows="4" placeholder="e.g. 50 meals for local shelter"></textarea>
-                </div>
-                <br>
-            </div>
-
-            <div id="bloodFields" class="hidden-form">
-                <div class="request-item">
-                  <label class="label">Description</label>
-                  <br><br>
-                  <textarea name="blood_desc" rows="4" placeholder="e.g. O+ blood required for emergency "></textarea>
-                </div>
-                <br>
-                <div class="request-item">
-                  <label class="label">Preferred Location</label>
-                  <br><br>
-                  <input type="text" name="location" placeholder="Hospital / City Name">
-                </div>
-                <br>
-                <div class="request-item">
-                  <label class="label">Available Date</label>
-                  <br><br>
-                  <input type="date" name="avail_date" class="date-avail">
-                </div>
-                <br>
-                <div class="request-item">
-                  <label class="label">Available Time</label>
-                  <br><br>
-                  <input type="time" name="avail_time" class="time-avail">
-                </div>
-                <br>
-            </div>
-
-            <button class="menu submit-button" type="submit" name="submit-need" id="submitBtn">
-              Submit Need
-            </button>
-          </form>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Needs &amp; requests</p>
+          <h1 class="page-head__title">Post a new need</h1>
+          <p class="page-head__sub">Donors see your need and can schedule a donation for it.</p>
         </div>
       </section>
 
-      <div class="footer">© NGO Management System</div>
+        <?php if($message): ?>
+      <p class="alert alert--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-info"/></svg><span><?php echo $message; ?></span></p>
+        <?php endif; ?>
+
+      <section class="row row--2-1">
+        <article class="card reveal">
+          <form class="form" action="" method="POST">
+            <div class="field">
+              <label for="needTypeSelector">Type of need</label>
+              <div class="field__control field__control--select">
+                <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-list"/></svg>
+                <select name="need_type" id="needTypeSelector" data-reveal required>
+                  <option value="" disabled selected>Select a category</option>
+                  <option value="food">Food</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field" data-reveal-for="food" hidden>
+              <label for="food_desc">Description</label>
+              <div class="field__control field__control--area">
+                <textarea id="food_desc" name="food_desc" rows="5" placeholder="e.g. 50 meals for the local shelter on Friday" data-required></textarea>
+              </div>
+              <p class="field__hint">Say what you need, how much, and by when.</p>
+            </div>
+
+            <div class="card__foot">
+              <button class="btn btn--dark" type="submit" name="submit-need" id="submitBtn"><svg class="icon"><use href="../assets/img/icons.svg#i-send"/></svg>Submit need</button>
+              <a href="../ngos/ngo-needs.php" class="btn btn--outline">Cancel</a>
+            </div>
+          </form>
+        </article>
+
+        <aside class="urgent reveal">
+          <svg aria-hidden="true" class="leaf leaf--u1"><use href="../assets/img/icons.svg#leaf"/></svg>
+          <span class="pill pill--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-info"/></svg>After you post</span>
+          <h2>What happens next</h2>
+          <ol class="urgent__steps">
+            <li>Donors see your need under <strong>NGO food requests</strong>.</li>
+            <li>A donor schedules a donation for it — its status becomes <strong>Donated</strong>.</li>
+            <li>You accept it, then mark it <strong>Picked up</strong> once collected.</li>
+          </ol>
+        </aside>
+      </section>
+
     </main>
   </div>
+</div>
 
-  <!-- <div class="snow">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-  </div> -->
-
-  <!-- <div class="snow-accumulation"></div> -->
-
-  <script>
-    const typeSelector = document.getElementById('needTypeSelector');
-    const foodFields = document.getElementById('foodFields');
-    const bloodFields = document.getElementById('bloodFields');
-    const submitBtn = document.getElementById('submitBtn');
-
-    typeSelector.addEventListener('change', function() {
-        // Show button
-        submitBtn.style.display = 'block';
-        
-        // Toggle fields
-        if (this.value === 'food') {
-            foodFields.classList.remove('hidden-form');
-            bloodFields.classList.add('hidden-form');
-            // Set required attributes
-            setRequired(foodFields, true);
-            setRequired(bloodFields, false);
-        } else if (this.value === 'blood') {
-            bloodFields.classList.remove('hidden-form');
-            foodFields.classList.add('hidden-form');
-            // Set required attributes
-            setRequired(bloodFields, true);
-            setRequired(foodFields, false);
-        }
-    });
-
-    function setRequired(container, isRequired) {
-        const inputs = container.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            if (isRequired) input.setAttribute('required', '');
-            else input.removeAttribute('required');
-        });
-    }
-  </script>
-  <script src="../assets/js/sidebar.js"></script>
-
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

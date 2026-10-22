@@ -3,144 +3,92 @@
 require_once __DIR__. '/../../inc/auth.php';
 ngo_require_login();
 ?>
-<!-- FOR REQUESTED DONATIONS : 
-  Status = Donated means a donor has already donated. You have to accept it/reject it.  
--->
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-  <meta charset="UTF-8">
-  <title>Resource Allocation</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/ngo.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food donations · NGO | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
+<body>
+<div class="app">
 
-<body> 
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
 
-  <div class="overlay" id="overlay"></div>
+    <span class="sidebar__tag">NGO workspace</span>
 
-  <div class="sky">
-    <div class="aurora a1"></div>
-    <div class="aurora a2"></div>
-    <div class="aurora a3"></div>
-  </div>
+    <nav class="sidebar__nav" aria-label="NGO workspace">
+      <a href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-needs.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
+      <a href="../ngos/ngo-beneficiaries.php"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
+      <a href="../ngos/ngo-donations.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="../ngos/ngo-campaigns.php"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>Campaigns</a>
+      <a href="../ngos/ngo-volunteers.php"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>
+      <a href="../ngos/ngo-communication.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Communication</a>
+      <a href="../ngos/ngo-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Profile &amp; compliance</a>
+    </nav>
 
-  <!-- <div class="moon"></div> -->
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
 
-  <div class="app">
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand">NGO</div>
-        <button class="sidebar-close" id="sidebarClose">✕</button>
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../ngos/ngo-donations.php">Donations &amp; resources</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Food donations</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
+          <div class="profile__text"><strong>NGO team</strong><span>NGO workspace</span></div>
+        </div>
       </div>
+    </header>
 
-      <div class="tagline">Management & Operations</div>
+    <main class="content" id="content">
 
-      <nav class="sidebar-nav">
-        <ul>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Donations &amp; resources</p>
+          <h1 class="page-head__title">Food donations</h1>
+          <p class="page-head__sub">Accept donations, then mark them picked up once you have collected the food.</p>
+        </div>
+      </section>
 
-          <li class="nav-item">
-            <a href="../dashboards/ngo-dashboard.php">
-              <span class="icon">📊</span>
-              <span class="label">Dashboard Overview</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-profile.php">
-              <span class="icon">🧾</span>
-              <span class="label">Profile & Compliance</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-needs.php">
-              <span class="icon">📌</span>
-              <span class="label">Needs & Requests</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-beneficiaries.php">
-              <span class="icon">👥</span>
-              <span class="label">Beneficiaries</span>
-            </a>
-          </li>
-
-          <li class="nav-item active">
-            <a href="../ngos/ngo-donations.php">
-              <span class="icon">🎁</span>
-              <span class="label">Donations & Resources</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-campaigns.php">
-              <span class="icon">📣</span>
-              <span class="label">Campaigns</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-volunteers.php">
-              <span class="icon">🧑‍🤝‍🧑</span>
-              <span class="label">Volunteers</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-communication.php">
-              <span class="icon">💬</span>
-              <span class="label">Communication</span>
-            </a>
-          </li>
-
-          <li class="nav-item logout">
-            <a href="../../inc/logout.php">
-              <span class="icon">⎋</span>
-              <span class="label">Sign Out</span>
-            </a>
-          </li>
-
-        </ul>
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-
-      <div class="topbar">
-        <div class="topbar-left">
-          <button class="menu-toggle" id="menuToggle">☰</button>
-          <div class="section-header">
-            <h3>Food Donations</h3>
+      <!-- Donations made for this NGO's own requests -->
+      <article class="card reveal">
+        <header class="card__head">
+          <div>
+            <h2 class="card__title">Donations for your requests</h2>
+            <p class="card__sub">“Donated” means a donor has answered your need — accept it, then mark it picked up</p>
           </div>
-        </div>
-
-        <div class="user-name">
-          NGO Administrator
-        </div>
-      </div>
-
-      <!-- Available Resources -->
-      <section class="documents">
-        <div class="section-header">
-          <h3>Donations by Requests</h3>
-        </div>
-
-        <table class="document-table">
-          <tr>
-            <th>Donor</th>
-            <th>Request Type</th>
-            <th>Food Type</th>
-            <th>Quantity</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-          <?php 
+        </header>
+        <div class="table-wrap">
+          <table class="table table--stack" id="requestDonations">
+            <thead>
+              <tr><th>Donor</th><th>Request type</th><th>Food type</th><th>Quantity</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+          <?php
           $stmt=$pdo->prepare("select * from food_donation_requests where ngo_id=?");
           $stmt->bindParam(1,$_SESSION['ngo_id']);
           $stmt->execute();
@@ -164,50 +112,52 @@ ngo_require_login();
                 $name=$res['name'];
               }
               ?>
-          <tr>
-            <td><?php echo isset($name)?$name:'' ?></td>
-            <td><?php echo $request_type ?></td>
-            <td><?php echo $food_type ?></td>
-            <td><?php echo $quantity ?></td>
-            <td><?php echo $status ?></td>
+              <tr>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo isset($name)?$name:'' ?></strong></div></td>
+                <td><?php echo $request_type ?></td>
+                <td><?php echo $food_type ?></td>
+                <td><?php echo $quantity ?></td>
+                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
             <?php if($status=="Donated" && $request_type=="Scheduled"): ?>
-            <td><?php echo action_button('donation-accept.php', ['type'=>'Scheduled','donation'=>'requested','id'=>$id], 'Accept') ?></td>
+                <td><div class="actions actions--yes"><?php echo action_button('donation-accept.php', ['type'=>'Scheduled','donation'=>'requested','id'=>$id], 'Accept') ?></div></td>
             <?php endif ?>
             <?php if($status=="Accepted" && $request_type=="Scheduled"): ?>
-            <td><?php echo action_button('donation-pickup.php', ['type'=>'Scheduled','donation'=>'requested','id'=>$id], 'Pick Up') ?></td>
+                <td><div class="actions"><?php echo action_button('donation-pickup.php', ['type'=>'Scheduled','donation'=>'requested','id'=>$id], 'Pick Up') ?></div></td>
             <?php endif ?>
             <?php if($status=="Picked Up" && $request_type=="Scheduled"): ?>
-              <td>None</td>
+                <td><span class="muted">Done</span></td>
             <?php endif ?>
-          </tr>
+              </tr>
               <?php
             }
           }
           ?>
-        </table>
-      </section>
-
-      <section class="documents">
-        <div class="section-header">
-          <h3>View All Voluntary Scheduled Food Donations</h3>
-          <!-- Donation Issued by any Donor => Status = Donated. Waiting for Acceptance
-           Status = Accepted means any NGO [target_id] has accepted it. Pickup is Left
-           Status = Rejected is NOT possible. If you reject any donation, all other NGOs except you will still be able to see it and even accept if they want to
-           Status = Picked Up means acceptor NGO has Picked Up the Donation from Donor
-           You can only see here donations that have NOT yet been Accepted by any NGO          
-          -->
+            </tbody>
+          </table>
         </div>
+        <div class="empty" data-empty-for="#requestDonations">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>
+          <strong>No requests posted yet</strong>
+          <p>Post a food need and donors can answer it.</p>
+          <a href="../ngos/ngo-needs-post.php" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-plus"/></svg>Post a need</a>
+        </div>
+      </article>
 
-        <table class="document-table">
-          <tr>
-            <th>Donor</th>
-            <th>Donated At</th>
-            <th>Food Type</th>
-            <th>Quantity</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-          <?php 
+      <!-- Voluntary scheduled donations (open to every NGO) -->
+      <article class="card reveal">
+        <header class="card__head">
+          <div>
+            <h2 class="card__title">Voluntary scheduled donations</h2>
+            <p class="card__sub">Open donations any NGO can accept — first to accept gets it. Your accepted and completed pickups are listed too.</p>
+          </div>
+        </header>
+        <div class="table-wrap">
+          <table class="table table--stack" id="voluntaryDonations">
+            <thead>
+              <tr><th>Donor</th><th>Donated at</th><th>Food type</th><th>Quantity</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+          <?php
           $stmt=$pdo->prepare("select * from food_donations where target_type=? and status = ? and is_requested_by_ngo = ?");
           $stmt->bindValue(1, "NGO");
           $stmt->bindValue(2, "Donated");
@@ -233,19 +183,19 @@ ngo_require_login();
                 $name=$res['name'];
               }
               ?>
-          <tr>
-            <td><?php echo $name ?></td>
-            <td><?php echo $donated_at ?></td>
-            <td><?php echo $food_type ?></td>
-            <td><?php echo $quantity ?></td>
-            <td><?php echo $status ?></td>
-            <td><?php echo action_button('donation-accept.php', ['type'=>'Scheduled','donation'=>'voluntary','id'=>$id], 'Accept') ?></td>
-          </tr>
+              <tr>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo $name ?></strong></div></td>
+                <td class="date-cell"><?php echo $donated_at ?></td>
+                <td><?php echo $food_type ?></td>
+                <td><?php echo $quantity ?></td>
+                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
+                <td><div class="actions actions--yes"><?php echo action_button('donation-accept.php', ['type'=>'Scheduled','donation'=>'voluntary','id'=>$id], 'Accept') ?></div></td>
+              </tr>
               <?php
             }
           }
           ?>
-          <?php 
+          <?php
           $stmt=$pdo->prepare("select * from food_donations where target_type=? and status = ? and target_id=?");
           $stmt->bindValue(1, "NGO");
           $stmt->bindValue(2, "Accepted");
@@ -271,19 +221,19 @@ ngo_require_login();
                 $name=$res['name'];
               }
               ?>
-          <tr>
-            <td><?php echo $name ?></td>
-            <td><?php echo $donated_at ?></td>
-            <td><?php echo $food_type ?></td>
-            <td><?php echo $quantity ?></td>
-            <td><?php echo $status ?></td>
-            <td><?php echo action_button('donation-pickup.php', ['type'=>'Scheduled','donation'=>'voluntary','id'=>$id1], 'Pick Up') ?></td>
-          </tr>
+              <tr>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo $name ?></strong></div></td>
+                <td class="date-cell"><?php echo $donated_at ?></td>
+                <td><?php echo $food_type ?></td>
+                <td><?php echo $quantity ?></td>
+                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
+                <td><div class="actions"><?php echo action_button('donation-pickup.php', ['type'=>'Scheduled','donation'=>'voluntary','id'=>$id1], 'Pick Up') ?></div></td>
+              </tr>
               <?php
             }
           }
           ?>
-          <?php 
+          <?php
           $stmt=$pdo->prepare("select * from food_donations where target_type=? and status = ? and target_id=? and donation_type=?");
           $stmt->bindValue(1, "NGO");
           $stmt->bindValue(2, "Picked Up");
@@ -310,36 +260,44 @@ ngo_require_login();
                 $name=$res['name'];
               }
               ?>
-          <tr>
-            <td><?php echo $name ?></td>
-            <td><?php echo $donated_at ?></td>
-            <td><?php echo $food_type ?></td>
-            <td><?php echo $quantity ?></td>
-            <td><?php echo $status ?></td>
-            <td>None</td>
-          </tr>
+              <tr>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo $name ?></strong></div></td>
+                <td class="date-cell"><?php echo $donated_at ?></td>
+                <td><?php echo $food_type ?></td>
+                <td><?php echo $quantity ?></td>
+                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
+                <td><span class="muted">Done</span></td>
+              </tr>
               <?php
             }
           }
           ?>
-        </table>
-      </section>
-
-      <section class="documents">
-        <div class="section-header">
-          <h3>All Immediate Donations to You</h3>
+            </tbody>
+          </table>
         </div>
+        <div class="empty" data-empty-for="#voluntaryDonations">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>
+          <strong>No scheduled donations right now</strong>
+          <p>When a donor schedules a food donation, it appears here for every NGO.</p>
+        </div>
+      </article>
 
-        <table class="document-table">
-          <tr>
-            <th>Donor</th>
-            <th>Request Type</th>
-            <th>Food Type</th>
-            <th>Quantity</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-          <?php 
+      <!-- Immediate donations accepted by this NGO -->
+      <article class="card reveal">
+        <header class="card__head">
+          <div>
+            <h2 class="card__title">Immediate donations you accepted</h2>
+            <p class="card__sub">Accepted from an email alert — collect them within the donor’s pickup window</p>
+          </div>
+          <span class="pill pill--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-clock"/></svg>High urgency</span>
+        </header>
+        <div class="table-wrap">
+          <table class="table table--stack" id="immediateDonations">
+            <thead>
+              <tr><th>Donor</th><th>Type</th><th>Food type</th><th>Quantity</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+          <?php
           $stmt=$pdo->prepare("select * from food_donations where target_id=? and donation_type=? and target_type=?");
           $stmt->bindParam(1,$_SESSION['ngo_id']);
           $stmt->bindValue(2, "Immediate");
@@ -365,43 +323,38 @@ ngo_require_login();
                 $name=$res['name'];
               }
               ?>
-          <tr>
-            <td><?php echo isset($name)?$name:'' ?></td>
-            <td><?php echo $request_type ?></td>
-            <td><?php echo $food_type ?></td>
-            <td><?php echo $quantity ?></td>
-            <td><?php echo $status ?></td>
+              <tr>
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo isset($name)?$name:'' ?></strong></div></td>
+                <td><?php echo $request_type ?></td>
+                <td><?php echo $food_type ?></td>
+                <td><?php echo $quantity ?></td>
+                <td><span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span></td>
             <?php if($status=="Donated" && $request_type=="Immediate"): ?>
-            <td><?php echo action_button('donation-pickup.php', ['type'=>'Immediate','id'=>$id], 'Pick Up') ?></td>
+                <td><div class="actions"><?php echo action_button('donation-pickup.php', ['type'=>'Immediate','id'=>$id], 'Pick Up') ?></div></td>
             <?php endif ?>
             <?php if($status=="Picked Up" && $request_type=="Immediate"): ?>
-              <td>None</td>
+                <td><span class="muted">Done</span></td>
             <?php endif ?>
-          </tr>
-          <!-- Immediate Donation status Donated means you have already Accepted the Donation. Only Pickup is left. Immediate Donation cannot be Requested -->
+              </tr>
               <?php
             }
           }
           ?>
-        </table>
-      </section>
-
-      <div class="footer">
-        © NGO Management System
-      </div>
+            </tbody>
+          </table>
+        </div>
+        <div class="empty" data-empty-for="#immediateDonations">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-food"/></svg>
+          <strong>No immediate donations yet</strong>
+          <p>Accept an immediate food alert from your email and it will be listed here.</p>
+        </div>
+      </article>
 
     </main>
-
   </div>
+</div>
 
-  <!-- <div class="snow">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
-
-  <div class="snow-accumulation"></div> -->
-
-  <script src="../assets/js/sidebar.js"></script>
-
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

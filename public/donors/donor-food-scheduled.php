@@ -87,175 +87,160 @@ if (isset($_POST['donate-btn'])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduled Food Donation</title>
-    <link rel="stylesheet" href="../assets/css/donor.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scheduled food donation · Donor | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
-
 <div class="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="brand">HelpSphere</div>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+
+    <span class="sidebar__tag">Donor space</span>
+
+    <nav class="sidebar__nav" aria-label="Donor space">
+      <a href="../dashboards/donor-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../donors/donor-food-selection.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-food"/></svg>Food donation</a>
+      <a href="../donors/donor-money-selection.php"><svg class="icon"><use href="../assets/img/icons.svg#i-coin"/></svg>Money donation</a>
+      <a href="../donors/donor-resource-donation.php"><svg class="icon"><use href="../assets/img/icons.svg#i-box"/></svg>Resource donation</a>
+      <a href="../donors/donor-volunteer-registration.php"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteering</a>
+      <a href="../donors/donor-messages.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Messages</a>
+      <a href="../donors/donor-profile-preferences.php"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg>Profile &amp; preferences</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/donor-dashboard.php">Donor space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../donors/donor-food-selection.php">Food donation</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Scheduled donation</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span>
+          <div class="profile__text"><strong>Donor</strong><span>Donor space</span></div>
         </div>
+      </div>
+    </header>
 
-        <nav class="sidebar-nav">
-            <ul>
-                <li>
-                    <a href="../dashboards/donor-dashboard.php" class="nav-item">
-                        <span class="icon">🏠</span>
-                        <span class="label">Dashboard</span>
-                    </a>
-                </li>
+    <main class="content" id="content">
 
-                <li>
-                    <a href="../donors/donor-profile-preferences.php" class="nav-item">
-                        <span class="icon">👤</span>
-                        <span class="label">Profile & Preferences</span>
-                    </a>
-                </li>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Food donation</p>
+          <h1 class="page-head__title">Schedule a food pickup</h1>
+          <p class="page-head__sub">Choose when and where the food can be collected. The NGO coordinates the pickup closer to the time.</p>
+        </div>
+      </section>
 
-                <li>
-                    <a href="../donors/donor-food-selection.php" class="nav-item active">
-                        <span class="icon">🍱</span>
-                        <span class="label">Food Donation</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../donors/donor-money-selection.php" class="nav-item">
-                        <span class="icon">💰</span>
-                        <span class="label">Money Donation</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../donors/donor-resource-donation.php" class="nav-item">
-                        <span class="icon">📦</span>
-                        <span class="label">Resource Donation</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../donors/donor-volunteer-registration.php" class="nav-item">
-                        <span class="icon">🤝</span>
-                        <span class="label">Volunteering</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../donors/donor-messages.php" class="nav-item">
-                        <span class="icon">💬</span>
-                        <span class="label">Communication</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../../inc/logout.php" class="nav-item">
-                        <span class="icon">🚪</span>
-                        <span class="label">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-
-       <header class="topbar">
-        <div class="user-name">Book Donation Slot</div>
-        <div class="menu-toggle" id="menuToggle">☰</div>
-       </header>
-
-       <form action="" method="POST">
+      <form class="row row--2-1" action="" method="POST">
+        <article class="card reveal">
         <input type="hidden" name="csrf" value="<?php echo h($_SESSION['csrf']) ?>" />
-
         <?php if ($error !== ''): ?>
-        <div style="color:#f87171;margin:0 0 16px"><?php echo h($error) ?></div>
+          <p class="alert alert--error"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg><span><?php echo h($error) ?></span></p>
         <?php endif ?>
 
-        <!-- SCHEDULE DETAILS -->
-        <section>
-            <div class="section-header">
-                <h3>Donation Schedule</h3>
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Donation schedule</h2>
+              <p class="card__sub">What you are giving and when it can be picked up</p>
             </div>
+          </header>
 
-            <div class="card">
-
-                <div class="form-group">
-                    <label>Food Type</label>
-                    <select name="type">
+          <div class="form">
+            <div class="form__grid">
+              <div class="field">
+                <label for="type">Food type</label>
+                <div class="field__control field__control--select">
+                  <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-food"/></svg>
+                  <select id="type" name="type">
                         <?php foreach ($TYPES as $t): ?>
                         <option value="<?php echo h($t) ?>" <?php if ($form['type'] === $t) echo 'selected' ?>><?php echo h($t) ?></option>
                         <?php endforeach ?>
-                    </select>
+                  </select>
                 </div>
+              </div>
 
-                <div class="form-group">
-                    <label>Estimated Quantity (Do mention the unit)</label>
-                    <input type="text" placeholder="e.g. 50 gram" name="quantity" value="<?php echo h($form['quantity']) ?>">
+              <div class="field">
+                <label for="quantity">Estimated quantity (with unit)</label>
+                <div class="field__control">
+                  <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-box"/></svg>
+                  <input type="text" id="quantity" placeholder="e.g. 10 kg, 30 meals" name="quantity" value="<?php echo h($form['quantity']) ?>">
                 </div>
+              </div>
 
-                <div class="form-group">
-                    <label>Pickup Date</label>
-                    <input type="date" name="date" value="<?php echo h($form['date']) ?>" required>
+              <div class="field">
+                <label for="date">Pickup date</label>
+                <div class="field__control">
+                  <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-calendar"/></svg>
+                  <input type="date" id="date" name="date" value="<?php echo h($form['date']) ?>" required>
                 </div>
+              </div>
 
-                <div class="form-group">
-                    <label>Pickup Time Window</label>
-                    <input type="time" name="time" value="<?php echo h($form['time']) ?>" required>
+              <div class="field">
+                <label for="time">Pickup time</label>
+                <div class="field__control">
+                  <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-clock"/></svg>
+                  <input type="time" id="time" name="time" value="<?php echo h($form['time']) ?>" required>
                 </div>
+              </div>
 
-                <div class="form-group">
-                    <label>Pickup Address</label>
-                    <textarea rows="3" placeholder="Exact pickup location" name="address"><?php echo h($form['address']) ?></textarea>
+              <div class="field field--full">
+                <label for="address">Pickup address</label>
+                <div class="field__control field__control--area">
+                  <textarea id="address" rows="3" placeholder="Exact pickup location" name="address"><?php echo h($form['address']) ?></textarea>
                 </div>
+              </div>
 
+              <div class="field">
+                <label for="urgency">Urgency</label>
+                <div class="field__control">
+                  <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-info"/></svg>
+                  <input type="text" id="urgency" value="N/A" readonly>
+                </div>
+                <p class="field__hint">Scheduled donations have no urgency level.</p>
+              </div>
             </div>
-        </section>
+          </div>
+        </article>
 
-        <!-- PICKUP COORDINATION -->
-        <section>
-            <div class="section-header">
-                <h3>Pickup Coordination</h3>
-            </div>
-
-            <div class="card">
-                <div class="form-group">
-                    <label>Urgency Level</label>
-                    <input type="text" value="N/A" readonly>
-                </div>
-            </div>
-        </section>
-
-        <!-- CONFIRM -->
-        <section>
-            <div class="section-header">
-                <h3>Confirm Scheduled Donation</h3>
-            </div>
-
-            <div class="card">
-                <p>
-                    Your donation will be scheduled and coordinated
-                    with the selected NGO closer to the pickup time.
-                </p>
-
-                <button class="btn" type="submit" name="donate-btn">
-                 Submit Scheduled Food Donation
-                </button>
-            </div>
-        </section>
-        </form>
+        <aside class="urgent reveal">
+          <svg aria-hidden="true" class="leaf leaf--u1"><use href="../assets/img/icons.svg#leaf"/></svg>
+          <svg aria-hidden="true" class="leaf leaf--u2"><use href="../assets/img/icons.svg#leaf"/></svg>
+          <span class="pill pill--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Scheduled</span>
+          <h2>Confirm your donation</h2>
+          <p>Your donation will be listed for NGOs. The NGO that accepts it will coordinate the pickup at the time you chose.</p>
+          <button class="btn btn--light" type="submit" name="donate-btn"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Submit scheduled donation</button>
+        </aside>
+      </form>
 
     </main>
-<script src="../assets/js/donor.js"></script>
+  </div>
 </div>
 
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

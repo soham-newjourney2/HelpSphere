@@ -84,216 +84,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-  <meta charset="UTF-8">
-  <title>Compliance Documents</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/ngo.css">
-  <style>
-    .alert {
-      padding: 12px 18px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 0.95rem;
-      font-weight: 500;
-    }
-    .alert-success {
-      background: rgba(34, 197, 94, 0.15);
-      color: #16a34a;
-      border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-    .alert-error {
-      background: rgba(239, 68, 68, 0.15);
-      color: #dc2626;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .btn-view {
-      display: inline-block;
-      padding: 6px 16px;
-      background: rgba(99, 179, 237, 0.2);
-      color: #63b3ed;
-      border: 1px solid rgba(99, 179, 237, 0.4);
-      border-radius: 6px;
-      font-size: 0.85rem;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-    .btn-view:hover {
-      background: rgba(99, 179, 237, 0.35);
-      color: #fff;
-    }
-    .btn-delete {
-      display: inline-block;
-      padding: 6px 16px;
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      border-radius: 6px;
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      margin-left: 6px;
-    }
-    .btn-delete:hover {
-      background: rgba(239, 68, 68, 0.35);
-      color: #fff;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    .status-uploaded {
-      background: rgba(251, 191, 36, 0.15);
-      color: #f59e0b;
-      border: 1px solid rgba(251, 191, 36, 0.3);
-    }
-    .status-verified {
-      background: rgba(34, 197, 94, 0.15);
-      color: #16a34a;
-      border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compliance documents · NGO | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
+<body>
+<div class="app">
 
-<body> 
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
 
-  <div class="overlay" id="overlay"></div>
+    <span class="sidebar__tag">NGO workspace</span>
 
-  <div class="sky">
-    <div class="aurora a1"></div>
-    <div class="aurora a2"></div>
-    <div class="aurora a3"></div>
-  </div>
+    <nav class="sidebar__nav" aria-label="NGO workspace">
+      <a href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-needs.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
+      <a href="../ngos/ngo-beneficiaries.php"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
+      <a href="../ngos/ngo-donations.php"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="../ngos/ngo-campaigns.php"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>Campaigns</a>
+      <a href="../ngos/ngo-volunteers.php"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>
+      <a href="../ngos/ngo-communication.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Communication</a>
+      <a href="../ngos/ngo-profile.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Profile &amp; compliance</a>
+    </nav>
 
-  <!-- <div class="moon"></div> -->
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
 
-  <div class="app">
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand">NGO</div>
-        <button class="sidebar-close" id="sidebarClose">✕</button>
-      </div>
-
-      <div class="tagline">Management & Operations</div>
-
-      <nav class="sidebar-nav">
-        <ul>
-
-          <li class="nav-item">
-            <a href="../dashboards/ngo-dashboard.php">
-              <span class="icon">📊</span>
-              <span class="label">Dashboard Overview</span>
-            </a>
-          </li>
-
-          <li class="nav-item active">
-            <a href="../ngos/ngo-profile.php">
-              <span class="icon">🧾</span>
-              <span class="label">Profile & Compliance</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-needs.php">
-              <span class="icon">📌</span>
-              <span class="label">Needs & Requests</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-beneficiaries.php">
-              <span class="icon">👥</span>
-              <span class="label">Beneficiaries</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-donations.php">
-              <span class="icon">🎁</span>
-              <span class="label">Donations & Resources</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-campaigns.php">
-              <span class="icon">📣</span>
-              <span class="label">Campaigns</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-volunteers.php">
-              <span class="icon">🧑‍🤝‍🧑</span>
-              <span class="label">Volunteers</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="../ngos/ngo-communication.php">
-              <span class="icon">💬</span>
-              <span class="label">Communication</span>
-            </a>
-          </li>
-
-          <li class="nav-item logout">
-            <a href="../../inc/logout.php">
-              <span class="icon">⎋</span>
-              <span class="label">Sign Out</span>
-            </a>
-          </li>
-
-        </ul>
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-
-      <div class="topbar">
-        <div class="topbar-left">
-          <button class="menu-toggle" id="menuToggle">☰</button>
-          <div class="section-header">
-            <h3>Compliance Documents</h3>
-          </div>
-        </div>
-
-        <div class="user-name">
-          NGO Administrator
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../ngos/ngo-profile.php">Profile &amp; compliance</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Compliance documents</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
+          <div class="profile__text"><strong>NGO team</strong><span>NGO workspace</span></div>
         </div>
       </div>
+    </header>
 
-      <!-- Alerts -->
+    <main class="content" id="content">
+
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Profile &amp; compliance</p>
+          <h1 class="page-head__title">Compliance documents</h1>
+          <p class="page-head__sub">Upload your registration certificate, financial reports and other documents for admin review.</p>
+        </div>
+        <div class="page-head__actions">
+          <a href="../ngos/ngo-profile-verification.php" class="btn btn--outline btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Verification status</a>
+        </div>
+      </section>
+
       <?php if ($upload_success): ?>
-        <div class="alert alert-success">✅ <?php echo htmlspecialchars($upload_success); ?></div>
+      <div class="alert alert-success"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg><span><?php echo htmlspecialchars($upload_success); ?></span></div>
       <?php endif; ?>
       <?php if ($upload_error): ?>
-        <div class="alert alert-error">⚠️ <?php echo htmlspecialchars($upload_error); ?></div>
+      <div class="alert alert-error"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg><span><?php echo htmlspecialchars($upload_error); ?></span></div>
       <?php endif; ?>
 
-      <!-- Uploaded Documents -->
-      <section class="documents">
-        <div class="section-header">
-          <h3>Submitted Documents</h3>
-        </div>
-
-        <table class="document-table">
-          <tr>
-            <th>Document Name</th>
-            <th>Uploaded At</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
+      <section class="row row--2-1">
+        <article class="card reveal">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Submitted documents</h2>
+              <p class="card__sub">Newest first</p>
+            </div>
+          </header>
+          <div class="table-wrap">
+            <table class="table table--stack" id="docsTable">
+              <thead>
+                <tr><th>Document</th><th>Uploaded</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
           <?php
           $stmt = $pdo->prepare("SELECT * FROM ngo_documents WHERE ngo_id = ? ORDER BY uploaded_at DESC");
           $stmt->execute([$_SESSION['ngo_id']]);
-
           if ($stmt->rowCount() > 0):
             while ($res = $stmt->fetch(PDO::FETCH_ASSOC)):
               $doc_id     = (int) $res['id'];
@@ -305,77 +191,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document_file'])) {
               $file_url = 'ngo-profile-documents.php?doc=' . $doc_id;
               $badge_class = strtolower($status) === 'verified' ? 'status-verified' : 'status-uploaded';
           ?>
-          <tr>
-            <td><?php echo $docname; ?></td>
-            <td><?php echo $uploaded; ?></td>
-            <td><span class="status-badge <?php echo $badge_class; ?>"><?php echo $status; ?></span></td>
-            <td>
+                <tr>
+                  <td><div class="who"><span class="doc-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg></span><strong><?php echo $docname; ?></strong></div></td>
+                  <td class="date-cell"><?php echo $uploaded; ?></td>
+                  <td><span class="status <?php echo $badge_class; ?>" data-status="<?php echo $status; ?>"><?php echo $status; ?></span></td>
+                  <td>
+                    <div class="actions">
               <?php if (!empty($file_path)): ?>
-                <a href="<?php echo $file_url; ?>" target="_blank" class="btn-view">👁 View</a>
+                      <a href="<?php echo $file_url; ?>" target="_blank" rel="noopener" class="act act--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-eye"/></svg>View</a>
               <?php else: ?>
-                <span style="color: #888; font-size:0.85rem;">N/A</span>
+                      <span class="muted">N/A</span>
               <?php endif; ?>
-              <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this document? This cannot be undone.');"> 
-                <button type="submit" name="delete_doc_id" value="<?php echo $doc_id; ?>" class="btn-delete">🗑 Delete</button> 
-              </form>
-            </td>
-          </tr>
+                      <form method="POST" data-confirm="Delete this document? This cannot be undone.">
+                        <button type="submit" name="delete_doc_id" value="<?php echo $doc_id; ?>" class="act act--no"><svg class="icon"><use href="../assets/img/icons.svg#i-trash"/></svg>Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
           <?php
             endwhile;
           else:
           ?>
-          <tr>
-            <td colspan="4" style="text-align:center; color:#aaa; padding: 20px;">No documents submitted yet.</td>
-          </tr>
           <?php endif; ?>
-        </table>
-      </section>
-
-      <!-- Upload Section -->
-      <section class="active-requests">
-        <div class="section-header">
-          <h3>Upload New Document</h3>
-        </div>
-
-        <!-- enctype is required for file uploads -->
-        <form action="" method="POST" enctype="multipart/form-data">
-          <div class="request-list">
-
-            <div class="request-item">
-              <label class="label">Document Type</label>
-              <input type="text" name="document_type" placeholder="e.g. Financial Report" required
-                     value="<?php echo htmlspecialchars($_POST['document_type'] ?? ''); ?>">
-            </div>
-
-            <div class="request-item">
-              <label class="label">Select File <span style="font-size:0.8rem; color:#aaa;">(PDF, JPG, PNG, DOC, DOCX — max 5MB)</span></label>
-              <input type="file" name="document_file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" required>
-            </div>
-
-            <button type="submit">
-              Upload Document
-            </button>
-
+              </tbody>
+            </table>
           </div>
-        </form>
-      </section>
+          <div class="empty" data-empty-for="#docsTable">
+            <svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>
+            <strong>No documents submitted yet</strong>
+            <p>Upload your first compliance document using the form.</p>
+          </div>
+        </article>
 
-      <div class="footer">
-        © NGO Management System
-      </div>
+        <article class="card reveal">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">Upload a document</h2>
+              <p class="card__sub">PDF, JPG, PNG, DOC or DOCX — max 5 MB</p>
+            </div>
+          </header>
+          <form class="form" action="" method="POST" enctype="multipart/form-data">
+            <div class="field">
+              <label for="document_type">Document type</label>
+              <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-file"/></svg><input type="text" id="document_type" name="document_type" placeholder="e.g. Registration certificate" required
+                     value="<?php echo htmlspecialchars($_POST['document_type'] ?? ''); ?>"></div>
+            </div>
+            <div class="field">
+              <label for="document_file">File</label>
+              <div class="field__control field__control--file"><input type="file" id="document_file" name="document_file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" required></div>
+            </div>
+            <button type="submit" class="btn btn--dark"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload document</button>
+          </form>
+        </article>
+      </section>
 
     </main>
-
   </div>
+</div>
 
-  <!-- <div class="snow">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
-
-  <div class="snow-accumulation"></div> -->
-
-  <script src="../assets/js/sidebar.js"></script>
-
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

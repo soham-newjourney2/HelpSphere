@@ -5,119 +5,89 @@ require_login();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request Management</title>
-    <link rel="stylesheet" href="../assets/css/beneficiary.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My requests · Beneficiary | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
-
-<div id="overlay" class="overlay"></div>
-
 <div class="app">
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="brand">HelpSphere</div>
-            <button id="sidebarClose" class="sidebar-close">✕</button>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+
+    <span class="sidebar__tag">Beneficiary space</span>
+
+    <nav class="sidebar__nav" aria-label="Beneficiary space">
+      <a href="../dashboards/beneficiary-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../beneficiaries/beneficiary-request-management.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>My requests</a>
+      <a href="../beneficiaries/beneficiary-document-upload.php"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload documents</a>
+      <a href="../beneficiaries/beneficiary-documents.php"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>My documents</a>
+      <a href="../beneficiaries/beneficiary-messages.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Messages</a>
+      <a href="../beneficiaries/beneficiary-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg>Profile</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/beneficiary-dashboard.php">Beneficiary space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>My requests</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span>
+          <div class="profile__text"><strong>Beneficiary</strong><span>Beneficiary space</span></div>
         </div>
+      </div>
+    </header>
 
-        <p class="tagline">Support that reaches you</p>
+    <main class="content" id="content">
 
-        <nav class="sidebar-nav">
-            <ul>
-                <li>
-                    <a href="../dashboards/beneficiary-dashboard.php" class="nav-item">
-                        <span class="icon">🏠</span>
-                        <span class="label">Dashboard</span>
-                    </a>
-                </li>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Requests</p>
+          <h1 class="page-head__title">My assistance requests</h1>
+          <p class="page-head__sub">Edit or cancel a request while it is pending, and follow its timeline once an NGO picks it up.</p>
+        </div>
+        <div class="page-head__actions">
+          <a href="../beneficiaries/beneficiary-request-create.php" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-plus"/></svg>New request</a>
+        </div>
+      </section>
 
-                <li>
-                    <a href="../beneficiaries/beneficiary-request-management.php" class="nav-item active">
-                        <span class="icon">📄</span>
-                        <span class="label">Requests</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-document-upload.php" class="nav-item">
-                        <span class="icon">📁</span>
-                        <span class="label">Upload Documents</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-documents.php" class="nav-item">
-                        <span class="icon">📁</span>
-                        <span class="label">Documents</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-messages.php" class="nav-item">
-                        <span class="icon">💬</span>
-                        <span class="label">Messages</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-profile.php" class="nav-item">
-                        <span class="icon">👤</span>
-                        <span class="label">Profile</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../../inc/logout.php" class="nav-item logout">
-                        <span class="icon">🚪</span>
-                        <span class="label">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <main class="main-content">
-
-        <header class="topbar">
-            <div class="topbar-left">
-                <button id="menuToggle" class="menu-toggle">☰</button>
-                <div class="user-name">Request Management</div>
-            </div>
+      <article class="card reveal">
+        <header class="card__head">
+          <div class="tabs" data-filter-target="#requestList" aria-label="Filter by status">
+            <button type="button" class="tabs__btn is-active" data-filter="all" aria-pressed="true">All <span></span></button>
+            <button type="button" class="tabs__btn" data-filter="Pending" aria-pressed="false">Pending <span></span></button>
+            <button type="button" class="tabs__btn" data-filter="Approved" aria-pressed="false">Approved <span></span></button>
+            <button type="button" class="tabs__btn" data-filter="Fulfilled" aria-pressed="false">Fulfilled <span></span></button>
+          </div>
+          <label class="search"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-search"/></svg><span class="sr-only">Search requests</span><input type="search" placeholder="Search requests…" data-search-target="#requestList" /></label>
         </header>
 
-        <!-- CREATE REQUEST -->
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Create Assistance Request</h3>
-            </div>
-
-            <div class="request-item">
-                <p>
-                    Start a new request for support such as medical, education, food,
-                    or emergency assistance.
-                </p>
-
-                <div class="action-row">
-                    <a href="../beneficiaries/beneficiary-request-create.php" class="action-btn">
-                        + Create New Request
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- MY REQUESTS -->
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>My Requests</h3>
-            </div>
-
-            <div class="request-list">
-
-            <?php 
+        <div class="list" id="requestList">
+            <?php
             $stmt=$pdo->prepare("select * from assistance_requests where beneficiary_id=? ORDER BY created_at DESC");
             $stmt->bindParam(1,$_SESSION['beneficiary_id']);
             $stmt->execute();
@@ -131,47 +101,47 @@ require_login();
                         $created_at=$record['created_at'];
                         $id=$record['id'];
                         ?>
-                    <div class="request-item">
-                         <strong><?php echo $category ?> Assistance</strong>
-                         <div class="status review"><?php echo $status ?></div>
-                         <p><strong>Submitted: </strong><?php echo $created_at ?></p>
-                         <p><strong>Request: </strong><?php echo htmlspecialchars($description) ?></p>
-
-                    <div class="action-row">
+          <div class="item" data-status="<?php echo $status ?>">
+            <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg></span>
+            <div class="item__body">
+              <div class="item__top">
+                <span class="item__title"><?php echo $category ?> assistance</span>
+                <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+              </div>
+              <p class="item__text"><?php echo htmlspecialchars($description) ?></p>
+              <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Submitted <?php echo $created_at ?></span></div>
+              <div class="item__actions">
                         <?php if($status=="Pending"): ?>
-                        <a href="../beneficiaries/beneficiary-request-edit.php?id=<?php echo $id ?>" class="action-btn secondary">
-                            Edit
-                        </a>
+                <a href="../beneficiaries/beneficiary-request-edit.php?id=<?php echo $id ?>" class="btn btn--outline btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-edit"/></svg>Edit</a>
                         <?php endif ?>
                         <?php if($status=="Pending"): ?>
                         <?php echo action_button('../beneficiaries/request-cancel.php', ['id'=>$id], 'Cancel', 'action-btn danger') ?>
                         <?php endif ?>
-                        <a href="../beneficiaries/beneficiary-request-timeline.php?id=<?php echo $id ?>" class="action-btn secondary">
-                            Timeline
-                        </a>
+                <a href="../beneficiaries/beneficiary-request-timeline.php?id=<?php echo $id ?>" class="btn btn--outline btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-history"/></svg>Timeline</a>
                         <?php if($status=="Fulfilled"): ?>
-                        <a href="../beneficiaries/beneficiary-request-fulfillment.php?id=<?php echo $id ?>&category=<?php echo $category ?>" class="action-btn">
-                            Fulfillment Status
-                        </a>
+                <a href="../beneficiaries/beneficiary-request-fulfillment.php?id=<?php echo $id ?>&category=<?php echo $category ?>" class="btn btn--dark btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Fulfillment details</a>
                         <?php endif ?>
-                    </div>
-                </div>
-
+              </div>
+            </div>
+          </div>
                         <?php
                     }
                 }
             ?>
-            </div>
-        </section>
-
-        <footer class="footer">
-            © 2026 HelpSphere · Beneficiary Portal
-        </footer>
+        </div>
+        <div class="empty" data-empty-for="#requestList">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>
+          <strong>No requests here</strong>
+          <p>Create a request and a verified NGO will review it.</p>
+          <a href="../beneficiaries/beneficiary-request-create.php" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-plus"/></svg>New request</a>
+        </div>
+      </article>
 
     </main>
-
+  </div>
 </div>
 
-<script src="../assets/js/beneficiary-dashboard.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

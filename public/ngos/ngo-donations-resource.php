@@ -45,146 +45,136 @@ $stmt = $pdo->prepare(
 $stmt->execute([$ngo_id]);
 $donations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Resource Donations</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/ngo.css">
-  <style>
-    .badge {
-      display: inline-block;
-      padding: 3px 12px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-    .badge-pending  { background: rgba(251,191,36,0.15);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
-    .badge-approved { background: rgba(74,222,128,0.15);  color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
 
-    .btn-accept {
-      display: inline-block;
-      padding: 5px 16px;
-      background: rgba(74,222,128,0.15);
-      color: #4ade80;
-      border: 1px solid rgba(74,222,128,0.35);
-      border-radius: 6px;
-      font-size: 0.83rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-accept:hover { background: rgba(74,222,128,0.35); color: #fff; }
-  </style>
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resource donations · NGO | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
+<div class="app">
 
-  <div class="overlay" id="overlay"></div>
-  <div class="sky">
-    <div class="aurora a1"></div>
-    <div class="aurora a2"></div>
-    <div class="aurora a3"></div>
-  </div>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
 
-  <div class="app">
+    <span class="sidebar__tag">NGO workspace</span>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand">NGO</div>
-        <button class="sidebar-close" id="sidebarClose">✕</button>
-      </div>
-      <div class="tagline">Management & Operations</div>
-      <nav class="sidebar-nav">
-        <ul>
-          <li class="nav-item"><a href="../dashboards/ngo-dashboard.php"><span class="icon">📊</span><span class="label">Dashboard Overview</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-profile.php"><span class="icon">🧾</span><span class="label">Profile & Compliance</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-needs.php"><span class="icon">📌</span><span class="label">Needs & Requests</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-beneficiaries.php"><span class="icon">👥</span><span class="label">Beneficiaries</span></a></li>
-          <li class="nav-item active"><a href="../ngos/ngo-donations.php"><span class="icon">🎁</span><span class="label">Donations & Resources</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-campaigns.php"><span class="icon">📣</span><span class="label">Campaigns</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-volunteers.php"><span class="icon">🧑‍🤝‍🧑</span><span class="label">Volunteers</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-communication.php"><span class="icon">💬</span><span class="label">Communication</span></a></li>
-          <li class="nav-item logout"><a href="../../inc/logout.php"><span class="icon">⎋</span><span class="label">Sign Out</span></a></li>
-        </ul>
-      </nav>
-    </aside>
+    <nav class="sidebar__nav" aria-label="NGO workspace">
+      <a href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-needs.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
+      <a href="../ngos/ngo-beneficiaries.php"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
+      <a href="../ngos/ngo-donations.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="../ngos/ngo-campaigns.php"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>Campaigns</a>
+      <a href="../ngos/ngo-volunteers.php"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>
+      <a href="../ngos/ngo-communication.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Communication</a>
+      <a href="../ngos/ngo-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Profile &amp; compliance</a>
+    </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
 
-      <div class="topbar">
-        <div class="topbar-left">
-          <button class="menu-toggle" id="menuToggle">☰</button>
-          <div class="section-header"><h3>Resource Donations</h3></div>
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../ngos/ngo-donations.php">Donations &amp; resources</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Resource donations</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
+          <div class="profile__text"><strong>NGO team</strong><span>NGO workspace</span></div>
         </div>
-        <div class="user-name">NGO Administrator</div>
       </div>
+    </header>
 
-      <section class="documents">
-        <div class="section-header">
-          <h3>List of all Donations</h3>
+    <main class="content" id="content">
+
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Donations &amp; resources</p>
+          <h1 class="page-head__title">Resource donations</h1>
+          <p class="page-head__sub">Open offers from donors, plus the ones your NGO has accepted. The first NGO to accept an offer gets it.</p>
         </div>
+      </section>
 
-        <table class="document-table">
-          <tr>
-            <th>Donor</th>
-            <th>Resource Type</th>
-            <th>Condition</th>
-            <th>Quantity</th>
-            <th>Pickup Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-
+      <article class="card reveal">
+        <header class="card__head">
+          <div class="tabs" data-filter-target="#resourceTable" aria-label="Filter by status">
+            <button type="button" class="tabs__btn is-active" data-filter="all" aria-pressed="true">All <span></span></button>
+            <button type="button" class="tabs__btn" data-filter="Pending" aria-pressed="false">Open <span></span></button>
+            <button type="button" class="tabs__btn" data-filter="Approved" aria-pressed="false">Accepted by you <span></span></button>
+          </div>
+        </header>
+        <div class="table-wrap">
+          <table class="table table--stack" id="resourceTable">
+            <thead>
+              <tr><th>Donor</th><th>Resource</th><th>Condition</th><th>Quantity</th><th>Pickup date</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
           <?php if (empty($donations)): ?>
-          <tr>
-            <td colspan="7" style="text-align:center; color:#64748b; padding:24px;">
-              No resource donations available.
-            </td>
-          </tr>
           <?php else: ?>
             <?php foreach ($donations as $rec):
               $res_id    = (int) $rec['id'];
               $donor_id  = (int) $rec['donor_id'];
               $status    = $rec['status'];
             ?>
-          <tr>
-            <td><?php echo htmlspecialchars($rec['donor_name']); ?></td>
-            <td><?php echo htmlspecialchars($rec['resource_type']); ?></td>
-            <td><?php echo htmlspecialchars($rec['resource_condition']); ?></td>
-            <td><?php echo htmlspecialchars($rec['quantity']); ?></td>
-            <td><?php echo htmlspecialchars($rec['pickup_date']); ?></td>
-            <td>
-              <span class="badge <?php echo $status === 'Approved' ? 'badge-approved' : 'badge-pending'; ?>">
-                <?php echo htmlspecialchars($status); ?>
-              </span>
-            </td>
-            <td>
+              <tr data-status="<?php echo htmlspecialchars($status); ?>">
+                <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span><strong><?php echo htmlspecialchars($rec['donor_name']); ?></strong></div></td>
+                <td><span class="pill pill--muted"><svg class="icon"><use href="../assets/img/icons.svg#i-box"/></svg><?php echo htmlspecialchars($rec['resource_type']); ?></span></td>
+                <td><?php echo htmlspecialchars($rec['resource_condition']); ?></td>
+                <td><?php echo htmlspecialchars($rec['quantity']); ?></td>
+                <td class="date-cell"><?php echo htmlspecialchars($rec['pickup_date']); ?></td>
+                <td>
+                  <span class="status <?php echo $status === 'Approved' ? 'badge-approved' : 'badge-pending'; ?>" data-status="<?php echo htmlspecialchars($status); ?>"><?php echo htmlspecialchars($status); ?></span>
+                </td>
+                <td>
               <?php if ($status === 'Pending'): ?>
-                <form method="POST" action=""
-                      onsubmit="return confirm('Accept this resource donation?');">
-                  <input type="hidden" name="accept_id" value="<?php echo $res_id; ?>">
-                  <input type="hidden" name="donor_id"  value="<?php echo $donor_id; ?>">
-                  <button type="submit" class="btn-accept">✔ Accept</button>
-                </form>
+                  <form method="POST" action="" data-confirm="Accept this resource donation?">
+                    <input type="hidden" name="accept_id" value="<?php echo $res_id; ?>">
+                    <input type="hidden" name="donor_id"  value="<?php echo $donor_id; ?>">
+                    <button type="submit" class="act act--yes"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Accept</button>
+                  </form>
               <?php else: ?>
-                <span style="color:#4ade80; font-size:0.83rem;">✔ Accepted by you</span>
+                  <span class="pill pill--good"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Accepted by you</span>
               <?php endif; ?>
-            </td>
-          </tr>
+                </td>
+              </tr>
             <?php endforeach; ?>
           <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
+        <div class="empty" data-empty-for="#resourceTable">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-box"/></svg>
+          <strong>No resource donations available</strong>
+          <p>Donors’ offers of clothes, books and supplies appear here.</p>
+        </div>
+      </article>
 
-        </table>
-      </section>
-
-      <div class="footer">© NGO Management System</div>
     </main>
-
   </div>
+</div>
 
-  <script src="../assets/js/sidebar.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

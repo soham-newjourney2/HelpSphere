@@ -81,240 +81,77 @@ $error   = isset($_GET['error']) ? 1 : 0;
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document History</title>
-    <link rel="stylesheet" href="../assets/css/beneficiary.css">
-    <style>
-      .btn-view-doc {
-        display: inline-block;
-        padding: 6px 16px;
-        background: rgba(99, 179, 237, 0.2);
-        color: #63b3ed;
-        border: 1px solid rgba(99, 179, 237, 0.4);
-        border-radius: 6px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .btn-view-doc:hover { background: rgba(99, 179, 237, 0.35); color: #fff; }
-
-      .btn-delete-doc {
-        display: inline-block;
-        padding: 6px 16px;
-        background: rgba(239, 68, 68, 0.15);
-        color: #f87171;
-        border: 1px solid rgba(239, 68, 68, 0.35);
-        border-radius: 6px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .btn-delete-doc:hover { background: rgba(239, 68, 68, 0.35); color: #fff; }
-
-      .doc-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      /* ── Preview Modal ───────────────────────────────────────────────────── */
-      .preview-backdrop {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-      }
-      .preview-backdrop.active { display: flex; }
-
-      .preview-box {
-        background: #0f172a;
-        border: 1px solid rgba(99, 179, 237, 0.25);
-        border-radius: 12px;
-        padding: 20px 24px;
-        width: 100%;
-        max-width: 860px;
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 24px 64px rgba(0,0,0,0.6);
-      }
-
-      .preview-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 16px;
-        flex-shrink: 0;
-      }
-      .preview-header h4 {
-        color: #e2e8f0;
-        margin: 0;
-        font-size: 1rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 72%;
-      }
-      .preview-header-actions { display: flex; gap: 10px; align-items: center; }
-
-      .btn-open-tab {
-        padding: 5px 14px;
-        background: rgba(99, 179, 237, 0.15);
-        color: #63b3ed;
-        border: 1px solid rgba(99, 179, 237, 0.35);
-        border-radius: 6px;
-        font-size: 0.82rem;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: all 0.2s ease;
-      }
-      .btn-open-tab:hover { background: rgba(99, 179, 237, 0.3); color: #fff; }
-
-      .btn-close-preview {
-        padding: 5px 12px;
-        background: rgba(148, 163, 184, 0.1);
-        color: #94a3b8;
-        border: 1px solid rgba(148, 163, 184, 0.25);
-        border-radius: 6px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .btn-close-preview:hover { background: rgba(148, 163, 184, 0.25); color: #fff; }
-
-      .preview-body {
-        flex: 1;
-        overflow: auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 0;
-        border-radius: 8px;
-        background: rgba(15, 23, 42, 0.5);
-      }
-      .preview-body img {
-        max-width: 100%;
-        max-height: 70vh;
-        border-radius: 6px;
-        object-fit: contain;
-      }
-      .preview-body iframe {
-        width: 100%;
-        height: 70vh;
-        border: none;
-        border-radius: 6px;
-      }
-      .preview-unsupported {
-        text-align: center;
-        color: #94a3b8;
-        padding: 40px 20px;
-      }
-      .preview-unsupported .file-icon { font-size: 3rem; margin-bottom: 12px; }
-      .preview-unsupported p { margin: 6px 0; font-size: 0.9rem; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My documents · Beneficiary | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
-
-<div id="overlay" class="overlay"></div>
-
-<!-- Document Preview Modal -->
-<div class="preview-backdrop" id="previewModal">
-  <div class="preview-box">
-    <div class="preview-header">
-      <h4 id="previewTitle">Document</h4>
-      <div class="preview-header-actions">
-        <a id="previewOpenTab" href="#" target="_blank" rel="noopener" class="btn-open-tab">↗ Open in new tab</a>
-        <button type="button" class="btn-close-preview" id="previewClose">✕ Close</button>
-      </div>
-    </div>
-    <div class="preview-body" id="previewBody"></div>
-  </div>
-</div>
-
 <div class="app">
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="brand">HelpSphere</div>
-            <button id="sidebarClose" class="sidebar-close">✕</button>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+
+    <span class="sidebar__tag">Beneficiary space</span>
+
+    <nav class="sidebar__nav" aria-label="Beneficiary space">
+      <a href="../dashboards/beneficiary-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../beneficiaries/beneficiary-request-management.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>My requests</a>
+      <a href="../beneficiaries/beneficiary-document-upload.php"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload documents</a>
+      <a href="../beneficiaries/beneficiary-documents.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>My documents</a>
+      <a href="../beneficiaries/beneficiary-messages.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Messages</a>
+      <a href="../beneficiaries/beneficiary-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg>Profile</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/beneficiary-dashboard.php">Beneficiary space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>My documents</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span>
+          <div class="profile__text"><strong>Beneficiary</strong><span>Beneficiary space</span></div>
         </div>
+      </div>
+    </header>
 
-        <p class="tagline">Support that reaches you</p>
+    <main class="content" id="content">
 
-        <nav class="sidebar-nav">
-            <ul>
-                <li>
-                    <a href="../dashboards/beneficiary-dashboard.php" class="nav-item">
-                        <span class="icon">🏠</span>
-                        <span class="label">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-request-management.php" class="nav-item">
-                        <span class="icon">📄</span>
-                        <span class="label">Requests</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-document-upload.php" class="nav-item">
-                        <span class="icon">📁</span>
-                        <span class="label">Upload Documents</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-documents.php" class="nav-item active">
-                        <span class="icon">📁</span>
-                        <span class="label">Documents</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-messages.php" class="nav-item">
-                        <span class="icon">💬</span>
-                        <span class="label">Messages</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-profile.php" class="nav-item">
-                        <span class="icon">👤</span>
-                        <span class="label">Profile</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../../inc/logout.php" class="nav-item logout">
-                        <span class="icon">🚪</span>
-                        <span class="label">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Documents</p>
+          <h1 class="page-head__title">Your uploaded documents</h1>
+          <p class="page-head__sub">NGOs review these before approving help. Verified documents are locked and can no longer be deleted.</p>
+        </div>
+        <div class="page-head__actions">
+          <a href="../beneficiaries/beneficiary-document-upload.php" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload more</a>
+        </div>
+      </section>
 
-    <main class="main-content">
-
-        <header class="topbar">
-            <div class="topbar-left">
-                <button id="menuToggle" class="menu-toggle">☰</button>
-                <div class="user-name">Document History</div>
-            </div>
-        </header>
-
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Previously Uploaded Documents</h3>
-            </div>
-
-            <div class="request-list">
-
+      <div class="cards-grid">
             <?php
             $stmt = $pdo->prepare("SELECT * FROM beneficiary_documents WHERE beneficiary_id = ? ORDER BY uploaded_at DESC");
             $stmt->execute([$beneficiary_id]);
@@ -327,137 +164,72 @@ $error   = isset($_GET['error']) ? 1 : 0;
                     $file_url   = 'beneficiary-documents.php?doc=' . $doc_id;
                     $ext        = strtolower(pathinfo($file_raw, PATHINFO_EXTENSION));
             ?>
-                <div class="document-card">
-                  <strong>Document: <?php echo h($name_raw) ?></strong>
-                  <p><strong>Uploaded:</strong> <?php echo h($record['uploaded_at']) ?></p>
-                  <div class="status review"><?php echo h($status_raw) ?></div>
-
-                  <div class="doc-actions">
+        <article class="mini-card">
+          <div class="mini-card__top">
+            <span class="doc-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg></span>
+            <span class="status" data-status="<?php echo h($status_raw) ?>"><?php echo h($status_raw) ?></span>
+          </div>
+          <h3><?php echo h($name_raw) ?></h3>
+          <div class="mini-card__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg>Uploaded <?php echo h($record['uploaded_at']) ?></span></div>
+          <div class="mini-card__foot">
                     <?php if ($file_raw !== ''): ?>
-                      <button type="button" class="btn-view-doc"
-                              data-name="<?php echo h($name_raw) ?>"
-                              data-url="<?php echo h($file_url) ?>"
-                              data-ext="<?php echo h($ext) ?>">
-                        👁 View
-                      </button>
+            <button type="button" class="btn btn--outline btn--xs" data-modal-open="#previewModal"
+                    data-preview-name="<?php echo h($name_raw) ?>"
+                    data-preview-url="<?php echo h($file_url) ?>"
+                    data-preview-ext="<?php echo h($ext) ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-eye"/></svg>View</button>
                     <?php endif; ?>
-
                     <?php if ($status_raw !== 'Verified'): ?>
-                    <form method="POST" action="" class="delete-form" style="margin:0;"
-                          data-name="<?php echo h($name_raw) ?>">
-                      <input type="hidden" name="delete_id" value="<?php echo $doc_id; ?>">
-                      <input type="hidden" name="csrf" value="<?php echo h($_SESSION['csrf']) ?>" />
-                      <button type="submit" class="btn-delete-doc">🗑 Delete</button>
-                    </form>
+            <form method="POST" action="" data-confirm="Delete “<?php echo h($name_raw) ?>”? This cannot be undone.">
+              <input type="hidden" name="delete_id" value="<?php echo $doc_id; ?>">
+              <input type="hidden" name="csrf" value="<?php echo h($_SESSION['csrf']) ?>" />
+              <button type="submit" class="btn btn--danger btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-trash"/></svg>Delete</button>
+            </form>
                     <?php endif; ?>
-                  </div>
-                </div>
+          </div>
+        </article>
             <?php
                 endwhile;
             else: ?>
-                <p style="color:#64748b; padding: 16px;">No documents uploaded yet.</p>
+        <div class="card empty">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>
+          <strong>No documents uploaded yet</strong>
+          <p>Upload your ID and supporting documents so NGOs can verify your requests.</p>
+          <a href="../beneficiaries/beneficiary-document-upload.php" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload documents</a>
+        </div>
             <?php endif; ?>
+      </div>
 
+      <!-- Document preview -->
+      <div class="modal" id="previewModal" hidden role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+        <div class="modal__box modal__box--wide">
+          <div class="modal__head">
+            <div>
+              <h2 id="previewTitle">Document</h2>
             </div>
-        </section>
-
-        <footer class="footer">
-            © 2026 HelpSphere · Beneficiary Portal
-        </footer>
-
-    </main>
-
-</div>
+            <div class="actions">
+              <a id="previewOpen" href="#" target="_blank" rel="noopener" class="btn btn--outline btn--xs"><svg class="icon"><use href="../assets/img/icons.svg#i-external"/></svg>Open in new tab</a>
+              <button type="button" class="btn btn--dark btn--xs" data-modal-close><svg class="icon"><use href="../assets/img/icons.svg#i-x"/></svg>Close</button>
+            </div>
+          </div>
+          <div class="preview" id="previewBody"></div>
+        </div>
+      </div>
 
 <?php if ($success === 1): ?>
-    <script>alert("Document Uploaded Successfully");</script>
+      <div data-toast="Document uploaded successfully"></div>
 <?php endif; ?>
 <?php if ($deleted === 1): ?>
-    <script>alert("Document deleted successfully.");</script>
+      <div data-toast="Document deleted"></div>
 <?php endif; ?>
 <?php if ($error === 1): ?>
-    <script>alert("This document could not be deleted. Verified documents cannot be deleted.");</script>
+      <p class="alert alert--error"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg><span>This document could not be deleted. Verified documents cannot be deleted.</span></p>
 <?php endif; ?>
 
-<script src="../assets/js/beneficiary-dashboard.js"></script>
-<script>
-  const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
-  const pdfExts   = ['pdf'];
+    </main>
+  </div>
+</div>
 
-  function openPreview(docName, fileUrl, ext) {
-    document.getElementById('previewTitle').textContent = docName;
-    document.getElementById('previewOpenTab').href      = fileUrl;
-
-    const body = document.getElementById('previewBody');
-    body.textContent = '';
-
-    if (imageExts.includes(ext)) {
-      const img = document.createElement('img');
-      img.src = fileUrl;
-      img.alt = docName;
-      body.appendChild(img);
-
-    } else if (pdfExts.includes(ext)) {
-      const iframe = document.createElement('iframe');
-      iframe.src = fileUrl;
-      body.appendChild(iframe);
-
-    } else {
-      const wrap = document.createElement('div');
-      wrap.className = 'preview-unsupported';
-
-      const icon = document.createElement('div');
-      icon.className = 'file-icon';
-      icon.textContent = '📄';
-
-      const p1 = document.createElement('p');
-      const strong = document.createElement('strong');
-      strong.textContent = docName;
-      p1.appendChild(strong);
-
-      const p2 = document.createElement('p');
-      p2.textContent = 'This file type cannot be previewed in the browser.';
-
-      const a = document.createElement('a');
-      a.href = fileUrl;
-      a.className = 'btn-open-tab';
-      a.style.cssText = 'display:inline-block; margin-top:12px;';
-      a.textContent = '⬇ Download File';
-
-      wrap.append(icon, p1, p2, a);
-      body.appendChild(wrap);
-    }
-
-    document.getElementById('previewModal').classList.add('active');
-  }
-
-  function closePreview() {
-    document.getElementById('previewModal').classList.remove('active');
-    document.getElementById('previewBody').textContent = '';
-  }
-
-  document.querySelectorAll('.btn-view-doc').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      openPreview(btn.dataset.name, btn.dataset.url, btn.dataset.ext);
-    });
-  });
-
-  document.querySelectorAll('.delete-form').forEach(function (form) {
-    form.addEventListener('submit', function (e) {
-      if (!confirm('Delete "' + form.dataset.name + '"? This cannot be undone.')) e.preventDefault();
-    });
-  });
-
-  document.getElementById('previewClose').addEventListener('click', closePreview);
-
-  document.getElementById('previewModal').addEventListener('click', function (e) {
-    if (e.target === this) closePreview();
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closePreview();
-  });
-</script>
-
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

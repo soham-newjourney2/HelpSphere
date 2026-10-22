@@ -88,247 +88,147 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['documents'])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Documents</title>
-    <link rel="stylesheet" href="../assets/css/beneficiary.css">
-    <style>
-      .alert {
-        padding: 12px 18px;
-        border-radius: 8px;
-        margin-bottom: 16px;
-        font-size: 0.95rem;
-        font-weight: 500;
-      }
-      .alert-success { background: rgba(34,197,94,0.15); color: #16a34a; border: 1px solid rgba(34,197,94,0.3); }
-      .alert-warning  { background: rgba(251,191,36,0.15); color: #d97706; border: 1px solid rgba(251,191,36,0.3); }
-      .alert-error   { background: rgba(239,68,68,0.15);  color: #dc2626; border: 1px solid rgba(239,68,68,0.3); }
-
-      /* File row layout */
-      .file-row {
-        display: flex;
-        gap: 12px;
-        align-items: flex-end;
-        margin-bottom: 14px;
-        flex-wrap: wrap;
-      }
-      .file-row .field-docname {
-        flex: 1 1 200px;
-        min-width: 160px;
-      }
-      .file-row .field-file {
-        flex: 2 1 240px;
-        min-width: 180px;
-      }
-      .file-row label {
-        display: block;
-        font-size: 0.85rem;
-        margin-bottom: 5px;
-        opacity: 0.8;
-      }
-      .file-row input[type="text"],
-      .file-row input[type="file"] {
-        width: 100%;
-        box-sizing: border-box;
-      }
-      .btn-remove-row {
-        padding: 8px 12px;
-        background: rgba(239,68,68,0.15);
-        color: #f87171;
-        border: 1px solid rgba(239,68,68,0.35);
-        border-radius: 6px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: all 0.2s ease;
-        align-self: flex-end;
-        margin-bottom: 1px;
-      }
-      .btn-remove-row:hover { background: rgba(239,68,68,0.35); color: #fff; }
-
-      .btn-add-row {
-        display: inline-block;
-        margin-bottom: 18px;
-        padding: 8px 18px;
-        background: rgba(99,179,237,0.15);
-        color: #63b3ed;
-        border: 1px solid rgba(99,179,237,0.35);
-        border-radius: 6px;
-        font-size: 0.88rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .btn-add-row:hover { background: rgba(99,179,237,0.3); color: #fff; }
-
-      #file-rows-container { margin-bottom: 4px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload documents · Beneficiary | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
-
-<div id="overlay" class="overlay"></div>
-
 <div class="app">
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="brand">HelpSphere</div>
-            <button id="sidebarClose" class="sidebar-close">✕</button>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+
+    <span class="sidebar__tag">Beneficiary space</span>
+
+    <nav class="sidebar__nav" aria-label="Beneficiary space">
+      <a href="../dashboards/beneficiary-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../beneficiaries/beneficiary-request-management.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>My requests</a>
+      <a href="../beneficiaries/beneficiary-document-upload.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload documents</a>
+      <a href="../beneficiaries/beneficiary-documents.php"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>My documents</a>
+      <a href="../beneficiaries/beneficiary-messages.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Messages</a>
+      <a href="../beneficiaries/beneficiary-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg>Profile</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/beneficiary-dashboard.php">Beneficiary space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Upload documents</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span>
+          <div class="profile__text"><strong>Beneficiary</strong><span>Beneficiary space</span></div>
         </div>
+      </div>
+    </header>
 
-        <p class="tagline">Support that reaches you</p>
+    <main class="content" id="content">
 
-        <nav class="sidebar-nav">
-            <ul>
-                <li>
-                    <a href="../dashboards/beneficiary-dashboard.php" class="nav-item">
-                        <span class="icon">🏠</span>
-                        <span class="label">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-request-management.php" class="nav-item">
-                        <span class="icon">📄</span>
-                        <span class="label">Requests</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-document-upload.php" class="nav-item active">
-                        <span class="icon">📁</span>
-                        <span class="label">Upload Documents</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-documents.php" class="nav-item">
-                        <span class="icon">📁</span>
-                        <span class="label">Documents</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-messages.php" class="nav-item">
-                        <span class="icon">💬</span>
-                        <span class="label">Messages</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../beneficiaries/beneficiary-profile.php" class="nav-item">
-                        <span class="icon">👤</span>
-                        <span class="label">Profile</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="../../inc/logout.php" class="nav-item logout">
-                        <span class="icon">🚪</span>
-                        <span class="label">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <main class="main-content">
-
-        <header class="topbar">
-            <div class="topbar-left">
-                <button id="menuToggle" class="menu-toggle">☰</button>
-                <div class="user-name">Upload Documents</div>
-            </div>
-        </header>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Documents</p>
+          <h1 class="page-head__title">Upload supporting documents</h1>
+          <p class="page-head__sub">Give each file a clear name, like “ID proof” or “Income certificate”. PDF, JPG or PNG, up to 5 MB each.</p>
+        </div>
+        <div class="page-head__actions">
+          <a href="../beneficiaries/beneficiary-documents.php" class="btn btn--outline btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>My documents</a>
+        </div>
+      </section>
 
         <?php if ($alert_message): ?>
           <div class="alert alert-<?php echo $alert_type; ?>">
             <?php
-              $icon = match($alert_type) { 
-                'success' => '✅', 
-                'warning' => '⚠️', 
-                default => '❌' 
+              $icon = match($alert_type) {
+                'success' => '✅',
+                'warning' => '⚠️',
+                default => '❌'
               };
               echo $icon . ' ' . htmlspecialchars($alert_message);
             ?>
           </div>
         <?php endif; ?>
 
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Upload Supporting Documents</h3>
+      <article class="card reveal">
+        <form class="form" action="" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(csrf_token()) ?>">
+
+          <div class="file-rows" id="fileRows">
+            <div class="file-row">
+              <div class="field">
+                <label for="docname-0">Document name</label>
+                <div class="field__control">
+                  <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-file"/></svg>
+                  <input type="text" id="docname-0" name="docname[]" placeholder="e.g. ID proof" required>
+                </div>
+              </div>
+              <div class="field">
+                <label for="document-0">File</label>
+                <div class="field__control field__control--file">
+                  <input type="file" id="document-0" name="documents[]" accept=".pdf,.jpg,.jpeg,.png" required>
+                </div>
+              </div>
+              <span></span>
             </div>
+          </div>
 
-            <div class="request-item">
-                <form class="request-form" action="" method="POST" enctype="multipart/form-data">
-
-                    <!-- Dynamic file rows — each row = 1 document name + 1 file -->
-                    <div id="file-rows-container">
-                      <!-- First row (always present, cannot be removed) -->
-                      <div class="file-row" id="row-0">
-                        <div class="field-docname">
-                          <label>Document Name</label>
-                          <input type="text" name="docname[]" placeholder="e.g. ID Proof" required>
-                        </div>
-                        <div class="field-file">
-                          <label>File <span style="opacity:0.6; font-size:0.78rem;">(PDF, JPG, PNG · max 5MB)</span></label>
-                          <input type="file" name="documents[]" accept=".pdf,.jpg,.jpeg,.png" required>
-                          <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(csrf_token()) ?>">
-                        </div>
-                        <!-- No remove button on the first row -->
-                      </div>
-                    </div>
-
-                    <button type="button" class="btn-add-row" onclick="addRow()">+ Add Another Document</button>
-
-                    <div class="form-info">
-                        Each file can have its own name. Accepted formats: PDF, JPG, PNG (Max 5MB per file).
-                    </div>
-
-                    <div class="action-row">
-                        <button type="submit" class="action-btn">Upload Documents</button>
-                        <a href="../dashboards/beneficiary-dashboard.php" class="action-btn secondary">Cancel</a>
-                    </div>
-
-                </form>
+          <template id="fileRowTemplate">
+            <div class="file-row">
+              <div class="field">
+                <label>Document name</label>
+                <div class="field__control">
+                  <svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-file"/></svg>
+                  <input type="text" name="docname[]" placeholder="e.g. Income certificate" required>
+                </div>
+              </div>
+              <div class="field">
+                <label>File</label>
+                <div class="field__control field__control--file">
+                  <input type="file" name="documents[]" accept=".pdf,.jpg,.jpeg,.png" required>
+                </div>
+              </div>
+              <button type="button" class="btn btn--danger btn--sm file-row__remove" data-remove-row><svg class="icon"><use href="../assets/img/icons.svg#i-x"/></svg>Remove</button>
             </div>
-        </section>
+          </template>
 
-        <footer class="footer">
-            © 2026 HelpSphere · Beneficiary Portal
-        </footer>
+          <div>
+            <button type="button" class="btn btn--outline btn--sm" id="addFileRow"><svg class="icon"><use href="../assets/img/icons.svg#i-plus"/></svg>Add another document</button>
+          </div>
+
+          <div class="card__foot">
+            <button type="submit" class="btn btn--dark"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload documents</button>
+            <a href="../dashboards/beneficiary-dashboard.php" class="btn btn--outline">Cancel</a>
+          </div>
+        </form>
+      </article>
 
     </main>
-
+  </div>
 </div>
 
-<script src="../assets/js/beneficiary-dashboard.js"></script>
-<script>
-  let rowCount = 1;
-
-  function addRow() {
-    const container = document.getElementById('file-rows-container');
-    const id = rowCount++;
-
-    const row = document.createElement('div');
-    row.className = 'file-row';
-    row.id = 'row-' + id;
-
-    row.innerHTML = `
-      <div class="field-docname">
-        <label>Document Name</label>
-        <input type="text" name="docname[]" placeholder="e.g. Income Certificate" required>
-      </div>
-      <div class="field-file">
-        <label>File <span style="opacity:0.6; font-size:0.78rem;">(PDF, JPG, PNG · max 5MB)</span></label>
-        <input type="file" name="documents[]" accept=".pdf,.jpg,.jpeg,.png" required>
-      </div>
-      <button type="button" class="btn-remove-row" onclick="removeRow('row-${id}')">✕ Remove</button>
-    `;
-
-    container.appendChild(row);
-  }
-
-  function removeRow(rowId) {
-    const row = document.getElementById(rowId);
-    if (row) row.remove();
-  }
-</script>
-
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

@@ -42,170 +42,143 @@ if(isset($_POST['update-btn']))
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile & Settings</title>
-   <link rel="stylesheet" href="../assets/css/beneficiary.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile · Beneficiary | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
-
-<div id="overlay" class="overlay"></div>
-
 <div class="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="brand">HelpSphere</div>
-            <button id="sidebarClose" class="sidebar-close">✕</button>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+
+    <span class="sidebar__tag">Beneficiary space</span>
+
+    <nav class="sidebar__nav" aria-label="Beneficiary space">
+      <a href="../dashboards/beneficiary-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../beneficiaries/beneficiary-request-management.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>My requests</a>
+      <a href="../beneficiaries/beneficiary-document-upload.php"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload documents</a>
+      <a href="../beneficiaries/beneficiary-documents.php"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>My documents</a>
+      <a href="../beneficiaries/beneficiary-messages.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Messages</a>
+      <a href="../beneficiaries/beneficiary-profile.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg>Profile</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/beneficiary-dashboard.php">Beneficiary space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Profile</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span>
+          <div class="profile__text"><strong>Beneficiary</strong><span>Beneficiary space</span></div>
         </div>
+      </div>
+    </header>
 
-        <p class="tagline">Support that reaches you</p>
+    <main class="content" id="content">
 
-        <nav class="sidebar-nav">
-            <ul>
-                <li>
-                    <a href="../dashboards/beneficiary-dashboard.php" class="nav-item">
-                        <span class="icon">🏠</span>
-                        <span class="label">Dashboard</span>
-                    </a>
-                </li>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Profile &amp; settings</p>
+          <h1 class="page-head__title">Your details</h1>
+          <p class="page-head__sub">NGOs use these details to contact you and to deliver help.</p>
+        </div>
+      </section>
 
-                <li>
-                    <a href="../beneficiaries/beneficiary-request-management.php" class="nav-item">
-                        <span class="icon">📄</span>
-                        <span class="label">Requests</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-document-upload.php" class="nav-item">
-                        <span class="icon">📁</span>
-                        <span class="label">Upload Documents</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-documents.php" class="nav-item">
-                        <span class="icon">📁</span>
-                        <span class="label">Documents</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-messages.php" class="nav-item">
-                        <span class="icon">💬</span>
-                        <span class="label">Messages</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-profile.php" class="nav-item active">
-                        <span class="icon">👤</span>
-                        <span class="label">Profile</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../../inc/logout.php" class="nav-item logout">
-                        <span class="icon">🚪</span>
-                        <span class="label">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main-content">
-
-        <header class="topbar">
-            <div class="topbar-left">
-                <button id="menuToggle" class="menu-toggle">☰</button>
-                <div class="user-name">Profile & Settings</div>
-            </div>
-        </header>
-
-        <!-- PERSONAL DETAILS -->
-         <form class="request-form" action="" method="POST">
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Personal Details</h3>
-            </div>
-
-            <div class="request-item">
-
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" value="<?php echo isset($name)?$name:'' ?>" name="name">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Date of Birth</label>
-                        <input type="date" value="<?php echo isset($dob)?$dob:'' ?>" name="dob">
-                    </div>
-
+      <form class="form" action="" method="POST">
+        <section class="row row--2">
+          <article class="card reveal">
+            <header class="card__head">
+              <div>
+                <h2 class="card__title">Personal details</h2>
+                <p class="card__sub">Your name, date of birth and gender</p>
+              </div>
+            </header>
+            <div class="form">
+              <div class="field">
+                <label for="pf-name">Full name</label>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-user"/></svg><input type="text" id="pf-name" value="<?php echo isset($name)?$name:'' ?>" name="name" autocomplete="name"></div>
+              </div>
+              <div class="field">
+                <label for="pf-dob">Date of birth</label>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-calendar"/></svg><input type="date" id="pf-dob" value="<?php echo isset($dob)?$dob:'' ?>" name="dob"></div>
+              </div>
                     <?php if(isset($gender)): ?>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select name="gender">
+              <div class="field">
+                <label for="pf-gender">Gender</label>
+                <div class="field__control field__control--select">
+                  <select id="pf-gender" name="gender">
                             <option value="Male" <?php if($gender=='Male') echo 'selected'; ?>>Male</option>
                             <option value="Female" <?php if($gender=='Female') echo 'selected'; ?>>Female</option>
                             <option value="Other" <?php if($gender=='Other') echo 'selected'; ?>>Other</option>
-                        </select>
-                    </div>
+                  </select>
+                </div>
+              </div>
                     <?php endif ?>
             </div>
+          </article>
+
+          <article class="card reveal">
+            <header class="card__head">
+              <div>
+                <h2 class="card__title">Address &amp; contact</h2>
+                <p class="card__sub">Where and how NGOs can reach you</p>
+              </div>
+            </header>
+            <div class="form">
+              <div class="field">
+                <label for="pf-address">Address</label>
+                <div class="field__control field__control--area"><textarea id="pf-address" rows="3" name="address" autocomplete="street-address"><?php echo isset($address) ? htmlspecialchars($address) : '' ?></textarea></div>
+              </div>
+              <div class="field">
+                <label for="pf-phone">Phone number</label>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-phone"/></svg><input type="tel" id="pf-phone" value="<?php echo isset($phone)?$phone:'' ?>" name="phone" autocomplete="tel"></div>
+              </div>
+              <div class="field">
+                <label for="pf-email">Email</label>
+                <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-mail"/></svg><input type="email" id="pf-email" value="<?php echo isset($email)?$email:'' ?>" name="email" autocomplete="email"></div>
+              </div>
+            </div>
+          </article>
         </section>
 
-        <!-- ADDRESS & CONTACT -->
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Address & Contact</h3>
-            </div>
-
-            <div class="request-item">
-                <form class="request-form">
-
-                    <div class="form-group">
-                        <label>Address</label>
-                        <textarea rows="3" name="address"><?php echo isset($address) ? htmlspecialchars($address) : '' ?></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="number" value="<?php echo isset($phone)?$phone:'' ?>" name="phone">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" value="<?php echo isset($email)?$email:'' ?>" name="email">
-                    </div>
-            </div>
-        </section>
-
-        <!-- SAVE ACTION -->
-        <section class="active-requests">
-            <div class="request-item">
-                <div class="action-row">
-                    <button type="submit" name="update-btn" class="action-btn">
-                        Save Changes
-                    </button>
-                </div>
-            </div>
-        </section>
-        </form>
-
-        <footer class="footer">
-            © 2026 HelpSphere · Beneficiary Portal
-        </footer>
+        <div class="card reveal">
+          <div class="actions">
+            <button type="submit" name="update-btn" class="btn btn--dark"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Save changes</button>
+            <span class="muted">Changes apply immediately.</span>
+          </div>
+        </div>
+      </form>
 
     </main>
-
+  </div>
 </div>
 
-<script src="../assets/js/beneficiary-dashboard.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

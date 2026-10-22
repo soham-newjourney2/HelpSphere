@@ -95,306 +95,125 @@ $stmtDocs = $pdo->prepare(
 $stmtDocs->execute([$beneficiary_id, $_SESSION['ngo_id']]);
 $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-  <meta charset="UTF-8">
-  <title>Beneficiary Documents</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/ngo.css">
-  <style>
-    .alert {
-      padding: 12px 18px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 0.95rem;
-      font-weight: 500;
-    }
-    .alert-success {
-      background: rgba(34, 197, 94, 0.15);
-      color: #16a34a;
-      border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-    .alert-error {
-      background: rgba(239, 68, 68, 0.15);
-      color: #dc2626;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .btn-view {
-      display: inline-block;
-      padding: 5px 14px;
-      background: rgba(99, 179, 237, 0.2);
-      color: #63b3ed;
-      border: 1px solid rgba(99, 179, 237, 0.4);
-      border-radius: 6px;
-      font-size: 0.82rem;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    .btn-view:hover { background: rgba(99, 179, 237, 0.35); color: #fff; }
-
-    .btn-approve {
-      padding: 5px 12px;
-      background: rgba(34, 197, 94, 0.15);
-      color: #4ade80;
-      border: 1px solid rgba(34, 197, 94, 0.35);
-      border-radius: 6px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-approve:hover { background: rgba(34, 197, 94, 0.35); color: #fff; }
-
-    .btn-reject {
-      padding: 5px 12px;
-      background: rgba(251, 191, 36, 0.15);
-      color: #fbbf24;
-      border: 1px solid rgba(251, 191, 36, 0.35);
-      border-radius: 6px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-reject:hover { background: rgba(251, 191, 36, 0.35); color: #fff; }
-
-    .btn-report {
-      padding: 5px 12px;
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      border-radius: 6px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-report:hover { background: rgba(239, 68, 68, 0.35); color: #fff; }
-
-    .btn-back {
-      display: inline-block;
-      margin-bottom: 16px;
-      padding: 8px 18px;
-      background: rgba(148, 163, 184, 0.15);
-      color: #94a3b8;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      border-radius: 6px;
-      font-size: 0.88rem;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    .btn-back:hover { background: rgba(148, 163, 184, 0.3); color: #fff; }
-
-    .action-group {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .status-pending {
-      display: inline-block;
-      padding: 3px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      background: rgba(251, 191, 36, 0.15);
-      color: #fbbf24;
-      border: 1px solid rgba(251, 191, 36, 0.3);
-    }
-
-    /* ── Modal ────────────────────────────────────────────────────────────── */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-backdrop.active { display: flex; }
-
-    .modal-box {
-      background: #0f172a;
-      border: 1px solid rgba(99, 179, 237, 0.25);
-      border-radius: 12px;
-      padding: 28px 32px;
-      width: 100%;
-      max-width: 480px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
-    .modal-box h4 {
-      color: #e2e8f0;
-      margin: 0 0 6px 0;
-      font-size: 1.1rem;
-    }
-    .modal-box p.modal-sub {
-      color: #94a3b8;
-      font-size: 0.85rem;
-      margin: 0 0 18px 0;
-    }
-    .modal-box textarea {
-      width: 100%;
-      min-height: 110px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(99, 179, 237, 0.3);
-      background: rgba(30, 41, 59, 0.8);
-      color: #e2e8f0;
-      font-size: 0.9rem;
-      resize: vertical;
-      box-sizing: border-box;
-    }
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-      justify-content: flex-end;
-    }
-    .btn-modal-submit {
-      padding: 8px 20px;
-      background: rgba(239, 68, 68, 0.2);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      border-radius: 7px;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-modal-submit:hover { background: rgba(239, 68, 68, 0.4); color: #fff; }
-    .btn-modal-cancel {
-      padding: 8px 20px;
-      background: rgba(148, 163, 184, 0.1);
-      color: #94a3b8;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 7px;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-modal-cancel:hover { background: rgba(148, 163, 184, 0.25); color: #fff; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beneficiary documents · NGO | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
-
 <body>
+<div class="app">
 
-  <div class="overlay" id="overlay"></div>
-
-  <div class="sky">
-    <div class="aurora a1"></div>
-    <div class="aurora a2"></div>
-    <div class="aurora a3"></div>
-  </div>
-
-  <!-- <div class="moon"></div> -->
-
-  <!-- Report Modal -->
-  <div class="modal-backdrop" id="reportModal">
-    <div class="modal-box">
-      <h4>🚩 Report Document</h4>
-      <p class="modal-sub" id="modalDocLabel">Document: —</p>
-      <form method="POST" id="reportForm">
-        <textarea name="report_text" placeholder="Describe the issue (e.g. document appears fake, information is incorrect...)" required></textarea>
-        <input type="text" name="doc_name" id="modalDocNameInput" style="display:none;">
-        <div class="modal-actions">
-          <button type="button" class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
-          <button type="submit" class="btn-modal-submit">Submit Report</button>
-        </div>
-      </form>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
     </div>
-  </div>
 
-  <div class="app">
+    <span class="sidebar__tag">NGO workspace</span>
 
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand">NGO</div>
-        <button class="sidebar-close" id="sidebarClose">✕</button>
-      </div>
-      <div class="tagline">Management & Operations</div>
-      <nav class="sidebar-nav">
-        <ul>
-          <li class="nav-item">
-            <a href="../dashboards/ngo-dashboard.php">
-              <span class="icon">📊</span><span class="label">Dashboard Overview</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="../ngos/ngo-profile.php">
-              <span class="icon">🧾</span><span class="label">Profile & Compliance</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="../ngos/ngo-needs.php">
-              <span class="icon">📌</span><span class="label">Needs & Requests</span>
-            </a>
-          </li>
-          <li class="nav-item active">
-            <a href="../ngos/ngo-beneficiaries.php">
-              <span class="icon">👥</span><span class="label">Beneficiaries</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="../ngos/ngo-donations.php">
-              <span class="icon">🎁</span><span class="label">Donations & Resources</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="../ngos/ngo-campaigns.php">
-              <span class="icon">📣</span><span class="label">Campaigns</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="../ngos/ngo-volunteers.php">
-              <span class="icon">🧑‍🤝‍🧑</span><span class="label">Volunteers</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="../ngos/ngo-communication.php">
-              <span class="icon">💬</span><span class="label">Communication</span>
-            </a>
-          </li>
-          <li class="nav-item logout">
-            <a href="../../inc/logout.php">
-              <span class="icon">⎋</span><span class="label">Sign Out</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+    <nav class="sidebar__nav" aria-label="NGO workspace">
+      <a href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-needs.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
+      <a href="../ngos/ngo-beneficiaries.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
+      <a href="../ngos/ngo-donations.php"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="../ngos/ngo-campaigns.php"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>Campaigns</a>
+      <a href="../ngos/ngo-volunteers.php"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>
+      <a href="../ngos/ngo-communication.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Communication</a>
+      <a href="../ngos/ngo-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Profile &amp; compliance</a>
+    </nav>
 
-    <main class="main-content">
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
 
-      <div class="topbar">
-        <div class="topbar-left">
-          <button class="menu-toggle" id="menuToggle">☰</button>
-          <div class="section-header">
-            <h3>Beneficiary Documents</h3>
-          </div>
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../ngos/ngo-beneficiaries-review.php">Review requests</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Documents</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
+          <div class="profile__text"><strong>NGO team</strong><span>NGO workspace</span></div>
         </div>
-        <div class="user-name">NGO Administrator</div>
       </div>
+    </header>
+
+    <main class="content" id="content">
+
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Beneficiary documents</p>
+          <h1 class="page-head__title"><?php echo htmlspecialchars($beneficiary_name); ?></h1>
+          <p class="page-head__sub">Approving marks a document Verified for every NGO. Rejecting only hides it from your view. Report anything that looks wrong.</p>
+        </div>
+        <div class="page-head__actions">
+          <a href="ngo-beneficiaries-review.php" class="btn btn--outline btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-arrow-left"/></svg>Back to requests</a>
+        </div>
+      </section>
 
       <?php if ($alert_message): ?>
-        <div class="alert alert-<?php echo $alert_type; ?>">
-          <?php echo $alert_type === 'success' ? '✅' : '⚠️'; ?> <?php echo htmlspecialchars($alert_message); ?>
-        </div>
+      <div class="alert alert-<?php echo $alert_type; ?>">
+        <svg class="icon"><use href="../assets/img/icons.svg#i-info"/></svg><span><?php echo htmlspecialchars($alert_message); ?></span>
+      </div>
       <?php endif; ?>
 
-      <a href="ngo-beneficiaries-review.php" class="btn-back">← Back to Requests</a>
-
-      <section class="documents">
-        <div class="section-header">
-          <h3>Documents for: <?php echo htmlspecialchars($beneficiary_name); ?></h3>
+      <!-- Report modal -->
+      <div class="modal" id="reportModal" hidden role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+        <div class="modal__box">
+          <div class="modal__head">
+            <div>
+              <h2 id="reportTitle">Report document</h2>
+              <p>Document: <span data-fill="doc_name">—</span></p>
+            </div>
+            <button type="button" class="icon-btn" data-modal-close aria-label="Close"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+          </div>
+          <form method="POST" id="reportForm" class="form">
+            <div class="field">
+              <label for="report_text">What is the issue?</label>
+              <div class="field__control field__control--area">
+                <textarea id="report_text" name="report_text" placeholder="e.g. the document appears altered, or the details don’t match the request" required></textarea>
+              </div>
+            </div>
+            <input type="hidden" name="doc_name">
+            <div class="modal__actions">
+              <button type="button" class="btn btn--outline btn--sm" data-modal-close>Cancel</button>
+              <button type="submit" class="btn btn--danger btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-flag"/></svg>Submit report</button>
+            </div>
+          </form>
         </div>
+      </div>
 
-        <table class="document-table">
-          <tr>
-            <th>Document Name</th>
-            <th>Uploaded At</th>
-            <th>View</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
+      <article class="card reveal">
+        <header class="card__head">
+          <div>
+            <h2 class="card__title">Documents awaiting review</h2>
+            <p class="card__sub">Verified documents and ones you rejected are not shown</p>
+          </div>
+        </header>
+        <div class="table-wrap">
+          <table class="table table--stack" id="docTable">
+            <thead>
+              <tr><th>Document</th><th>Uploaded</th><th>File</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
           <?php if (!empty($documents)): ?>
             <?php foreach ($documents as $doc): ?>
               <?php
@@ -405,98 +224,50 @@ $documents = $stmtDocs->fetchAll(PDO::FETCH_ASSOC);
                 $file_url = 'ngo-beneficiaries-documents.php?doc='.$doc_id.'&beneficiary_id='.$beneficiary_id;
               ?>
               <tr>
-                <td><?php echo $doc_name; ?></td>
-                <td><?php echo $doc_date; ?></td>
+                <td><div class="who"><span class="doc-card__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg></span><strong><?php echo $doc_name; ?></strong></div></td>
+                <td class="date-cell"><?php echo $doc_date; ?></td>
                 <td>
                   <?php if (!empty($doc_file)): ?>
-                    <a href="<?php echo $file_url; ?>" target="_blank" class="btn-view">👁 View</a>
+                    <a href="<?php echo $file_url; ?>" target="_blank" rel="noopener" class="act act--plain"><svg class="icon"><use href="../assets/img/icons.svg#i-eye"/></svg>View</a>
                   <?php else: ?>
-                    <span style="color:#888; font-size:0.82rem;">N/A</span>
+                    <span class="muted">N/A</span>
                   <?php endif; ?>
                 </td>
+                <td><span class="status" data-status="Pending">Pending</span></td>
                 <td>
-                  <span class="status-pending">Pending</span>
-                </td>
-                <td>
-                  <div class="action-group">
-
-                    <!-- Approve — doc_id on the button itself, no hidden input -->
+                  <div class="actions">
                     <form method="POST"
                           action="ngo-beneficiaries-documents.php?beneficiary_id=<?php echo $beneficiary_id; ?>&request_id=<?php echo $request_id; ?>"
-                          style="display:inline;"
-                          onsubmit="return confirm('Approve this document? It will be marked Verified for all NGOs.');">
-                      <button type="submit" name="approve_doc" value="<?php echo $doc_id; ?>" class="btn-approve">✔ Approve</button>
+                          data-confirm="Approve this document? It will be marked Verified for all NGOs.">
+                      <button type="submit" name="approve_doc" value="<?php echo $doc_id; ?>" class="act act--yes"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Approve</button>
                     </form>
-
-                    <!-- Reject — hides document for this NGO only, no DB status change -->
                     <form method="POST"
                           action="ngo-beneficiaries-documents.php?beneficiary_id=<?php echo $beneficiary_id; ?>&request_id=<?php echo $request_id; ?>"
-                          style="display:inline;"
-                          onsubmit="return confirm('Reject this document? It will be hidden from your view only.');">
-                      <button type="submit" name="reject_doc" value="<?php echo $doc_id; ?>" class="btn-reject">✖ Reject</button>
+                          data-confirm="Reject this document? It will be hidden from your view only.">
+                      <button type="submit" name="reject_doc" value="<?php echo $doc_id; ?>" class="act act--no"><svg class="icon"><use href="../assets/img/icons.svg#i-x"/></svg>Reject</button>
                     </form>
-
-                    <!-- Report — opens modal -->
-                    <button type="button" class="btn-report" data-doc-id="<?php echo $doc_id; ?>" data-doc-name="<?php echo $doc_name; ?>">
-                    🚩 Report
-                    </button>
-
+                    <button type="button" class="act act--warn" data-modal-open="#reportModal" data-doc-id="<?php echo $doc_id; ?>" data-fill-doc_name="<?php echo $doc_name; ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-flag"/></svg>Report</button>
                   </div>
                 </td>
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
-            <tr>
-              <td colspan="5" style="text-align:center; color:#aaa; padding:20px;">
-                No documents available (all may have been approved/rejected or none submitted).
-              </td>
-            </tr>
-          <?php endif; ?>
-        </table>
-      </section>
-
-      <div class="footer">© NGO Management System</div>
+            <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
+        <div class="empty" data-empty-for="#docTable">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>
+          <strong>No documents to review</strong>
+          <p>All of this beneficiary’s documents have been verified or rejected, or none were uploaded.</p>
+        </div>
+      </article>
 
     </main>
   </div>
+</div>
 
-  <!-- <div class="snow">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
-  <div class="snow-accumulation"></div> -->
-
-  <script src="../assets/js/sidebar.js"></script>
-  <script>
-    const beneficiaryId = <?php echo $beneficiary_id; ?>;
-    const requestId     = <?php echo $request_id; ?>;
-
-    function openModal(docId, docName) {
-      document.getElementById('modalDocLabel').textContent = 'Document: ' + docName;
-      document.getElementById('modalDocNameInput').value   = docName;
-      document.getElementById('reportForm').action =
-        'ngo-beneficiaries-documents.php?beneficiary_id=' + beneficiaryId +
-        '&request_id=' + requestId +
-        '&doc_id=' + docId +
-        '&report=1';
-      document.getElementById('reportModal').classList.add('active');
-    }
-
-    function closeModal() {
-      document.getElementById('reportModal').classList.remove('active');
-      document.getElementById('reportForm').reset();
-    }
-
-    document.querySelectorAll('.btn-report').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-    openModal(this.dataset.docId, this.dataset.docName);
-    });
-    });
-
-    document.getElementById('reportModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
-  </script>
-
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

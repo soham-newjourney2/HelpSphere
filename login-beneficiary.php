@@ -124,83 +124,167 @@ else if(isset($_POST['login-beneficiary']))
 }
 $conn=null;
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HelpSphere - Beneficiary-Register-Login</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="./public/assets/css/beneficiary-login.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beneficiary sign in | HelpSphere</title>
+  <meta name="description" content="Sign in or create a HelpSphere account to request help." />
+  <meta name="hs-icons" content="public/assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="public/assets/css/base.css" />
+  <link rel="stylesheet" href="public/assets/css/auth.css" />
 </head>
 <body>
-    <div class="container">
-        <div class="form-box login">
-            <form action="" method="POST">
-                <h1>Login</h1>
-                <div class="input-box">
-                    <input type="email" placeholder="Email" name="email" required>
-                    <i class="fa-regular fa-envelope"></i>
-                </div>
-                <div class="input-box">
-                    <input type="password" placeholder="Password" name="password" autocomplete="current-password" required>
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <button class="btn" type="submit" name="login-beneficiary">Login</button>
-            </form>
-        </div>
 
-        <div class="form-box register">
-            <form action="" method="POST">
-                <h1>Registration</h1>
-                <div class="input-box">
-                    <input type="text" placeholder="Name" name="fullname" required>
-                    <i class="fa-regular fa-user"></i>
-                </div>
-                <div class="input-box">
-                    <input type="email" placeholder="Email" name="email" required>
-                    <i class="fa-regular fa-envelope"></i>
-                </div>
-                <div class="input-box">
-                    <input type="password" placeholder="Password" name="password" autocomplete="new-password" required>
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <div class="input-box">
-                    <input type="password" placeholder="Confirm Password" name="cpassword" autocomplete="new-password" required>
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <button class="btn" type="submit" name="register-beneficiary">Register</button>
-            </form>
-        </div>
+<div class="auth">
 
-        <div class="toggle-box">
-            <div class="toggle-panel toggle-left">
-                <h1>Hello, Welcome</h1>
-                <p>Don't have an account?</p>
-                <button class="btn register-btn">Register</button>
-            </div>
+  <!-- ============ Art panel ============ -->
+  <aside class="auth__art" aria-hidden="true">
+    <svg class="leaf leaf--blur leaf--a1"><use href="public/assets/img/icons.svg#leaf"/></svg>
+    <svg class="leaf leaf--a2"><use href="public/assets/img/icons.svg#leaf"/></svg>
+    <svg class="leaf leaf--a3"><use href="public/assets/img/icons.svg#leaf"/></svg>
+    <svg class="leaf leaf--blur leaf--a4"><use href="public/assets/img/icons.svg#leaf"/></svg>
 
-            <div class="toggle-panel toggle-right">
-                <h1>Welcome Back!</h1>
-                <p>Already have an account?</p>
-                <button class="btn login-btn">Login</button>
-            </div>
-        </div>
+    <a href="index.php" class="logo logo--light" tabindex="-1">
+      <span class="logo__mark"><svg><use href="public/assets/img/icons.svg#i-sprout"/></svg></span>
+      HelpSphere
+    </a>
+
+    <div class="auth__art-body">
+      <div class="badge-ring badge-ring--light badge-ring--md">
+        <svg class="badge-ring__text" viewBox="0 0 200 200">
+          <defs><path id="ringPath" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+          <text><textPath href="#ringPath" textLength="480">FOR PEOPLE · FOR THE PLANET · FOR TOMORROW ·</textPath></text>
+        </svg>
+        <div class="badge-ring__core"><svg><use href="public/assets/img/icons.svg#i-sprout"/></svg></div>
+      </div>
+      <h2 class="auth__art-title">Help is closer than you think.</h2>
+      <p class="auth__art-text">Request food or resources, upload your documents once and follow every step of your request.</p>
     </div>
 
-     <script>
-    const container = document.querySelector('.container')
-    const registerBtn = document.querySelector('.register-btn')
-    const loginBtn = document.querySelector('.login-btn')
+    <ul class="auth__art-facts">
+      <li><strong>Free</strong><span>to ask for help</span></li>
+      <li><strong>Verified</strong><span>NGOs only</span></li>
+      <li><strong>Tracked</strong><span>every step</span></li>
+    </ul>
+  </aside>
 
-    registerBtn.addEventListener('click', ()=> {container.classList.add('active');});
-    loginBtn.addEventListener('click', ()=> {container.classList.remove('active');});
-     </script>
+  <!-- ============ Form panel ============ -->
+  <main class="auth__main">
+    <div class="auth__topbar">
+      <a href="index.php" class="logo auth__logo-mobile">
+        <span class="logo__mark"><svg><use href="public/assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <a href="index.php" class="auth__back">
+        <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-arrow-left"/></svg> Back to home
+      </a>
+    </div>
+
+    <div class="auth__panel">
+      <h1 class="auth__title" id="formTitle">Welcome back</h1>
+      <p class="auth__subtitle" id="formSubtitle">Sign in to track your assistance requests.</p>
+
+      <nav class="roles-select" aria-label="Sign in as">
+        <a class="role-opt" href="login-beneficiary.php" aria-current="page"><svg class="icon"><use href="public/assets/img/icons.svg#i-user"/></svg>Beneficiary</a>
+        <a class="role-opt" href="login-donor.php"><svg class="icon"><use href="public/assets/img/icons.svg#i-heart"/></svg>Donor</a>
+        <a class="role-opt" href="login-ngo.php"><svg class="icon"><use href="public/assets/img/icons.svg#i-building"/></svg>NGO</a>
+        <a class="role-opt" href="login-admin.php"><svg class="icon"><use href="public/assets/img/icons.svg#i-shield"/></svg>Admin</a>
+      </nav>
+
+      <div class="mode-tabs" role="tablist" id="modeTabs" data-mode="signin">
+        <button type="button" role="tab" class="mode-tab is-active" aria-selected="true" data-mode="signin"
+                data-title="Welcome back" data-subtitle="Sign in to track your assistance requests.">Sign in</button>
+        <button type="button" role="tab" class="mode-tab" aria-selected="false" data-mode="register"
+                data-title="Create your account" data-subtitle="Create an account to request help with dignity.">Create account</button>
+        <span class="mode-tabs__ink" aria-hidden="true"></span>
+      </div>
+
+      <!-- ===== Sign in ===== -->
+      <form class="form" action="" method="POST" data-panel="signin">
+        <div class="field">
+          <label for="si-email">Email address</label>
+          <div class="field__control">
+            <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-mail"/></svg>
+            <input type="email" id="si-email" name="email" placeholder="you@example.com" autocomplete="username" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="si-pass">Password</label>
+          <div class="field__control">
+            <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-lock"/></svg>
+            <input type="password" id="si-pass" name="password" placeholder="Enter your password" autocomplete="current-password" required />
+            <button type="button" class="field__eye" aria-label="Show password" data-toggle-pass="si-pass">
+              <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-eye"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" name="login-beneficiary" class="btn btn--dark btn--block form__submit">
+          Sign in <svg class="icon icon--arrow"><use href="public/assets/img/icons.svg#i-arrow"/></svg>
+        </button>
+
+        <p class="form__switch">New to HelpSphere? <button type="button" data-goto="register">Create an account</button></p>
+      </form>
+
+      <!-- ===== Register ===== -->
+      <form class="form" action="" method="POST" data-panel="register" hidden>
+        <div class="field">
+          <label for="rg-name">Full name</label>
+          <div class="field__control">
+            <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-user"/></svg>
+            <input type="text" id="rg-name" name="fullname" placeholder="Your full name" autocomplete="name" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="rg-email">Email address</label>
+          <div class="field__control">
+            <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-mail"/></svg>
+            <input type="email" id="rg-email" name="email" placeholder="you@example.com" autocomplete="email" required />
+          </div>
+        </div>
+
+        <div class="form__grid">
+          <div class="field">
+            <label for="rg-pass">Password</label>
+            <div class="field__control">
+              <input type="password" id="rg-pass" name="password" placeholder="Min. 6 characters" autocomplete="new-password" minlength="6" required />
+              <button type="button" class="field__eye" aria-label="Show password" data-toggle-pass="rg-pass">
+                <svg class="icon icon--sm"><use href="public/assets/img/icons.svg#i-eye"/></svg>
+              </button>
+            </div>
+            <div class="strength" id="strength" aria-live="polite">
+              <span class="strength__bar"><i></i><i></i><i></i><i></i></span>
+              <span class="strength__label">At least 6 characters</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="rg-cpass">Confirm password</label>
+            <div class="field__control">
+              <input type="password" id="rg-cpass" name="cpassword" placeholder="Repeat password" autocomplete="new-password" required />
+            </div>
+            <p class="match-hint" id="matchHint" hidden>Passwords do not match.</p>
+          </div>
+        </div>
+
+        <button type="submit" name="register-beneficiary" class="btn btn--dark btn--block form__submit">
+          Create account <svg class="icon icon--arrow"><use href="public/assets/img/icons.svg#i-arrow"/></svg>
+        </button>
+
+        <p class="form__switch">Already have an account? <button type="button" data-goto="signin">Sign in</button></p>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script src="public/assets/js/common.js"></script>
+<script src="public/assets/js/auth.js"></script>
 </body>
 </html>

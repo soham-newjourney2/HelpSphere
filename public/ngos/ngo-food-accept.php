@@ -153,130 +153,132 @@ if ($notif_id > 0 && $token !== '') {
     }
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accept Food Donation – HelpSphere</title>
-    <link rel="stylesheet" href="../assets/css/ngo.css">
-    <style>
-        .accept-page {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-        }
-        .accept-card {
-            background: rgba(15,23,42,0.95);
-            border-radius: 16px;
-            padding: 36px 38px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(99,179,237,0.18);
-            box-shadow: 0 24px 64px rgba(0,0,0,0.6);
-        }
-        .accept-card .icon { font-size: 3rem; margin-bottom: 16px; }
-        .accept-card h2 { margin: 0 0 10px; color: #e2e8f0; font-size: 1.25rem; }
-        .accept-card p  { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin: 0; }
-
-        .detail-grid {
-            background: rgba(30,41,59,0.6);
-            border: 1px solid rgba(99,179,237,0.12);
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        .detail-grid p { margin: 6px 0; font-size: 0.87rem; color: #94a3b8; }
-        .detail-grid p strong { color: #cbd5e1; }
-
-        .btn-back {
-            display: inline-block;
-            margin-top: 22px;
-            padding: 10px 24px;
-            background: rgba(99,179,237,0.18);
-            color: #63b3ed;
-            border: 1px solid rgba(99,179,237,0.35);
-            border-radius: 8px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .btn-back:hover { background: rgba(99,179,237,0.35); color: #fff; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accept food donation · NGO | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
-<div class="sky"><div class="aurora a1"></div><div class="aurora a2"></div><div class="aurora a3"></div></div>
+<div class="app">
 
-<div class="accept-page">
-    <div class="accept-card">
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+
+    <span class="sidebar__tag">NGO workspace</span>
+
+    <nav class="sidebar__nav" aria-label="NGO workspace">
+      <a href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-needs.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
+      <a href="../ngos/ngo-beneficiaries.php"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
+      <a href="../ngos/ngo-donations.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="../ngos/ngo-campaigns.php"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>Campaigns</a>
+      <a href="../ngos/ngo-volunteers.php"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>
+      <a href="../ngos/ngo-communication.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Communication</a>
+      <a href="../ngos/ngo-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Profile &amp; compliance</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../ngos/ngo-donations.php">Donations &amp; resources</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Accept food donation</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
+          <div class="profile__text"><strong>NGO team</strong><span>NGO workspace</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content" id="content">
 
         <?php if ($state === 'success'): ?>
-            <div class="icon">✅</div>
-            <h2>Donation Accepted!</h2>
-            <p>Thank you, <strong><?php echo h($ngo_name); ?></strong>!<br>
-               You have successfully accepted this food donation.</p>
-
-            <div class="detail-grid">
-                <p><strong>Food Type:</strong> <?php echo h($batch['food_type']); ?></p>
-                <p><strong>Quantity:</strong> <?php echo h($batch['quantity']); ?></p>
-                <p><strong>Pickup Address:</strong> <?php echo h($batch['pickup_address']); ?></p>
-                <p><strong>Pickup Within:</strong> <?php echo (int) $batch['pickup_within']; ?> hour(s)</p>
-                <p><strong>Urgency:</strong> <span style="color:#f87171;font-weight:700;">High</span></p>
-            </div>
-            <p>Please arrange pickup as soon as possible. The donation is now recorded under your NGO.</p>
-            <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
-
+      <section class="result">
+        <span class="result__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg></span>
+        <h1>Donation accepted!</h1>
+        <p>Thank you, <strong><?php echo h($ngo_name); ?></strong>! You have accepted this food donation and it is now recorded under your NGO.</p>
+        <dl class="details">
+          <div><dt>Food type</dt><dd><?php echo h($batch['food_type']); ?></dd></div>
+          <div><dt>Quantity</dt><dd><?php echo h($batch['quantity']); ?></dd></div>
+          <div><dt>Pickup address</dt><dd><?php echo h($batch['pickup_address']); ?></dd></div>
+          <div><dt>Pick up within</dt><dd><?php echo (int) $batch['pickup_within']; ?> hour(s)</dd></div>
+          <div><dt>Urgency</dt><dd>High</dd></div>
+        </dl>
+        <p>Please arrange the pickup as soon as possible.</p>
+        <a class="btn btn--dark" href="../ngos/ngo-donations-food.php"><svg class="icon"><use href="../assets/img/icons.svg#i-truck"/></svg>Go to food donations</a>
+      </section>
         <?php elseif ($state === 'already_accepted'): ?>
-            <div class="icon">✅</div>
-            <h2>You Already Accepted This</h2>
-            <p>You have already accepted this donation, <strong><?php echo h($ngo_name); ?></strong>.<br>
-               Please proceed with pickup.</p>
-            <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
-
+      <section class="result">
+        <span class="result__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg></span>
+        <h1>You already accepted this</h1>
+        <p>You have already accepted this donation, <strong><?php echo h($ngo_name); ?></strong>. Please go ahead with the pickup.</p>
+        <a class="btn btn--dark" href="../ngos/ngo-donations-food.php"><svg class="icon"><use href="../assets/img/icons.svg#i-truck"/></svg>Go to food donations</a>
+      </section>
         <?php elseif ($state === 'already_taken'): ?>
-            <div class="icon">⚡</div>
-            <h2>Already Claimed</h2>
-            <p>Another NGO accepted this donation just before you.<br>
-               Thank you for your willingness. We'll notify you of future requests.</p>
-            <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
-
+      <section class="result">
+        <span class="result__icon result__icon--info"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg></span>
+        <h1>Already claimed</h1>
+        <p>Another NGO accepted this donation just before you. Thank you for responding — you will be alerted about future donations near you.</p>
+        <a class="btn btn--dark" href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
+      </section>
         <?php elseif ($state === 'expired'): ?>
-            <div class="icon">⏰</div>
-            <h2>This Link Has Expired</h2>
-            <p>The acceptance window for this donation has closed.<br>
-               The request is being forwarded to the next batch of NGOs.</p>
-            <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
-
+      <section class="result">
+        <span class="result__icon result__icon--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-clock"/></svg></span>
+        <h1>This link has expired</h1>
+        <p>The acceptance window for this donation has closed, and it is being forwarded to the next group of NGOs.</p>
+        <a class="btn btn--dark" href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
+      </section>
         <?php elseif ($state === 'wrong_account'): ?>
-            <div class="icon">🔒</div>
-            <h2>Different NGO Account</h2>
-            <p>This link was sent to a different NGO account than the one you are signed in with.<br>
-               Please sign out, sign in with the NGO that received the email, and open the link again.</p>
-            <a class="btn-back" href="../../inc/logout.php">Sign Out</a>
-
+      <section class="result">
+        <span class="result__icon result__icon--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-lock"/></svg></span>
+        <h1>Different NGO account</h1>
+        <p>This link was sent to a different NGO than the one you are signed in as. Sign out, sign in with the NGO that received the email, and open the link again.</p>
+        <a class="btn btn--dark" href="../../inc/logout.php"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+      </section>
         <?php elseif ($state === 'error'): ?>
-            <div class="icon">⚠️</div>
-            <h2>Something Went Wrong</h2>
-            <p>We couldn't process your acceptance. Nothing was changed.<br>
-               Please try the link again, or contact the platform administrator.</p>
-            <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
-
+      <section class="result">
+        <span class="result__icon result__icon--bad"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg></span>
+        <h1>Something went wrong</h1>
+        <p>We couldn’t process your acceptance and nothing was changed. Please try the link again, or contact the platform administrator.</p>
+        <a class="btn btn--dark" href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
+      </section>
         <?php else: ?>
-            <div class="icon">❌</div>
-            <h2>Invalid Link</h2>
-            <p>This acceptance link is not valid or has already been used.<br>
-               If you believe this is an error, please contact the platform administrator.</p>
-            <a class="btn-back" href="../dashboards/ngo-dashboard.php">Go to Dashboard →</a>
+      <section class="result">
+        <span class="result__icon result__icon--bad"><svg class="icon"><use href="../assets/img/icons.svg#i-x"/></svg></span>
+        <h1>Invalid link</h1>
+        <p>This acceptance link is not valid or has already been used. If you think this is a mistake, please contact the platform administrator.</p>
+        <a class="btn btn--dark" href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
+      </section>
         <?php endif; ?>
 
-    </div>
+    </main>
+  </div>
 </div>
 
-<script src="../assets/js/sidebar.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

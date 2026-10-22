@@ -358,153 +358,99 @@ else
 
 $filters_active=($type!=='all' || $q!=='');
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>All Users — HelpSphere Admin</title>
-  <meta name="description" content="Manage all beneficiaries, NGOs, and donors on the HelpSphere platform." />
+  <title>Users · Admin | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
-  <script>
-    (function () {
-      var t = localStorage.getItem('hs-theme');
-      if (t !== 'light' && t !== 'dark') {
-        t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      }
-      document.documentElement.setAttribute('data-theme', t);
-    })();
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
+<div class="app">
 
-  <div class="liquid-bg" aria-hidden="true">
-    <div class="liquid-bg__orb liquid-bg__orb--1"></div>
-    <div class="liquid-bg__orb liquid-bg__orb--2"></div>
-    <div class="liquid-bg__orb liquid-bg__orb--3"></div>
-    <div class="liquid-bg__orb liquid-bg__orb--4"></div>
-    <div class="liquid-bg__orb liquid-bg__orb--5"></div>
-    <div class="liquid-bg__orb liquid-bg__orb--6"></div>
-  </div>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar__brand">
-      <div class="sidebar__logo">
-        <span class="sidebar__logo-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-        </span>
-        <div>
-          <h1 class="sidebar__title">HelpSphere</h1>
-          <span class="sidebar__subtitle">Admin Portal</span>
-        </div>
-      </div>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
     </div>
 
-    <nav class="sidebar__nav">
-      <ul class="sidebar__menu">
-        <li class="sidebar__menu-label">Main</li>
-        <li>
-          <a href="index.php" class="sidebar__link" id="nav-dashboard">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            <span>Dashboard</span>
-          </a>
-        </li>
+    <span class="sidebar__tag">Admin console</span>
 
-        <li class="sidebar__menu-label">Management</li>
-        <li>
-          <a href="add-ngo.php" class="sidebar__link" id="nav-add-ngo">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-            <span>Add NGO</span>
-          </a>
-        </li>
-        <li>
-          <a href="users.php" class="sidebar__link active" id="nav-all-users">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>All Users</span>
-          </a>
-        </li>
-        <li><a href="ngo-verification.php" class="sidebar__link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          <span>NGO Verification</span></a></li>
-        <li>
-          <a href="../../inc/logout.php" class="sidebar__link" id="nav-logout">
-            <span>Logout</span>
-          </a>
-        </li>
-      </ul>
+    <nav class="sidebar__nav" aria-label="Admin console">
+      <a href="../admin/index.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../admin/users.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Users</a>
+      <a href="../admin/ngo-verification.php"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>NGO verification</a>
+      <a href="../admin/add-ngo.php"><svg class="icon"><use href="../assets/img/icons.svg#i-user-plus"/></svg>Add NGO</a>
     </nav>
 
-    <div class="sidebar__footer">
-      <div class="sidebar__admin">
-        <div class="sidebar__avatar">A</div>
-        <div>
-          <p class="sidebar__admin-name">Admin User</p>
-          <p class="sidebar__admin-role">Super Admin</p>
-        </div>
-      </div>
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
     </div>
   </aside>
+  <div class="scrim" id="scrim" hidden></div>
 
-  <div class="overlay" id="overlay"></div>
-
-  <main class="main" id="main">
-
+  <!-- ============ Main ============ -->
+  <div class="main">
     <header class="topbar">
-      <button class="topbar__hamburger" id="hamburger" aria-label="Toggle sidebar">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <div class="topbar__actions">
-        <button class="topbar__icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle light or dark theme">
-          <svg class="theme-toggle__sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-          <svg class="theme-toggle__moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../admin/index.php">Admin console</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Users</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg></span>
+          <div class="profile__text"><strong>Administrator</strong><span>Admin console</span></div>
+        </div>
       </div>
     </header>
 
-    <section class="page active" id="page-all-users">
-      <div class="page__header">
+    <main class="content" id="content">
+
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
         <div>
-          <h2 class="page__title">All Users</h2>
-          <p class="page__desc">Manage beneficiaries, NGOs, and donors across the platform.</p>
+          <p class="page-head__eyebrow">User management</p>
+          <h1 class="page-head__title">All users</h1>
+          <p class="page-head__sub">Manage beneficiaries, NGOs and donors across the platform. Passwords are never shown or edited here.</p>
         </div>
-      </div>
+      </section>
 
-      <div class="filters-bar">
-        <div class="filter-tabs">
-          <a class="filter-tab <?php if($type==='all') echo 'active' ?>" href="<?php echo h(list_url($filters, ['type'=>'all','page'=>1])) ?>">All Users <span class="filter-tab__count"><?php echo ($c + $c1 + $c2) ?></span></a>
-          <a class="filter-tab <?php if($type==='beneficiary') echo 'active' ?>" href="<?php echo h(list_url($filters, ['type'=>'beneficiary','page'=>1])) ?>">Beneficiaries <span class="filter-tab__count"><?php echo $c ?></span></a>
-          <a class="filter-tab <?php if($type==='ngo') echo 'active' ?>" href="<?php echo h(list_url($filters, ['type'=>'ngo','page'=>1])) ?>">NGOs <span class="filter-tab__count"><?php echo $c1 ?></span></a>
-          <a class="filter-tab <?php if($type==='donor') echo 'active' ?>" href="<?php echo h(list_url($filters, ['type'=>'donor','page'=>1])) ?>">Donors <span class="filter-tab__count"><?php echo $c2 ?></span></a>
+      <section class="card reveal">
+        <div class="filters">
+          <nav class="filter-tabs" aria-label="Filter by role">
+            <a class="filter-tab <?php if($type==='all') echo 'active' ?>" href="<?php echo h(list_url($filters, ['type'=>'all','page'=>1])) ?>">All users <span class="filter-tab__count"><?php echo ($c + $c1 + $c2) ?></span></a>
+            <a class="filter-tab <?php if($type==='beneficiary') echo 'active' ?>" href="<?php echo h(list_url($filters, ['type'=>'beneficiary','page'=>1])) ?>">Beneficiaries <span class="filter-tab__count"><?php echo $c ?></span></a>
+            <a class="filter-tab <?php if($type==='ngo') echo 'active' ?>" href="<?php echo h(list_url($filters, ['type'=>'ngo','page'=>1])) ?>">NGOs <span class="filter-tab__count"><?php echo $c1 ?></span></a>
+            <a class="filter-tab <?php if($type==='donor') echo 'active' ?>" href="<?php echo h(list_url($filters, ['type'=>'donor','page'=>1])) ?>">Donors <span class="filter-tab__count"><?php echo $c2 ?></span></a>
+          </nav>
+          <form method="get" action="users.php">
+            <input type="hidden" name="type" value="<?php echo h($type) ?>" />
+            <label class="search"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-search"/></svg><span class="sr-only">Search users</span>
+              <input type="text" name="q" placeholder="Search name, email, location…" id="user-search" value="<?php echo h($q) ?>" maxlength="100" />
+            </label>
+            <button type="submit" class="btn btn--outline btn--sm">Apply</button>
+            <?php if($filters_active): ?>
+            <a class="btn btn--ghost btn--sm" href="users.php">Reset</a>
+            <?php endif ?>
+          </form>
         </div>
-        <form class="filters-bar__right" method="get" action="users.php">
-          <input type="hidden" name="type" value="<?php echo h($type) ?>" />
-          <div class="filter-search">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" name="q" placeholder="Search name, email, location..." class="filter-search__input" id="user-search" value="<?php echo h($q) ?>" maxlength="100" />
-          </div>
-          <button type="submit" class="btn btn--outline btn--sm">Apply</button>
-          <?php if($filters_active): ?>
-          <a class="btn btn--ghost btn--sm" href="users.php">Reset</a>
-          <?php endif ?>
-        </form>
-      </div>
 
-      <div class="table-wrapper">
-        <table class="users-table" id="users-table">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Role</th>
-              <th>Email</th>
-              <th>Location</th>
-              <th>Joined</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="users-tbody">
+        <div class="table-wrap">
+          <table class="table table--stack" id="users-table">
+            <thead>
+              <tr><th>User</th><th>Role</th><th>Email</th><th>Location</th><th>Joined</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="users-tbody">
           <?php
           $i=0;
           if($total > 0)
@@ -518,86 +464,77 @@ $filters_active=($type!=='all' || $q!=='');
               $color=$avatarColors[$i % count($avatarColors)];
               $i++;
               ?>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-cell__avatar" style="background:<?php echo $color ?>"><?php echo h($letter) ?></div>
-                  <div>
-                    <div class="user-cell__name"><?php echo h($name) ?></div>
-                    <div class="user-cell__id"><?php echo h($display_id) ?></div>
+              <tr>
+                <td>
+                  <div class="who">
+                    <span class="avatar"><?php echo h($letter) ?></span>
+                    <div>
+                      <strong><?php echo h($name) ?></strong>
+                      <span class="muted"><?php echo h($display_id) ?></span>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td><span class="role-badge role-badge--<?php echo h($role) ?>"><?php echo h(ucfirst($role)) ?></span></td>
-              <td style="color:var(--text-secondary)"><?php echo h($rec['email']) ?></td>
-              <td style="color:var(--text-secondary)"><?php echo $rec['location']!=='' && $rec['location']!==null ? h($rec['location']) : '—' ?></td>
-              <td style="color:var(--text-muted)"><?php echo h(nice_date($rec['joined'])) ?></td>
-              <td>
-                <div class="action-btns">
-                  <a class="action-btn" href="<?php echo h(list_url($filters, ['action'=>'view','utype'=>$role,'uid'=>$rec['id']])) ?>" title="View" aria-label="View <?php echo h($name) ?>">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  </a>
-                  <a class="action-btn" href="<?php echo h(list_url($filters, ['action'=>'edit','utype'=>$role,'uid'=>$rec['id']])) ?>" title="Edit" aria-label="Edit <?php echo h($name) ?>">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  </a>
-                  <a class="action-btn action-btn--danger" href="<?php echo h(list_url($filters, ['action'=>'delete','utype'=>$role,'uid'=>$rec['id']])) ?>" title="Delete" aria-label="Delete <?php echo h($name) ?>">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                  </a>
-                </div>
-              </td>
-            </tr>
+                </td>
+                <td><span class="role-badge role-badge--<?php echo h($role) ?>"><?php echo h(ucfirst($role)) ?></span></td>
+                <td class="text-cell"><?php echo h($rec['email']) ?></td>
+                <td class="text-cell"><?php echo $rec['location']!=='' && $rec['location']!==null ? h($rec['location']) : '—' ?></td>
+                <td class="date-cell"><?php echo h(nice_date($rec['joined'])) ?></td>
+                <td>
+                  <div class="actions">
+                    <a class="act act--plain" href="<?php echo h(list_url($filters, ['action'=>'view','utype'=>$role,'uid'=>$rec['id']])) ?>" title="View" aria-label="View <?php echo h($name) ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-eye"/></svg></a>
+                    <a class="act act--info" href="<?php echo h(list_url($filters, ['action'=>'edit','utype'=>$role,'uid'=>$rec['id']])) ?>" title="Edit" aria-label="Edit <?php echo h($name) ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-edit"/></svg></a>
+                    <a class="act act--no" href="<?php echo h(list_url($filters, ['action'=>'delete','utype'=>$role,'uid'=>$rec['id']])) ?>" title="Delete" aria-label="Delete <?php echo h($name) ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-trash"/></svg></a>
+                  </div>
+                </td>
+              </tr>
               <?php
             }
           }
           else
           {
             ?>
-            <tr>
-              <td colspan="6" style="text-align:center;padding:40px 16px;color:var(--text-muted)">
-                <?php echo $filters_active ? 'No users match your filters.' : 'No users found.' ?>
-              </td>
-            </tr>
+              <tr>
+                <td colspan="6">
+                  <div class="empty"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg><strong><?php echo $filters_active ? 'No users match your filters.' : 'No users found.' ?></strong></div>
+                </td>
+              </tr>
             <?php
           }
           ?>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="pagination" id="pagination">
-        <div class="pagination__info">
-          Showing <strong><?php echo $page_start ?></strong>–<strong><?php echo $page_end ?></strong> of <strong><?php echo $total ?></strong> users
+            </tbody>
+          </table>
         </div>
-        <div class="pagination__controls">
+
+        <div class="pagination" id="pagination">
+          <div>
+            Showing <strong><?php echo $page_start ?></strong>–<strong><?php echo $page_end ?></strong> of <strong><?php echo $total ?></strong> users
+          </div>
+          <div class="pagination__controls">
           <?php if($page>1): ?>
           <a class="pagination__btn" href="<?php echo h(list_url($filters, ['page'=>$page-1])) ?>" aria-label="Previous page">
           <?php else: ?>
-          <span class="pagination__btn" style="opacity:.4;pointer-events:none" aria-disabled="true">
+          <span class="pagination__btn is-disabled" aria-disabled="true">
           <?php endif ?>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg class="icon"><use href="../assets/img/icons.svg#i-arrow-left"/></svg>
           <?php echo $page>1 ? '</a>' : '</span>' ?>
-
-          <div class="pagination__pages" id="page-numbers">
+            <div class="pagination__pages" id="page-numbers">
             <?php foreach($pages as $p): ?>
               <?php if($p==='...'): ?>
-              <span class="pagination__page" style="pointer-events:none;opacity:.4">…</span>
+              <span class="pagination__page is-disabled">…</span>
               <?php else: ?>
               <a class="pagination__page <?php if($p===$page) echo 'active' ?>" href="<?php echo h(list_url($filters, ['page'=>$p])) ?>"><?php echo $p ?></a>
               <?php endif ?>
             <?php endforeach ?>
-          </div>
-
+            </div>
           <?php if($page<$totalPages): ?>
           <a class="pagination__btn" href="<?php echo h(list_url($filters, ['page'=>$page+1])) ?>" aria-label="Next page">
           <?php else: ?>
-          <span class="pagination__btn" style="opacity:.4;pointer-events:none" aria-disabled="true">
+          <span class="pagination__btn is-disabled" aria-disabled="true">
           <?php endif ?>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg class="icon"><use href="../assets/img/icons.svg#i-arrow"/></svg>
           <?php echo $page<$totalPages ? '</a>' : '</span>' ?>
+          </div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
 
   <?php
   /* ============================================================
@@ -610,155 +547,131 @@ $filters_active=($type!=='all' || $q!=='');
       $r_letter=mb_strtoupper(mb_substr((string)$r_name, 0, 1)) ?: '?';
       $close_url=list_url($filters);
   ?>
-  <div class="modal open" role="dialog" aria-modal="true">
-    <div class="modal__card">
-      <a class="modal__close" href="<?php echo h($close_url) ?>" aria-label="Close">&#10005;</a>
-
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="userDialogTitle">
+        <div class="modal__box">
+          <div class="modal__head">
+            <div class="who">
+              <span class="avatar avatar--brand"><?php echo h($r_letter) ?></span>
+              <div>
+                <h2 id="userDialogTitle"><?php echo h($r_name) ?></h2>
+                <p><?php echo h($r_id) ?></p>
+              </div>
+            </div>
+            <a class="icon-btn" href="<?php echo h($close_url) ?>" aria-label="Close"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></a>
+          </div>
       <?php if($action==='view'): ?>
-
-      <div class="modal__head">
-        <div class="modal__avatar" style="background:<?php echo $avatarColors[0] ?>"><?php echo h($r_letter) ?></div>
-        <div>
-          <div class="modal__name"><?php echo h($r_name) ?></div>
-          <div class="modal__id"><?php echo h($r_id) ?></div>
-        </div>
-      </div>
-      <div class="modal__grid">
-        <div class="modal__field">
-          <span class="modal__field-label">Role</span>
-          <span class="modal__field-value"><span class="role-badge role-badge--<?php echo h($utype) ?>"><?php echo h($cfg['label']) ?></span></span>
-        </div>
+          <div class="modal__grid">
+            <div class="modal__field">
+              <span class="modal__field-label">Role</span>
+              <span class="modal__field-value"><span class="role-badge role-badge--<?php echo h($utype) ?>"><?php echo h($cfg['label']) ?></span></span>
+            </div>
         <?php foreach($cfg['fields'] as $col=>$def): ?>
           <?php if($col==='name') continue; ?>
-        <div class="modal__field <?php if($def[1]==='email' || $def[1]==='textarea') echo 'modal__field--full' ?>">
-          <span class="modal__field-label"><?php echo h($def[0]) ?></span>
-          <span class="modal__field-value"><?php echo $record[$col]!=='' && $record[$col]!==null ? h($record[$col]) : '—' ?></span>
-        </div>
+            <div class="modal__field <?php if($def[1]==='email' || $def[1]==='textarea') echo 'modal__field--full' ?>">
+              <span class="modal__field-label"><?php echo h($def[0]) ?></span>
+              <span class="modal__field-value"><?php echo $record[$col]!=='' && $record[$col]!==null ? h($record[$col]) : '—' ?></span>
+            </div>
         <?php endforeach ?>
         <?php if($cfg['joined']): ?>
-        <div class="modal__field">
-          <span class="modal__field-label">Joined</span>
-          <span class="modal__field-value"><?php echo h(nice_date($record[$cfg['joined']])) ?></span>
-        </div>
+            <div class="modal__field">
+              <span class="modal__field-label">Joined</span>
+              <span class="modal__field-value"><?php echo h(nice_date($record[$cfg['joined']])) ?></span>
+            </div>
         <?php endif ?>
         <?php foreach($cfg['extra'] as $col=>$label): ?>
-        <div class="modal__field">
-          <span class="modal__field-label"><?php echo h($label) ?></span>
-          <span class="modal__field-value"><?php echo !empty($record[$col]) ? h(nice_date($record[$col])) : '—' ?></span>
-        </div>
+            <div class="modal__field">
+              <span class="modal__field-label"><?php echo h($label) ?></span>
+              <span class="modal__field-value"><?php echo !empty($record[$col]) ? h(nice_date($record[$col])) : '—' ?></span>
+            </div>
         <?php endforeach ?>
-      </div>
-      <div class="modal__actions">
-        <a class="btn btn--ghost" href="<?php echo h($close_url) ?>">Close</a>
-        <a class="btn btn--primary" href="<?php echo h(list_url($filters, ['action'=>'edit','utype'=>$utype,'uid'=>$record['id']])) ?>">Edit User</a>
-      </div>
-
+          </div>
+          <div class="modal__actions">
+            <a class="btn btn--ghost btn--sm" href="<?php echo h($close_url) ?>">Close</a>
+            <a class="btn btn--dark btn--sm" href="<?php echo h(list_url($filters, ['action'=>'edit','utype'=>$utype,'uid'=>$record['id']])) ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-edit"/></svg>Edit user</a>
+          </div>
       <?php elseif($action==='edit'): ?>
-
-      <h3 class="modal__title">Edit <?php echo h($r_name) ?></h3>
+          <h3 class="modal__title">Edit <?php echo h($r_name) ?></h3>
       <?php if(!empty($form_errors)): ?>
-      <div style="margin:0 0 16px;padding:12px 14px;border-radius:10px;border:1px solid var(--clr-danger);color:var(--clr-danger);font-size:.9rem;line-height:1.5">
+          <div class="alert alert--error">
+            <svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg>
+            <div>
         <?php foreach($form_errors as $err): ?>
-          <div><?php echo h($err) ?></div>
+              <div><?php echo h($err) ?></div>
         <?php endforeach ?>
-      </div>
+            </div>
+          </div>
       <?php endif ?>
-      <form method="post" action="users.php" class="form-grid">
-        <input type="hidden" name="csrf" value="<?php echo h($_SESSION['csrf']) ?>" />
-        <input type="hidden" name="action" value="update" />
-        <input type="hidden" name="utype" value="<?php echo h($utype) ?>" />
-        <input type="hidden" name="uid" value="<?php echo (int)$record['id'] ?>" />
+          <form method="post" action="users.php" class="form-grid">
+            <input type="hidden" name="csrf" value="<?php echo h($_SESSION['csrf']) ?>" />
+            <input type="hidden" name="action" value="update" />
+            <input type="hidden" name="utype" value="<?php echo h($utype) ?>" />
+            <input type="hidden" name="uid" value="<?php echo (int)$record['id'] ?>" />
         <?php foreach($filters as $k=>$v): ?>
-        <input type="hidden" name="<?php echo h($k) ?>" value="<?php echo h($v) ?>" />
+            <input type="hidden" name="<?php echo h($k) ?>" value="<?php echo h($v) ?>" />
         <?php endforeach ?>
-
         <?php foreach($cfg['fields'] as $col=>$def):
             $val=($posted!==null) ? ($posted[$col] ?? '') : (string)$record[$col];
             $full=in_array($col, ['name','email','description'], true);
         ?>
-        <div class="form-group <?php if($full) echo 'form-group--full' ?>">
-          <label class="form-label" for="edit-<?php echo h($col) ?>"><?php echo h($def[0]) ?></label>
+            <div class="form-group <?php if($full) echo 'form-group--full' ?>">
+              <label class="form-label" for="edit-<?php echo h($col) ?>"><?php echo h($def[0]) ?></label>
           <?php if($def[1]==='select'): ?>
-          <select class="form-input form-select" id="edit-<?php echo h($col) ?>" name="<?php echo h($col) ?>">
+              <select class="form-input" id="edit-<?php echo h($col) ?>" name="<?php echo h($col) ?>">
             <?php foreach($def[2] as $opt): ?>
-            <option value="<?php echo h($opt) ?>" <?php if($val===$opt) echo 'selected' ?>><?php echo h($opt) ?></option>
+                <option value="<?php echo h($opt) ?>" <?php if($val===$opt) echo 'selected' ?>><?php echo h($opt) ?></option>
             <?php endforeach ?>
-          </select>
+              </select>
           <?php elseif($def[1]==='textarea'): ?>
-          <textarea class="form-input" id="edit-<?php echo h($col) ?>" name="<?php echo h($col) ?>" rows="3" maxlength="<?php echo (int)$def[2] ?>"><?php echo h($val) ?></textarea>
+              <textarea class="form-input" id="edit-<?php echo h($col) ?>" name="<?php echo h($col) ?>" rows="3" maxlength="<?php echo (int)$def[2] ?>"><?php echo h($val) ?></textarea>
           <?php else: ?>
-          <input class="form-input" id="edit-<?php echo h($col) ?>" name="<?php echo h($col) ?>" type="<?php echo h($def[1]) ?>" value="<?php echo h($val) ?>" <?php if($def[1]!=='date') echo 'maxlength="'.(int)$def[2].'"' ?> <?php if($def[3]) echo 'required' ?> />
+              <input class="form-input" id="edit-<?php echo h($col) ?>" name="<?php echo h($col) ?>" type="<?php echo h($def[1]) ?>" value="<?php echo h($val) ?>" <?php if($def[1]!=='date') echo 'maxlength="'.(int)$def[2].'"' ?> <?php if($def[3]) echo 'required' ?> />
           <?php endif ?>
-        </div>
+            </div>
         <?php endforeach ?>
-
-        <div class="form-group">
-          <label class="form-label" for="edit-role">Role</label>
-          <input class="form-input" id="edit-role" value="<?php echo h($cfg['label']) ?>" disabled />
-        </div>
-
-        <div class="modal__actions form-group--full">
-          <a class="btn btn--ghost" href="<?php echo h($close_url) ?>">Cancel</a>
-          <button type="submit" class="btn btn--primary">Save Changes</button>
-        </div>
-      </form>
-
+            <div class="form-group">
+              <label class="form-label" for="edit-role">Role</label>
+              <input class="form-input" id="edit-role" value="<?php echo h($cfg['label']) ?>" disabled />
+            </div>
+            <div class="modal__actions form-group--full">
+              <a class="btn btn--ghost btn--sm" href="<?php echo h($close_url) ?>">Cancel</a>
+              <button type="submit" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Save changes</button>
+            </div>
+          </form>
       <?php elseif($action==='delete'): ?>
-
-      <h3 class="modal__title">Delete user?</h3>
-      <p style="color:var(--text-secondary);margin:8px 0 20px;line-height:1.5">
-        This will permanently delete <strong><?php echo h($r_name) ?></strong> (<?php echo h($r_id) ?>). This cannot be undone.
-      </p>
-      <form method="post" action="users.php">
-        <input type="hidden" name="csrf" value="<?php echo h($_SESSION['csrf']) ?>" />
-        <input type="hidden" name="action" value="delete" />
-        <input type="hidden" name="utype" value="<?php echo h($utype) ?>" />
-        <input type="hidden" name="uid" value="<?php echo (int)$record['id'] ?>" />
+          <h3 class="modal__title">Delete this user?</h3>
+          <p class="muted">This will permanently delete <strong><?php echo h($r_name) ?></strong> (<?php echo h($r_id) ?>). This cannot be undone.</p>
+          <form method="post" action="users.php">
+            <input type="hidden" name="csrf" value="<?php echo h($_SESSION['csrf']) ?>" />
+            <input type="hidden" name="action" value="delete" />
+            <input type="hidden" name="utype" value="<?php echo h($utype) ?>" />
+            <input type="hidden" name="uid" value="<?php echo (int)$record['id'] ?>" />
         <?php foreach($filters as $k=>$v): ?>
-        <input type="hidden" name="<?php echo h($k) ?>" value="<?php echo h($v) ?>" />
+            <input type="hidden" name="<?php echo h($k) ?>" value="<?php echo h($v) ?>" />
         <?php endforeach ?>
-        <div class="modal__actions">
-          <a class="btn btn--ghost" href="<?php echo h($close_url) ?>">Cancel</a>
-          <button type="submit" class="btn btn--primary" style="background:var(--clr-danger);border-color:var(--clr-danger)">Delete</button>
-        </div>
-      </form>
-
+            <div class="modal__actions">
+              <a class="btn btn--ghost btn--sm" href="<?php echo h($close_url) ?>">Cancel</a>
+              <button type="submit" class="btn btn--danger btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-trash"/></svg>Delete</button>
+            </div>
+          </form>
       <?php endif ?>
-    </div>
-  </div>
+        </div>
+      </div>
   <?php endif ?>
-
-  <div class="toast-container" id="toast-container">
+      <div class="toast-stack" id="toast-container" role="status" aria-live="polite">
     <?php if($flash): ?>
-    <div class="toast toast--<?php echo $flash[0]==='success' ? 'success' : 'error' ?>">
-      <span class="toast__message"><?php echo h($flash[1]) ?></span>
-      <a class="toast__close" href="<?php echo h(list_url($filters)) ?>" aria-label="Dismiss">&#10005;</a>
-    </div>
+        <div class="toast toast--<?php echo $flash[0]==='success' ? 'success' : 'error' ?>">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-info"/></svg>
+          <span><?php echo h($flash[1]) ?></span>
+          <a class="icon-btn" href="<?php echo h(list_url($filters)) ?>" aria-label="Dismiss"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></a>
+        </div>
     <?php endif ?>
-  </div>
+      </div>
 
-  <!-- UI only (theme + mobile sidebar). All user CRUD is handled by PHP above. -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var root = document.documentElement;
-      var t = document.getElementById('theme-toggle');
-      if (t) t.addEventListener('click', function () {
-        var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        root.setAttribute('data-theme', next);
-        try { localStorage.setItem('hs-theme', next); } catch (e) {}
-      });
-      var sidebar = document.getElementById('sidebar');
-      var overlay = document.getElementById('overlay');
-      var ham = document.getElementById('hamburger');
-      if (ham) ham.addEventListener('click', function () {
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('show');
-      });
-      if (overlay) overlay.addEventListener('click', function () {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('show');
-      });
-    });
-  </script>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

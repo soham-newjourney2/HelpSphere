@@ -51,234 +51,114 @@ function getVolunteers($pdo, $campaign_id) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-  <meta charset="UTF-8">
-  <title>Volunteer Management</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/ngo.css">
-  <style>
-    /* ── Campaign Row ── */
-    .campaign-row {
-      background: rgba(30,41,59,0.6);
-      border: 1px solid rgba(99,179,237,0.13);
-      border-radius: 10px;
-      margin-bottom: 10px;
-      overflow: hidden;
-      transition: border-color 0.2s;
-    }
-    .campaign-row:hover { border-color: rgba(99,179,237,0.3); }
-
-    .campaign-row-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .campaign-row-info { flex: 1; min-width: 0; }
-    .campaign-row-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #e2e8f0;
-      margin-bottom: 3px;
-    }
-    .campaign-row-meta {
-      font-size: 0.78rem;
-      color: #64748b;
-    }
-
-    .btn-view-vol {
-      padding: 7px 18px;
-      background: rgba(99,179,237,0.15);
-      color: #63b3ed;
-      border: 1px solid rgba(99,179,237,0.35);
-      border-radius: 7px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .btn-view-vol:hover { background: rgba(99,179,237,0.3); color: #fff; }
-    .btn-view-vol.open  { background: rgba(99,179,237,0.25); color: #fff; }
-
-    /* ── Volunteer Sub-Panel ── */
-    .volunteer-panel {
-      display: none;
-      border-top: 1px solid rgba(99,179,237,0.1);
-      background: rgba(8,15,30,0.45);
-      padding: 14px 18px 18px;
-    }
-    .volunteer-panel.open { display: block; }
-
-    .vol-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-    .vol-table th {
-      text-align: left;
-      padding: 8px 12px;
-      color: #64748b;
-      font-size: 0.76rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-bottom: 1px solid rgba(99,179,237,0.1);
-    }
-    .vol-table td {
-      padding: 10px 12px;
-      color: #cbd5e1;
-      border-bottom: 1px solid rgba(99,179,237,0.06);
-      vertical-align: middle;
-    }
-    .vol-table tr:last-child td { border-bottom: none; }
-
-    .status-badge {
-      display: inline-block;
-      padding: 3px 11px;
-      border-radius: 20px;
-      font-size: 0.76rem;
-      font-weight: 600;
-    }
-    .status-badge.pending  { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
-    .status-badge.approved { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
-    .status-badge.rejected { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-
-    .btn-approve, .btn-reject {
-      padding: 5px 13px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-    }
-    .btn-approve {
-      background: rgba(74,222,128,0.15);
-      color: #4ade80;
-      border: 1px solid rgba(74,222,128,0.3);
-      margin-right: 6px;
-    }
-    .btn-approve:hover { background: rgba(74,222,128,0.3); color: #fff; }
-    .btn-reject {
-      background: rgba(239,68,68,0.12);
-      color: #f87171;
-      border: 1px solid rgba(239,68,68,0.3);
-    }
-    .btn-reject:hover { background: rgba(239,68,68,0.3); color: #fff; }
-
-    .no-vol {
-      color: #475569;
-      font-size: 0.84rem;
-      padding: 10px 0;
-    }
-
-    /* Section divider */
-    .section-divider {
-      margin: 32px 0 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .section-divider h3 { margin: 0; font-size: 1rem; color: #94a3b8; white-space: nowrap; }
-    .section-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(99,179,237,0.1);
-    }
-    .no-campaigns {
-      color: #475569;
-      font-size: 0.87rem;
-      padding: 14px 0;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volunteers · NGO | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
+<div class="app">
 
-  <div class="overlay" id="overlay"></div>
-  <div class="sky">
-    <div class="aurora a1"></div>
-    <div class="aurora a2"></div>
-    <div class="aurora a3"></div>
-  </div>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
 
-  <div class="app">
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand">NGO</div>
-        <button class="sidebar-close" id="sidebarClose">✕</button>
-      </div>
-      <div class="tagline">Management & Operations</div>
-      <nav class="sidebar-nav">
-        <ul>
-          <li class="nav-item"><a href="../dashboards/ngo-dashboard.php"><span class="icon">📊</span><span class="label">Dashboard Overview</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-profile.php"><span class="icon">🧾</span><span class="label">Profile & Compliance</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-needs.php"><span class="icon">📌</span><span class="label">Needs & Requests</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-beneficiaries.php"><span class="icon">👥</span><span class="label">Beneficiaries</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-donations.php"><span class="icon">🎁</span><span class="label">Donations & Resources</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-campaigns.php"><span class="icon">📣</span><span class="label">Campaigns</span></a></li>
-          <li class="nav-item active"><a href="../ngos/ngo-volunteers.php"><span class="icon">🧑‍🤝‍🧑</span><span class="label">Volunteers</span></a></li>
-          <li class="nav-item"><a href="../ngos/ngo-communication.php"><span class="icon">💬</span><span class="label">Communication</span></a></li>
-          <li class="nav-item logout"><a href="../../inc/logout.php"><span class="icon">⎋</span><span class="label">Sign Out</span></a></li>
-        </ul>
-      </nav>
-    </aside>
+    <span class="sidebar__tag">NGO workspace</span>
 
-    <main class="main-content">
-      <div class="topbar">
-        <div class="topbar-left">
-          <button class="menu-toggle" id="menuToggle">☰</button>
-          <div class="section-header"><h3>Volunteer Management</h3></div>
+    <nav class="sidebar__nav" aria-label="NGO workspace">
+      <a href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-needs.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
+      <a href="../ngos/ngo-beneficiaries.php"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
+      <a href="../ngos/ngo-donations.php"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
+      <a href="../ngos/ngo-campaigns.php"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>Campaigns</a>
+      <a href="../ngos/ngo-volunteers.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteers</a>
+      <a href="../ngos/ngo-communication.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Communication</a>
+      <a href="../ngos/ngo-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-shield"/></svg>Profile &amp; compliance</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Volunteers</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg></span>
+          <div class="profile__text"><strong>NGO team</strong><span>NGO workspace</span></div>
         </div>
-        <div class="user-name">NGO Administrator</div>
       </div>
+    </header>
 
-      <!-- ══════════════════════════════════════════════ -->
-      <!-- ONGOING CAMPAIGNS                              -->
-      <!-- ══════════════════════════════════════════════ -->
-      <section class="documents">
-        <div class="section-header"><h3>Ongoing Campaigns</h3></div>
+    <main class="content" id="content">
 
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Volunteers</p>
+          <h1 class="page-head__title">Volunteer management</h1>
+          <p class="page-head__sub">People who applied to your campaigns. Approve the ones you want on the ground.</p>
+        </div>
+        <div class="page-head__actions">
+          <a href="../ngos/ngo-campaigns-create.php" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-plus"/></svg>New campaign</a>
+        </div>
+      </section>
+
+      <section class="card reveal">
+        <header class="card__head">
+          <div>
+            <h2 class="card__title">Ongoing campaigns</h2>
+            <p class="card__sub">Open a campaign to review its applicants</p>
+          </div>
+        </header>
         <?php if (empty($ongoingCampaigns)): ?>
-          <p class="no-campaigns">No ongoing campaigns at the moment.</p>
+        <div class="empty"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg><strong>No ongoing campaigns at the moment</strong></div>
         <?php else: ?>
+        <div class="list">
           <?php foreach ($ongoingCampaigns as $c):
             $cid  = (int) $c['id'];
             $vols = getVolunteers($pdo, $cid);
           ?>
-          <div class="campaign-row">
-            <div class="campaign-row-header">
-              <div class="campaign-row-info">
-                <div class="campaign-row-title"><?php echo htmlspecialchars($c['title']); ?></div>
-                <div class="campaign-row-meta">
-                  📅 <?php echo htmlspecialchars($c['st_date']); ?> → <?php echo htmlspecialchars($c['end_date']); ?>
-                  &nbsp;·&nbsp; <?php echo count($vols); ?> applicant<?php echo count($vols) !== 1 ? 's' : ''; ?>
-                </div>
+          <div class="item">
+            <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg></span>
+            <div class="item__body">
+              <div class="item__top">
+                <span class="item__title"><?php echo htmlspecialchars($c['title']); ?></span>
+                <span class="pill pill--info"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg><?php echo count($vols); ?> applicant<?php echo count($vols) !== 1 ? 's' : ''; ?></span>
               </div>
-              <button class="btn-view-vol" onclick="togglePanel('panel-<?php echo $cid; ?>', this)">
-                👥 View Volunteers
-              </button>
-            </div>
-
-            <div class="volunteer-panel" id="panel-<?php echo $cid; ?>">
+              <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo htmlspecialchars($c['st_date']); ?> → <?php echo htmlspecialchars($c['end_date']); ?></span></div>
+              <div class="item__actions">
+                <button type="button" class="btn btn--outline btn--xs" data-expand="#panel-<?php echo $cid; ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg><span data-expand-label data-closed="View volunteers" data-open="Hide volunteers">View volunteers</span></button>
+              </div>
+              <div id="panel-<?php echo $cid; ?>" hidden>
               <?php if (empty($vols)): ?>
-                <p class="no-vol">No volunteers have applied for this campaign yet.</p>
+                <p class="muted">No volunteers have applied for this campaign yet.</p>
               <?php else: ?>
-                <table class="vol-table">
+                <div class="table-wrap">
+                <table class="table table--stack">
                   <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Volunteer Name</th>
-                      <th>Skills</th>
-                      <th>Applied On</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
+                    <tr><th>#</th><th>Volunteer</th><th>Skills</th><th>Applied on</th><th>Status</th><th>Actions</th></tr>
                   </thead>
                   <tbody>
                     <?php foreach ($vols as $i => $v):
@@ -287,85 +167,81 @@ function getVolunteers($pdo, $campaign_id) {
                     ?>
                     <tr>
                       <td><?php echo $i + 1; ?></td>
-                      <td><?php echo htmlspecialchars($v['donor_name']); ?></td>
-                      <td><?php echo htmlspecialchars($v['skills'] ?: '—'); ?></td>
-                      <td><?php echo date('d M Y', strtotime($v['applied_at'])); ?></td>
+                      <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg></span><strong><?php echo htmlspecialchars($v['donor_name']); ?></strong></div></td>
+                      <td class="text-cell"><?php echo htmlspecialchars($v['skills'] ?: '—'); ?></td>
+                      <td class="date-cell"><?php echo date('d M Y', strtotime($v['applied_at'])); ?></td>
                       <td>
-                        <span class="status-badge <?php echo $statusClass; ?>">
-                          <?php echo htmlspecialchars($v['status']); ?>
-                        </span>
+                        <span class="status <?php echo $statusClass; ?>" data-status="<?php echo htmlspecialchars($v['status']); ?>"><?php echo htmlspecialchars($v['status']); ?></span>
                       </td>
                       <td>
                         <?php if ($isPending): ?>
-                          <form method="POST" action="" style="display:inline;">
+                        <div class="actions">
+                          <form method="POST" action="">
                             <input type="hidden" name="volunteer_id" value="<?php echo (int)$v['vol_id']; ?>">
                             <input type="hidden" name="new_status"   value="Approved">
-                            <button type="submit" class="btn-approve">✔ Approve</button>
+                            <button type="submit" class="act act--yes"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Approve</button>
                           </form>
-                          <form method="POST" action="" style="display:inline;">
+                          <form method="POST" action="">
                             <input type="hidden" name="volunteer_id" value="<?php echo (int)$v['vol_id']; ?>">
                             <input type="hidden" name="new_status"   value="Rejected">
-                            <button type="submit" class="btn-reject">✖ Reject</button>
+                            <button type="submit" class="act act--no"><svg class="icon"><use href="../assets/img/icons.svg#i-x"/></svg>Reject</button>
                           </form>
+                        </div>
                         <?php else: ?>
-                          <span style="color:#475569; font-size:0.8rem;">—</span>
+                          <span class="muted">—</span>
                         <?php endif; ?>
                       </td>
                     </tr>
                     <?php endforeach; ?>
                   </tbody>
                 </table>
+                </div>
               <?php endif; ?>
+              </div>
             </div>
           </div>
           <?php endforeach; ?>
+        </div>
         <?php endif; ?>
       </section>
 
-      <!-- ══════════════════════════════════════════════ -->
-      <!-- COMPLETED CAMPAIGNS                            -->
-      <!-- ══════════════════════════════════════════════ -->
-      <div class="section-divider"><h3>Completed Campaigns</h3></div>
-
-      <section class="documents">
+      <section class="card reveal">
+        <header class="card__head">
+          <div>
+            <h2 class="card__title">Completed campaigns</h2>
+            <p class="card__sub">Who took part in your past campaigns</p>
+          </div>
+        </header>
         <?php if (empty($doneCampaigns)): ?>
-          <p class="no-campaigns">No completed campaigns yet.</p>
+        <div class="empty"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg><strong>No completed campaigns yet</strong></div>
         <?php else: ?>
+        <div class="list">
           <?php foreach ($doneCampaigns as $c):
             $cid  = (int) $c['id'];
             $vols = getVolunteers($pdo, $cid);
           ?>
-          <div class="campaign-row" style="border-color: rgba(148,163,184,0.12);">
-            <div class="campaign-row-header">
-              <div class="campaign-row-info">
-                <div class="campaign-row-title" style="color:#94a3b8;">
+          <div class="item">
+            <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg></span>
+            <div class="item__body">
+              <div class="item__top">
+                <span class="item__title">
                   <?php echo htmlspecialchars($c['title']); ?>
-                  <span style="font-size:0.72rem; color:#475569; font-weight:400; margin-left:8px;">COMPLETED</span>
-                </div>
-                <div class="campaign-row-meta">
-                  📅 <?php echo htmlspecialchars($c['st_date']); ?> → <?php echo htmlspecialchars($c['end_date']); ?>
-                  &nbsp;·&nbsp; <?php echo count($vols); ?> participant<?php echo count($vols) !== 1 ? 's' : ''; ?>
-                </div>
+                </span>
+                <span class="status" data-status="Completed">Completed</span>
+                <span class="pill pill--muted"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg><?php echo count($vols); ?> participant<?php echo count($vols) !== 1 ? 's' : ''; ?></span>
               </div>
-              <button class="btn-view-vol" style="border-color:rgba(148,163,184,0.3); color:#94a3b8;"
-                      onclick="togglePanel('done-panel-<?php echo $cid; ?>', this)">
-                👥 View Volunteers
-              </button>
-            </div>
-
-            <div class="volunteer-panel" id="done-panel-<?php echo $cid; ?>">
+              <div class="item__meta"><span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo htmlspecialchars($c['st_date']); ?> → <?php echo htmlspecialchars($c['end_date']); ?></span></div>
+              <div class="item__actions">
+                <button type="button" class="btn btn--outline btn--xs" data-expand="#done-panel-<?php echo $cid; ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg><span data-expand-label data-closed="View volunteers" data-open="Hide volunteers">View volunteers</span></button>
+              </div>
+              <div id="done-panel-<?php echo $cid; ?>" hidden>
               <?php if (empty($vols)): ?>
-                <p class="no-vol">No volunteers participated in this campaign.</p>
+                <p class="muted">No volunteers took part in this campaign.</p>
               <?php else: ?>
-                <table class="vol-table">
+                <div class="table-wrap">
+                <table class="table table--stack">
                   <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Volunteer Name</th>
-                      <th>Skills</th>
-                      <th>Applied On</th>
-                      <th>Status</th>
-                    </tr>
+                    <tr><th>#</th><th>Volunteer</th><th>Skills</th><th>Applied on</th><th>Status</th></tr>
                   </thead>
                   <tbody>
                     <?php foreach ($vols as $i => $v):
@@ -373,45 +249,31 @@ function getVolunteers($pdo, $campaign_id) {
                     ?>
                     <tr>
                       <td><?php echo $i + 1; ?></td>
-                      <td><?php echo htmlspecialchars($v['donor_name']); ?></td>
-                      <td><?php echo htmlspecialchars($v['skills'] ?: '—'); ?></td>
-                      <td><?php echo date('d M Y', strtotime($v['applied_at'])); ?></td>
+                      <td><div class="who"><span class="avatar"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg></span><strong><?php echo htmlspecialchars($v['donor_name']); ?></strong></div></td>
+                      <td class="text-cell"><?php echo htmlspecialchars($v['skills'] ?: '—'); ?></td>
+                      <td class="date-cell"><?php echo date('d M Y', strtotime($v['applied_at'])); ?></td>
                       <td>
-                        <span class="status-badge <?php echo $statusClass; ?>">
-                          <?php echo htmlspecialchars($v['status']); ?>
-                        </span>
+                        <span class="status <?php echo $statusClass; ?>" data-status="<?php echo htmlspecialchars($v['status']); ?>"><?php echo htmlspecialchars($v['status']); ?></span>
                       </td>
                     </tr>
                     <?php endforeach; ?>
                   </tbody>
                 </table>
+                </div>
               <?php endif; ?>
+              </div>
             </div>
           </div>
           <?php endforeach; ?>
+        </div>
         <?php endif; ?>
       </section>
 
-      <div class="footer">© NGO Management System</div>
     </main>
   </div>
+</div>
 
-  <script src="../assets/js/sidebar.js"></script>
-  <script>
-    function togglePanel(panelId, btn) {
-      const panel = document.getElementById(panelId);
-      const isOpen = panel.classList.contains('open');
-      // Close all panels first
-      document.querySelectorAll('.volunteer-panel').forEach(p => p.classList.remove('open'));
-      document.querySelectorAll('.btn-view-vol').forEach(b => b.classList.remove('open'));
-      if (!isOpen) {
-        panel.classList.add('open');
-        btn.classList.add('open');
-        btn.textContent = '✖ Hide Volunteers';
-      } else {
-        btn.textContent = '👥 View Volunteers';
-      }
-    }
-  </script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

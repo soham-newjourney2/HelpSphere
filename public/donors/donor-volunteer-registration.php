@@ -38,268 +38,112 @@ foreach ($stmtA->fetchAll(PDO::FETCH_ASSOC) as $row) {
     $applied[$row['campaign_id']] = $row['status'];
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volunteer Registration</title>
-    <link rel="stylesheet" href="../assets/css/donor.css">
-    <style>
-        /* ── Campaign Cards ── */
-        .campaign-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-top: 10px;
-        }
-        .campaign-card {
-            background: rgba(30,41,59,0.7);
-            border: 1px solid rgba(99,179,237,0.15);
-            border-radius: 12px;
-            padding: 18px 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-            transition: border-color 0.2s;
-        }
-        .campaign-card:hover { border-color: rgba(99,179,237,0.35); }
-        .campaign-info { flex: 1; min-width: 0; }
-        .campaign-title {
-            font-size: 0.97rem;
-            font-weight: 700;
-            color: #e2e8f0;
-            margin-bottom: 4px;
-        }
-        .campaign-meta {
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-        .campaign-meta span { margin-right: 14px; }
-
-        .btn-volunteer {
-            padding: 8px 20px;
-            background: rgba(99,179,237,0.2);
-            color: #63b3ed;
-            border: 1px solid rgba(99,179,237,0.4);
-            border-radius: 8px;
-            font-size: 0.87rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .btn-volunteer:hover { background: rgba(99,179,237,0.35); color: #fff; }
-
-        .applied-badge {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-        .badge-applied {
-            padding: 6px 16px;
-            background: rgba(74,222,128,0.12);
-            color: #4ade80;
-            border: 1px solid rgba(74,222,128,0.3);
-            border-radius: 8px;
-            font-size: 0.87rem;
-            font-weight: 600;
-        }
-        .badge-status {
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-        .badge-status .s-pending  { color: #fbbf24; }
-        .badge-status .s-approved { color: #4ade80; }
-        .badge-status .s-rejected { color: #f87171; }
-
-        .no-campaigns {
-            text-align: center;
-            color: #475569;
-            padding: 40px 20px;
-            font-size: 0.9rem;
-        }
-
-        /* ── Modal ── */
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .modal-backdrop.active { display: flex; }
-
-        .modal-box {
-            background: #0f172a;
-            border: 1px solid rgba(99,179,237,0.25);
-            border-radius: 14px;
-            padding: 28px 30px;
-            width: 100%;
-            max-width: 520px;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.6);
-        }
-        .modal-box h3 {
-            margin: 0 0 20px;
-            font-size: 1.1rem;
-            color: #e2e8f0;
-        }
-        .modal-detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px 20px;
-            margin-bottom: 20px;
-        }
-        .modal-detail-grid .full { grid-column: 1 / -1; }
-        .modal-detail-grid p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
-        .modal-detail-grid p strong { color: #cbd5e1; display: block; margin-bottom: 2px; }
-
-        .modal-divider {
-            border: none;
-            border-top: 1px solid rgba(99,179,237,0.1);
-            margin: 18px 0;
-        }
-        .modal-box label {
-            display: block;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-bottom: 6px;
-        }
-        .modal-box input[type="text"] {
-            width: 100%;
-            padding: 10px 13px;
-            border-radius: 8px;
-            border: 1px solid rgba(99,179,237,0.25);
-            background: rgba(30,41,59,0.8);
-            color: #e2e8f0;
-            font-size: 0.87rem;
-            font-family: inherit;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-        .modal-box input[type="text"]:focus { outline: none; border-color: rgba(99,179,237,0.5); }
-        .modal-box input[type="text"]::placeholder { color: #475569; }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: flex-end;
-        }
-        .btn-modal-cancel {
-            padding: 9px 20px;
-            background: rgba(148,163,184,0.1);
-            color: #94a3b8;
-            border: 1px solid rgba(148,163,184,0.25);
-            border-radius: 8px;
-            font-size: 0.87rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-modal-cancel:hover { background: rgba(148,163,184,0.2); color: #fff; }
-        .btn-modal-submit {
-            padding: 9px 24px;
-            background: rgba(99,179,237,0.2);
-            color: #63b3ed;
-            border: 1px solid rgba(99,179,237,0.4);
-            border-radius: 8px;
-            font-size: 0.87rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-modal-submit:hover { background: rgba(99,179,237,0.35); color: #fff; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volunteering · Donor | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
-
-<!-- ── Volunteer Modal ── -->
-<div class="modal-backdrop" id="volunteerModal">
-    <div class="modal-box">
-        <h3 id="modalCampaignName">Campaign Name</h3>
-
-        <div class="modal-detail-grid">
-            <p class="full">
-                <strong>Description</strong>
-                <span id="modalDescription">—</span>
-            </p>
-            <p>
-                <strong>Start Date</strong>
-                <span id="modalStartDate">—</span>
-            </p>
-            <p>
-                <strong>End Date</strong>
-                <span id="modalEndDate">—</span>
-            </p>
-            <p>
-                <strong>Organised by</strong>
-                <span id="modalNgoName">—</span>
-            </p>
-        </div>
-
-        <hr class="modal-divider">
-
-        <form method="POST" action="" id="volunteerForm">
-            <input type="hidden" name="campaign_id" id="modalCampaignId">
-            <label for="skillsInput">Your Skills <span style="color:#475569">(e.g. Teaching, Medical Aid)</span></label>
-            <input type="text" id="skillsInput" name="skills" placeholder="Enter your skills…" required>
-            <div class="modal-actions">
-                <button type="button" class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn-modal-submit">🤝 Volunteer</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <div class="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="brand">HelpSphere</div>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+
+    <span class="sidebar__tag">Donor space</span>
+
+    <nav class="sidebar__nav" aria-label="Donor space">
+      <a href="../dashboards/donor-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../donors/donor-food-selection.php"><svg class="icon"><use href="../assets/img/icons.svg#i-food"/></svg>Food donation</a>
+      <a href="../donors/donor-money-selection.php"><svg class="icon"><use href="../assets/img/icons.svg#i-coin"/></svg>Money donation</a>
+      <a href="../donors/donor-resource-donation.php"><svg class="icon"><use href="../assets/img/icons.svg#i-box"/></svg>Resource donation</a>
+      <a href="../donors/donor-volunteer-registration.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteering</a>
+      <a href="../donors/donor-messages.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Messages</a>
+      <a href="../donors/donor-profile-preferences.php"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg>Profile &amp; preferences</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/donor-dashboard.php">Donor space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Volunteering</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg></span>
+          <div class="profile__text"><strong>Donor</strong><span>Donor space</span></div>
         </div>
-        <nav class="sidebar-nav">
-            <ul>
-                <li><a href="../dashboards/donor-dashboard.php" class="nav-item"><span class="icon">🏠</span><span class="label">Dashboard</span></a></li>
-                <li><a href="../donors/donor-profile-preferences.php" class="nav-item"><span class="icon">👤</span><span class="label">Profile & Preferences</span></a></li>
-                <li><a href="../donors/donor-food-selection.php" class="nav-item"><span class="icon">🍱</span><span class="label">Food Donation</span></a></li>
-                <li><a href="../donors/donor-money-selection.php" class="nav-item"><span class="icon">💰</span><span class="label">Money Donation</span></a></li>
-                <li><a href="../donors/donor-resource-donation.php" class="nav-item"><span class="icon">📦</span><span class="label">Resource Donation</span></a></li>
-                <li><a href="../donors/donor-volunteer-registration.php" class="nav-item active"><span class="icon">🤝</span><span class="label">Volunteering</span></a></li>
-                <li><a href="../donors/donor-messages.php" class="nav-item"><span class="icon">💬</span><span class="label">Communication</span></a></li>
-                <li><a href="../../inc/logout.php" class="nav-item"><span class="icon">🚪</span><span class="label">Logout</span></a></li>
-            </ul>
-        </nav>
-    </aside>
+      </div>
+    </header>
 
-    <main class="main-content">
+    <main class="content" id="content">
 
-        <header class="topbar">
-            <div class="user-name">Volunteer for Campaigns</div>
-            <div class="menu-toggle" id="menuToggle">☰</div>
-        </header>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Volunteering</p>
+          <h1 class="page-head__title">Volunteer for a campaign</h1>
+          <p class="page-head__sub">Ongoing NGO campaigns that need people on the ground. Apply with your skills — the NGO approves volunteers.</p>
+        </div>
+      </section>
 
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Ongoing Campaigns</h3>
+      <!-- ── Volunteer modal ── -->
+      <div class="modal" id="volunteerModal" hidden role="dialog" aria-modal="true" aria-labelledby="vmTitle">
+        <div class="modal__box">
+          <div class="modal__head">
+            <div>
+              <h2 id="vmTitle" data-fill="title">Campaign</h2>
+              <p>Organised by <span data-fill="ngo">—</span></p>
             </div>
+            <button type="button" class="icon-btn" data-modal-close aria-label="Close"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+          </div>
+          <dl class="details">
+            <div><dt>Starts</dt><dd data-fill="start">—</dd></div>
+            <div><dt>Ends</dt><dd data-fill="end">—</dd></div>
+          </dl>
+          <p class="muted" data-fill="description"></p>
+          <form method="POST" action="" class="form">
+            <input type="hidden" name="campaign_id" id="modalCampaignId">
+            <div class="field">
+              <label for="skillsInput">Your skills</label>
+              <div class="field__control"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-hand"/></svg><input type="text" id="skillsInput" name="skills" placeholder="e.g. Teaching, first aid, driving" required></div>
+            </div>
+            <div class="modal__actions">
+              <button type="button" class="btn btn--outline btn--sm" data-modal-close>Cancel</button>
+              <button type="submit" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteer</button>
+            </div>
+          </form>
+        </div>
+      </div>
 
-            <div class="campaign-list">
+      <div class="cards-grid">
             <?php if (empty($campaigns)): ?>
-                <div class="no-campaigns">No ongoing campaigns at the moment. Check back soon!</div>
+        <div class="card empty">
+          <svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg>
+          <strong>No ongoing campaigns right now</strong>
+          <p>Check back soon — NGOs post new campaigns regularly.</p>
+        </div>
             <?php else: ?>
                 <?php foreach ($campaigns as $c):
                     $cid         = (int) $c['id'];
@@ -312,62 +156,41 @@ foreach ($stmtA->fetchAll(PDO::FETCH_ASSOC) as $row) {
                     $appStatus   = $isApplied ? $applied[$cid] : '';
                     $statusClass = 's-' . strtolower($appStatus);
                 ?>
-                <div class="campaign-card">
-                    <div class="campaign-info">
-                        <div class="campaign-title"><?php echo $title; ?></div>
-                        <div class="campaign-meta">
-                            <span>🏢 <?php echo $ngo_name; ?></span>
-                            <span>📅 <?php echo $st_date; ?> → <?php echo $end_date; ?></span>
-                        </div>
-                    </div>
-
+        <article class="mini-card">
+          <div class="mini-card__top">
+            <span class="item__icon"><svg class="icon"><use href="../assets/img/icons.svg#i-megaphone"/></svg></span>
+            <span class="pill pill--info"><svg class="icon"><use href="../assets/img/icons.svg#i-clock"/></svg>Ongoing</span>
+          </div>
+          <h3><?php echo $title; ?></h3>
+          <p><?php echo $description; ?></p>
+          <div class="mini-card__meta">
+            <span><svg class="icon"><use href="../assets/img/icons.svg#i-building"/></svg><?php echo $ngo_name; ?></span>
+            <span><svg class="icon"><use href="../assets/img/icons.svg#i-calendar"/></svg><?php echo $st_date; ?> → <?php echo $end_date; ?></span>
+          </div>
+          <div class="mini-card__foot">
                     <?php if ($isApplied): ?>
-                        <div class="applied-badge">
-                            <span class="badge-applied">✔ Applied</span>
-                            <span class="badge-status">Status: <span class="<?php echo $statusClass; ?>"><?php echo $appStatus; ?></span></span>
-                        </div>
+            <span class="pill pill--good"><svg class="icon"><use href="../assets/img/icons.svg#i-check"/></svg>Applied</span>
+            <span class="status <?php echo $statusClass; ?>" data-status="<?php echo $appStatus; ?>"><?php echo $appStatus; ?></span>
                     <?php else: ?>
-                        <button class="btn-volunteer"
-                                onclick="openModal(<?php echo $cid; ?>, '<?php echo addslashes($title); ?>', '<?php echo addslashes($description); ?>', '<?php echo $st_date; ?>', '<?php echo $end_date; ?>', '<?php echo addslashes($ngo_name); ?>')">
-                            🤝 Volunteer
-                        </button>
+            <button type="button" class="btn btn--dark btn--xs" data-modal-open="#volunteerModal"
+                    data-fill-campaign_id="<?php echo $cid; ?>"
+                    data-fill-title="<?php echo $title; ?>"
+                    data-fill-description="<?php echo $description; ?>"
+                    data-fill-start="<?php echo $st_date; ?>"
+                    data-fill-end="<?php echo $end_date; ?>"
+                    data-fill-ngo="<?php echo $ngo_name; ?>"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg>Volunteer</button>
                     <?php endif; ?>
-                </div>
+          </div>
+        </article>
                 <?php endforeach; ?>
             <?php endif; ?>
-            </div>
-        </section>
+      </div>
 
     </main>
-    <script src="../assets/js/donor.js"></script>
+  </div>
 </div>
 
-<script>
-    function openModal(id, title, description, startDate, endDate, ngoName) {
-        document.getElementById('modalCampaignId').value   = id;
-        document.getElementById('modalCampaignName').textContent = '🤝 ' + title;
-        document.getElementById('modalDescription').textContent  = description;
-        document.getElementById('modalStartDate').textContent    = startDate;
-        document.getElementById('modalEndDate').textContent      = endDate;
-        document.getElementById('modalNgoName').textContent      = ngoName;
-        document.getElementById('skillsInput').value = '';
-        document.getElementById('volunteerModal').classList.add('active');
-    }
-
-    function closeModal() {
-        document.getElementById('volunteerModal').classList.remove('active');
-    }
-
-    // Close on backdrop click
-    document.getElementById('volunteerModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-
-    // Close on Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeModal();
-    });
-</script>
-
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>

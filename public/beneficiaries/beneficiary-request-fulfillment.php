@@ -41,168 +41,111 @@ if($res2)
 }
 ?>
 
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fulfillment Status</title>
-    <link rel="stylesheet" href="../assets/css/beneficiary.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fulfillment · Beneficiary | HelpSphere</title>
+  <meta name="hs-icons" content="../assets/img/icons.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/app.css" />
 </head>
 <body>
-
-<div id="overlay" class="overlay"></div>
-
 <div class="app">
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="brand">HelpSphere</div>
-            <button id="sidebarClose" class="sidebar-close">✕</button>
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__head">
+      <a href="../../index.php" class="logo logo--light">
+        <span class="logo__mark"><svg ><use href="../assets/img/icons.svg#i-sprout"/></svg></span>
+        HelpSphere
+      </a>
+      <button type="button" class="sidebar__close" data-sidebar-close aria-label="Close menu"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+
+    <span class="sidebar__tag">Beneficiary space</span>
+
+    <nav class="sidebar__nav" aria-label="Beneficiary space">
+      <a href="../dashboards/beneficiary-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../beneficiaries/beneficiary-request-management.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>My requests</a>
+      <a href="../beneficiaries/beneficiary-document-upload.php"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload documents</a>
+      <a href="../beneficiaries/beneficiary-documents.php"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>My documents</a>
+      <a href="../beneficiaries/beneficiary-messages.php"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Messages</a>
+      <a href="../beneficiaries/beneficiary-profile.php"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg>Profile</a>
+    </nav>
+
+    <div class="sidebar__foot">
+      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ Main ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/beneficiary-dashboard.php">Beneficiary space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../beneficiaries/beneficiary-request-management.php">My requests</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Fulfillment details</strong></nav>
+      <div class="topbar__right">
+        <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
+        <div class="profile">
+          <span class="avatar avatar--brand"><svg class="icon"><use href="../assets/img/icons.svg#i-user"/></svg></span>
+          <div class="profile__text"><strong>Beneficiary</strong><span>Beneficiary space</span></div>
         </div>
+      </div>
+    </header>
 
-        <p class="tagline">Support that reaches you</p>
+    <main class="content" id="content">
 
-        <nav class="sidebar-nav">
-            <ul>
-                <li>
-                    <a href="../dashboards/beneficiary-dashboard.php" class="nav-item">
-                        <span class="icon">🏠</span>
-                        <span class="label">Dashboard</span>
-                    </a>
-                </li>
+      <section class="page-head">
+        <svg aria-hidden="true" class="leaf leaf--p1"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p2"><use href="../assets/img/icons.svg#leaf"/></svg><svg aria-hidden="true" class="leaf leaf--p3"><use href="../assets/img/icons.svg#leaf"/></svg>
+        <div>
+          <p class="page-head__eyebrow">Fulfillment status</p>
+          <h1 class="page-head__title"><?php echo $cat ?> assistance</h1>
+          <p class="page-head__sub">Submitted <?php echo $created_at ?></p>
+        </div>
+        <div class="page-head__actions">
+          <span class="status" data-status="<?php echo $status ?>"><?php echo $status ?></span>
+        </div>
+      </section>
 
-                <li>
-                    <a href="../beneficiaries/beneficiary-request-management.php" class="nav-item active">
-                        <span class="icon">📄</span>
-                        <span class="label">Requests</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-document-upload.php" class="nav-item">
-                        <span class="icon">📁</span>
-                        <span class="label">Upload Documents</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-documents.php" class="nav-item">
-                        <span class="icon">📁</span>
-                        <span class="label">Documents</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-messages.php" class="nav-item">
-                        <span class="icon">💬</span>
-                        <span class="label">Messages</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../beneficiaries/beneficiary-profile.php" class="nav-item">
-                        <span class="icon">👤</span>
-                        <span class="label">Profile</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="../../inc/logout.php" class="nav-item logout">
-                        <span class="icon">🚪</span>
-                        <span class="label">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <main class="main-content">
-
-        <header class="topbar">
-            <div class="topbar-left">
-                <button id="menuToggle" class="menu-toggle">☰</button>
-                <div class="user-name">Fulfillment Status</div>
+      <section class="row row--2-1">
+        <article class="card reveal">
+          <header class="card__head">
+            <div>
+              <h2 class="card__title">How your request was fulfilled</h2>
+              <p class="card__sub">Recorded by the NGO that helped you</p>
             </div>
-        </header>
+          </header>
+          <dl class="details">
+            <div><dt>Fulfilled at</dt><dd><?php echo $fulfilled_at!=='' ? htmlspecialchars($fulfilled_at) : 'Not recorded yet' ?></dd></div>
+            <div><dt>Type of support</dt><dd><?php echo htmlspecialchars((string)$support_type) ?></dd></div>
+            <div><dt>Provider</dt><dd><?php echo htmlspecialchars((string)$provider) ?></dd></div>
+            <div><dt>Delivery method</dt><dd><?php echo htmlspecialchars((string)$delivery_method) ?></dd></div>
+          </dl>
+          <div class="card__foot">
+            <a href="../beneficiaries/beneficiary-request-management.php" class="btn btn--outline btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-arrow-left"/></svg>Back to requests</a>
+            <a href="../beneficiaries/beneficiary-messages.php" class="btn btn--dark btn--sm"><svg class="icon"><use href="../assets/img/icons.svg#i-chat"/></svg>Contact the NGO</a>
+          </div>
+        </article>
 
-        <!-- REQUEST SUMMARY -->
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Request Summary</h3>
-            </div>
-
-            <div class="request-item">
-                <strong><?php echo $cat ?> Assistance</strong>
-                <div class="status fulfilled"><?php echo $status ?></div>
-                <p>Submitted: <?php echo $created_at ?></p>
-                <p>Fulfilled: <?php echo $fulfilled_at!=='' ? htmlspecialchars($fulfilled_at) : 'Not recorded yet' ?></p>
-            </div>
-        </section>
-
-        <!-- FULFILLMENT DETAILS -->
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Fulfillment Details</h3>
-            </div>
-
-            <div class="request-item">
-                <p>
-                    <strong>Type of Support:</strong><br>
-                    <?php echo htmlspecialchars((string)$support_type) ?>
-                </p>
-
-                <p>
-                    <strong>Provider:</strong><br>
-                    <?php echo htmlspecialchars((string)$provider) ?>
-                </p>
-
-                <p>
-                    <strong>Delivery Method:</strong><br>
-                    <?php echo htmlspecialchars((string)$delivery_method) ?>
-                </p>
-
-            </div>
-        </section>
-
-        <!-- CLOSURE NOTES -->
-        <section class="active-requests">
-            <div class="section-header">
-                <h3>Closure Notes</h3>
-            </div>
-
-            <div class="request-item">
-                <p>
-                    Your request has been successfully fulfilled.
-                    If you have any concerns or need further assistance,
-                    please contact the NGO through the Messages section.
-                </p>
-            </div>
-        </section>
-
-        <!-- NAVIGATION -->
-        <section class="active-requests">
-            <div class="request-item">
-                <div class="action-row">
-                    <a href="../beneficiaries/beneficiary-request-management.php" class="action-btn secondary">
-                        Back to Requests
-                    </a>
-                    <a href="../beneficiaries/beneficiary-messages.php" class="action-btn">
-                        Contact NGO
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <footer class="footer">
-            © 2026 HelpSphere · Beneficiary Portal
-        </footer>
+        <aside class="urgent reveal">
+          <svg aria-hidden="true" class="leaf leaf--u1"><use href="../assets/img/icons.svg#leaf"/></svg>
+          <svg aria-hidden="true" class="leaf leaf--u2"><use href="../assets/img/icons.svg#leaf"/></svg>
+          <span class="pill pill--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-heart"/></svg>Closure note</span>
+          <h2>We are glad you got help</h2>
+          <p>Your request has been fulfilled. If anything is missing or you need further assistance, contact the NGO through Messages.</p>
+        </aside>
+      </section>
 
     </main>
-
+  </div>
 </div>
 
-<script src="../assets/js/beneficiary-dashboard.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/app.js"></script>
 </body>
 </html>
