@@ -184,7 +184,7 @@ if ($notif_id > 0 && $token !== '') {
     <span class="sidebar__tag">NGO workspace</span>
 
     <nav class="sidebar__nav" aria-label="NGO workspace">
-      <a href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../ngos/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
       <a href="../ngos/ngo-needs.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>Needs &amp; requests</a>
       <a href="../ngos/ngo-beneficiaries.php"><svg class="icon"><use href="../assets/img/icons.svg#i-users"/></svg>Beneficiaries</a>
       <a href="../ngos/ngo-donations.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-gift"/></svg>Donations &amp; resources</a>
@@ -195,7 +195,7 @@ if ($notif_id > 0 && $token !== '') {
     </nav>
 
     <div class="sidebar__foot">
-      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+      <a href="../../logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
     </div>
   </aside>
   <div class="scrim" id="scrim" hidden></div>
@@ -204,7 +204,7 @@ if ($notif_id > 0 && $token !== '') {
   <div class="main">
     <header class="topbar">
       <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../ngos/ngo-donations.php">Donations &amp; resources</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Accept food donation</strong></nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../ngos/ngo-dashboard.php">NGO workspace</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><a href="../ngos/ngo-donations.php">Donations &amp; resources</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Accept food donation</strong></nav>
       <div class="topbar__right">
         <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
         <div class="profile">
@@ -243,35 +243,35 @@ if ($notif_id > 0 && $token !== '') {
         <span class="result__icon result__icon--info"><svg class="icon"><use href="../assets/img/icons.svg#i-hand"/></svg></span>
         <h1>Already claimed</h1>
         <p>Another NGO accepted this donation just before you. Thank you for responding — you will be alerted about future donations near you.</p>
-        <a class="btn btn--dark" href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
+        <a class="btn btn--dark" href="../ngos/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
       </section>
         <?php elseif ($state === 'expired'): ?>
       <section class="result">
         <span class="result__icon result__icon--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-clock"/></svg></span>
         <h1>This link has expired</h1>
         <p>The acceptance window for this donation has closed, and it is being forwarded to the next group of NGOs.</p>
-        <a class="btn btn--dark" href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
+        <a class="btn btn--dark" href="../ngos/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
       </section>
         <?php elseif ($state === 'wrong_account'): ?>
       <section class="result">
         <span class="result__icon result__icon--warn"><svg class="icon"><use href="../assets/img/icons.svg#i-lock"/></svg></span>
         <h1>Different NGO account</h1>
         <p>This link was sent to a different NGO than the one you are signed in as. Sign out, sign in with the NGO that received the email, and open the link again.</p>
-        <a class="btn btn--dark" href="../../inc/logout.php"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+        <a class="btn btn--dark" href="../../logout.php"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
       </section>
         <?php elseif ($state === 'error'): ?>
       <section class="result">
         <span class="result__icon result__icon--bad"><svg class="icon"><use href="../assets/img/icons.svg#i-alert"/></svg></span>
         <h1>Something went wrong</h1>
         <p>We couldn’t process your acceptance and nothing was changed. Please try the link again, or contact the platform administrator.</p>
-        <a class="btn btn--dark" href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
+        <a class="btn btn--dark" href="../ngos/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
       </section>
         <?php else: ?>
       <section class="result">
         <span class="result__icon result__icon--bad"><svg class="icon"><use href="../assets/img/icons.svg#i-x"/></svg></span>
         <h1>Invalid link</h1>
         <p>This acceptance link is not valid or has already been used. If you think this is a mistake, please contact the platform administrator.</p>
-        <a class="btn btn--dark" href="../dashboards/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
+        <a class="btn btn--dark" href="../ngos/ngo-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Go to dashboard</a>
       </section>
         <?php endif; ?>
 

@@ -1,0 +1,15 @@
+# Machine-specific settings and credentials
+/inc/config.local.php
+
+# Documents people upload are private data (folders are created on first upload)
+/uploads/
+
+# Local portable runtimes, if you use them instead of XAMPP
+/tools/
+
+# OS / editor clutter
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

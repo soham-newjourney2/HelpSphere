@@ -1,0 +1,8 @@
+# Apache (XAMPP) rules for HelpSphere
+
+# No automatic folder listings
+Options -Indexes
+
+# Internal folders are never served directly: shared PHP and settings, the SQL file,
+# command-line scripts and uploaded documents (uploads are streamed by PHP after a permission check)
+RedirectMatch 403 (?i)/(inc|database|scripts|uploads|tools)(/|$)

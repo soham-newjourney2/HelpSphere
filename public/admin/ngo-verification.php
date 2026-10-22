@@ -285,7 +285,7 @@ $colors = ['linear-gradient(135deg,#2dd4a8,#6ee7b7)', 'linear-gradient(135deg,#5
     </nav>
 
     <div class="sidebar__foot">
-      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+      <a href="../../logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
     </div>
   </aside>
   <div class="scrim" id="scrim" hidden></div>

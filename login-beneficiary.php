@@ -68,7 +68,7 @@ else if(isset($_POST['login-beneficiary']))
      $_SESSION['beneficiary_id']=$user['id'];
      $_SESSION['fullname']=$user['name'];
      $_SESSION['beneficiary_email']=$user['email'];
-     header("Location: ./public/dashboards/beneficiary-dashboard.php");
+     header("Location: ./public/beneficiaries/beneficiary-dashboard.php");
      exit();
    }
    $error='Invalid email or password.';

@@ -69,7 +69,7 @@ foreach ($stmtA->fetchAll(PDO::FETCH_ASSOC) as $row) {
     <span class="sidebar__tag">Donor space</span>
 
     <nav class="sidebar__nav" aria-label="Donor space">
-      <a href="../dashboards/donor-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../donors/donor-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
       <a href="../donors/donor-food-selection.php"><svg class="icon"><use href="../assets/img/icons.svg#i-food"/></svg>Food donation</a>
       <a href="../donors/donor-money-selection.php"><svg class="icon"><use href="../assets/img/icons.svg#i-coin"/></svg>Money donation</a>
       <a href="../donors/donor-resource-donation.php"><svg class="icon"><use href="../assets/img/icons.svg#i-box"/></svg>Resource donation</a>
@@ -79,7 +79,7 @@ foreach ($stmtA->fetchAll(PDO::FETCH_ASSOC) as $row) {
     </nav>
 
     <div class="sidebar__foot">
-      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+      <a href="../../logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
     </div>
   </aside>
   <div class="scrim" id="scrim" hidden></div>
@@ -88,7 +88,7 @@ foreach ($stmtA->fetchAll(PDO::FETCH_ASSOC) as $row) {
   <div class="main">
     <header class="topbar">
       <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/donor-dashboard.php">Donor space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Volunteering</strong></nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../donors/donor-dashboard.php">Donor space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>Volunteering</strong></nav>
       <div class="topbar__right">
         <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
         <div class="profile">

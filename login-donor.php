@@ -65,7 +65,7 @@ else if(isset($_POST['login-donor']))
      $_SESSION['donor_name']=$donor['name'];
      $_SESSION['donor_email']=$donor['email'];
      $_SESSION['donor_id']=$donor['id'];
-     header("Location: public/dashboards/donor-dashboard.php");
+     header("Location: public/donors/donor-dashboard.php");
      exit();
    }
    $error='Invalid email or password.';

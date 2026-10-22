@@ -6,10 +6,9 @@
  */
 require_once __DIR__ . '/smtp_mail.php';
 
-if (!defined('APP_URL'))            define('APP_URL',            'url of your app');  // <-- set this
+if (!defined('APP_URL'))            define('APP_URL',            'http://localhost/HelpSphere');  // set it in inc/config.local.php
 if (!defined('ESCALATION_MINUTES')) define('ESCALATION_MINUTES', 7);
 if (!defined('BATCH_SIZE'))         define('BATCH_SIZE',         5);
-if (!defined('MAIL_FROM'))          define('MAIL_FROM',          'your email');       // <-- set this
 
 function locationScore(?string $a, ?string $b): int {
     $a = (string)$a; $b = (string)$b;

@@ -109,7 +109,7 @@ $error   = isset($_GET['error']) ? 1 : 0;
     <span class="sidebar__tag">Beneficiary space</span>
 
     <nav class="sidebar__nav" aria-label="Beneficiary space">
-      <a href="../dashboards/beneficiary-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
+      <a href="../beneficiaries/beneficiary-dashboard.php"><svg class="icon"><use href="../assets/img/icons.svg#i-grid"/></svg>Overview</a>
       <a href="../beneficiaries/beneficiary-request-management.php"><svg class="icon"><use href="../assets/img/icons.svg#i-pin"/></svg>My requests</a>
       <a href="../beneficiaries/beneficiary-document-upload.php"><svg class="icon"><use href="../assets/img/icons.svg#i-upload"/></svg>Upload documents</a>
       <a href="../beneficiaries/beneficiary-documents.php" class="is-active" aria-current="page"><svg class="icon"><use href="../assets/img/icons.svg#i-file"/></svg>My documents</a>
@@ -118,7 +118,7 @@ $error   = isset($_GET['error']) ? 1 : 0;
     </nav>
 
     <div class="sidebar__foot">
-      <a href="../../inc/logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
+      <a href="../../logout.php" class="sidebar__logout"><svg class="icon"><use href="../assets/img/icons.svg#i-logout"/></svg>Sign out</a>
     </div>
   </aside>
   <div class="scrim" id="scrim" hidden></div>
@@ -127,7 +127,7 @@ $error   = isset($_GET['error']) ? 1 : 0;
   <div class="main">
     <header class="topbar">
       <button type="button" class="icon-btn topbar__menu" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-menu"/></svg></button>
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="../dashboards/beneficiary-dashboard.php">Beneficiary space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>My documents</strong></nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../beneficiaries/beneficiary-dashboard.php">Beneficiary space</a><svg class="icon icon--sm"><use href="../assets/img/icons.svg#i-arrow"/></svg><strong>My documents</strong></nav>
       <div class="topbar__right">
         <a href="../../index.php" class="topbar__site"><svg class="icon"><use href="../assets/img/icons.svg#i-sprout"/></svg><span>HelpSphere home</span></a>
         <div class="profile">

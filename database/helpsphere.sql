@@ -312,21 +312,6 @@ CREATE TABLE `ngo_master` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Table structure for table `request_ngo_decisions`
---
-
-CREATE TABLE `request_ngo_decisions` (
-  `id` int(11) NOT NULL,
-  `request_id` int(11) NOT NULL,
-  `ngo_id` int(11) NOT NULL,
-  `decision` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
-  `decided_at` timestamp NULL DEFAULT NULL,
-  `reason` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `resource_donations`
 --
 
@@ -490,14 +475,6 @@ ALTER TABLE `ngo_master`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `request_ngo_decisions`
---
-ALTER TABLE `request_ngo_decisions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uq_req_ngo` (`request_id`,`ngo_id`),
-  ADD KEY `ngo_id` (`ngo_id`);
-
---
 -- Indexes for table `resource_donations`
 --
 ALTER TABLE `resource_donations`
@@ -634,12 +611,6 @@ ALTER TABLE `ngo_master`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `request_ngo_decisions`
---
-ALTER TABLE `request_ngo_decisions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `resource_donations`
 --
 ALTER TABLE `resource_donations`
@@ -690,13 +661,6 @@ ALTER TABLE `food_donation_requests`
 --
 ALTER TABLE `ngo_document_admin_rejections`
   ADD CONSTRAINT `ngo_document_admin_rejections_ibfk_1` FOREIGN KEY (`document_id`) REFERENCES `ngo_documents` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `request_ngo_decisions`
---
-ALTER TABLE `request_ngo_decisions`
-  ADD CONSTRAINT `request_ngo_decisions_ibfk_1` FOREIGN KEY (`request_id`) REFERENCES `assistance_requests` (`id`),
-  ADD CONSTRAINT `request_ngo_decisions_ibfk_2` FOREIGN KEY (`ngo_id`) REFERENCES `ngo_master` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

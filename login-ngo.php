@@ -27,7 +27,7 @@ try
   if (preg_match('/^ngo-food-accept\.php\?notif_id=\d+&token=[a-f0-9]{64}$/', $to)) {
       header('Location: public/ngos/' . $to);
   } else {
-      header('Location: public/dashboards/ngo-dashboard.php');   // forward slashes, not backslashes
+      header('Location: public/ngos/ngo-dashboard.php');   // forward slashes, not backslashes
   }
   exit();
 }

@@ -9,13 +9,13 @@
  *   smtp_mail('to@example.com', 'Subject', 'Body text');
  */
 
-// ─── ✏️  Edit these four lines only ──────────────────────────────────────────
-define('SMTP_HOST', 'smtp.gmail.com');   // or smtp.outlook.com, etc.
-define('SMTP_PORT', 587);               
-define('SMTP_USER', 'your Gmail address');   // your Gmail address
-define('SMTP_PASS', 'Gmail App Password');       // Gmail App Password (not your login password)
-define('SMTP_FROM', 'your-address@gmail.com');   // shown as sender
-define('SMTP_NAME', 'your sender name');             // shown as sender name
+// ─── Defaults — set the real values in inc/config.local.php ─────────────────
+defined('SMTP_HOST') || define('SMTP_HOST', 'smtp.gmail.com');   // or smtp.outlook.com, etc.
+defined('SMTP_PORT') || define('SMTP_PORT', 587);
+defined('SMTP_USER') || define('SMTP_USER', 'your Gmail address');   // your Gmail address
+defined('SMTP_PASS') || define('SMTP_PASS', 'Gmail App Password');   // Gmail App Password (not your login password)
+defined('SMTP_FROM') || define('SMTP_FROM', 'your-address@gmail.com');   // shown as sender
+defined('SMTP_NAME') || define('SMTP_NAME', 'HelpSphere');           // shown as sender name
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
